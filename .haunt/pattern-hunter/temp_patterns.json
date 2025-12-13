@@ -1,0 +1,15 @@
+{
+  "patterns": [
+    {
+      "name": "Mock Pattern 1",
+      "description": "This is a mock pattern for dry-run testing",
+      "evidence": [
+        "file1.py",
+        "file2.py"
+      ],
+      "frequency": "weekly",
+      "impact": "high",
+      "root_cause": "Mock root cause"
+    }
+  ]
+}

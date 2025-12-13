@@ -1,0 +1,283 @@
+# Haunt Framework - Git Ignore Rules
+
+# ============================================================================
+# Session Progress (ephemeral, can be committed or ignored based on preference)
+# ============================================================================
+# Uncomment to ignore session progress files:
+# progress/*.md
+
+# ============================================================================
+# macOS System Files
+# ============================================================================
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# ============================================================================
+# Editor and IDE
+# ============================================================================
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.pydevproject
+.settings/
+
+# ============================================================================
+# Python
+# ============================================================================
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# ============================================================================
+# Testing
+# ============================================================================
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.hypothesis/
+
+# ============================================================================
+# Jupyter Notebooks
+# ============================================================================
+.ipynb_checkpoints
+
+# ============================================================================
+# Node.js (if using for any tooling)
+# ============================================================================
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# ============================================================================
+# Logs
+# ============================================================================
+*.log
+logs/
+
+# ============================================================================
+# Temporary Files
+# ============================================================================
+tmp/
+temp/
+*.tmp
+
+# ============================================================================
+# Secrets and Credentials
+# ============================================================================
+.env.local
+.env.*.local
+secrets.json
+credentials.json
+*.key
+*.pem
+
+# ============================================================================
+# Claude Code Project-Local Configuration
+# ============================================================================
+# Entire .claude/ directory (project-specific agents, settings, commands)
+.claude/
+
+# ============================================================================
+# Agent Memory (if running local memory server)
+# ============================================================================
+.agent-memory/
+
+# ============================================================================
+# NATS Data (if running NATS locally)
+# ============================================================================
+jetstream/
+nats-data/
+
+# ============================================================================
+# Project-Specific Ignores
+# ============================================================================
+# Add any project-specific patterns below this line
+
+# ============================================================================
+# Haunt Working Files (ephemeral)
+# ============================================================================
+.haunt/plans/
+.haunt/progress/
+.haunt/completed/
+.haunt/docs/
+.haunt/.deployment-manifest.json
+
+# Preserve Haunt tests and scripts (optionally shareable)
+!.haunt/tests/
+!.haunt/scripts/
+!.haunt/README.md
+
+# ============================================================================
+# Haunt - Project-Local Directories
+# ============================================================================
+
+# .claude/ - Project-local Claude Code configuration
+.claude/
+
+# .haunt/ - Project SDLC artifacts (ephemeral working files)
+.haunt/plans/
+.haunt/progress/
+.haunt/completed/
+.haunt/docs/
+
+# Preserve SDLC tests and scripts (optionally shareable)
+!.haunt/tests/
+!.haunt/scripts/
+!.haunt/README.md
+
+# ============================================================================
+# Haunt - Project-Local Directories
+# ============================================================================
+
+# .claude/ - Project-local Claude Code configuration
+.claude/
+
+# .haunt/ - Project SDLC artifacts (ephemeral working files)
+.haunt/plans/
+.haunt/progress/
+.haunt/completed/
+.haunt/docs/
+
+# Preserve SDLC tests and scripts (optionally shareable)
+!.haunt/tests/
+!.haunt/scripts/
+!.haunt/README.md
+
+# ============================================================================
+# Haunt - Project-Local Directories
+# ============================================================================
+
+# .claude/ - Project-local Claude Code configuration
+.claude/
+
+# .haunt/ - Project SDLC artifacts (ephemeral working files)
+.haunt/plans/
+.haunt/progress/
+.haunt/completed/
+.haunt/docs/
+
+# Preserve SDLC tests and scripts (optionally shareable)
+!.haunt/tests/
+!.haunt/scripts/
+!.haunt/README.md
+
+# ============================================================================
+# Haunt - Project-Local Directories
+# ============================================================================
+
+# .claude/ - Project-local Claude Code configuration
+.claude/
+
+# .haunt/ - Project SDLC artifacts (ephemeral working files)
+.haunt/plans/
+.haunt/progress/
+.haunt/completed/
+.haunt/docs/
+
+# Preserve SDLC tests and scripts (optionally shareable)
+!.haunt/tests/
+!.haunt/scripts/
+!.haunt/README.md
+
+# ============================================================================
+# Haunt - Project-Local Directories
+# ============================================================================
+
+# .claude/ - Project-local Claude Code configuration
+.claude/
+
+# .haunt/ - Project SDLC artifacts (ephemeral working files)
+.haunt/plans/
+.haunt/progress/
+.haunt/completed/
+.haunt/docs/
+
+# Preserve SDLC tests and scripts (optionally shareable)
+!.haunt/tests/
+!.haunt/scripts/
+!.haunt/README.md
+
+# ============================================================================
+# Haunt - Project-Local Directories
+# ============================================================================
+
+# .claude/ - Project-local Claude Code configuration
+.claude/
+
+# .haunt/ - Project SDLC artifacts (ephemeral working files)
+.haunt/plans/
+.haunt/progress/
+.haunt/completed/
+.haunt/docs/
+
+# Preserve SDLC tests and scripts (optionally shareable)
+!.haunt/tests/
+!.haunt/scripts/
+!.haunt/README.md
+
+# ============================================================================
+# Haunt - Project-Local Directories
+# ============================================================================
+
+# .claude/ - Project-local Claude Code configuration
+.claude/
+
+# .haunt/ - Project SDLC artifacts (ephemeral working files)
+.haunt/plans/
+.haunt/progress/
+.haunt/completed/
+.haunt/docs/
+
+# Preserve SDLC tests and scripts (optionally shareable)
+!.haunt/tests/
+!.haunt/scripts/
+!.haunt/README.md

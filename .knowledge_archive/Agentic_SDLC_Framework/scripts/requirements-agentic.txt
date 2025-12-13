@@ -1,0 +1,10 @@
+# Agentic SDLC Python Requirements
+nats-py>=2.6.0          # NATS client for Python
+mcp>=1.0.0              # Model Context Protocol
+fastmcp>=0.1.0          # Fast MCP server implementation
+pydantic>=2.0.0         # Data validation
+httpx>=0.25.0           # HTTP client
+pytest>=7.0.0           # Testing framework
+pytest-asyncio>=0.21.0  # Async test support
+pre-commit>=3.0.0       # Git hooks
+playwright>=1.40.0      # Browser automation for E2E testing

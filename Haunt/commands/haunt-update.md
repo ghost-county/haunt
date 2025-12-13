@@ -1,0 +1,241 @@
+# Haunt Update (Deployment Sync Check)
+
+Check if your deployed Haunt framework is in sync with the source files in `Haunt/`. Detect drift and offer to update.
+
+## Arguments: $ARGUMENTS
+
+### Overview
+
+This command runs a synchronization check between:
+- **Source**: Files in `Haunt/` directory (agents, rules, skills, commands)
+- **Deployed**: Files in `~/.claude/` and `.claude/` deployed by `setup-haunt.sh`
+
+The check uses the deployment manifest (`.haunt/.deployment-manifest.json`) and checksums to detect changes.
+
+### Execution
+
+#### Step 1: Check Prerequisites
+
+Verify the deployment manifest exists:
+
+```bash
+if [ -f ".haunt/.deployment-manifest.json" ]; then
+    # Proceed with sync check
+else
+    # No manifest - show error
+fi
+```
+
+#### Step 2: Run Sync Status Script
+
+Execute the sync detection script:
+
+```bash
+bash Haunt/scripts/sync-status.sh
+```
+
+**Exit Codes:**
+- `0` = In sync (no changes detected)
+- `1` = Drift detected (changes found)
+- `2` = No manifest (never deployed)
+- `127` = Script not found (REQ-169 not yet complete)
+
+#### Step 3: Parse Output and Display Results
+
+Based on the exit code and output, display the appropriate message.
+
+### Output Scenarios
+
+#### Scenario 1: In Sync (Exit Code 0)
+
+```
+*The spirits are at rest...*
+
+Your Haunt deployment is synchronized.
+
+Deployment Details:
+- Version: 2.0
+- Last summoned: 2025-12-12 14:30
+- Spirits bound: 46 files
+  - 5 agents
+  - 8 rules
+  - 17 skills
+  - 8 commands
+
+No action needed. The framework is aligned.
+```
+
+#### Scenario 2: Drift Detected (Exit Code 1)
+
+```
+*The spirits grow restless...*
+
+Changes detected since last deployment:
+
+Modified (3):
+  - agents/gco-dev.md
+  - skills/gco-seance/SKILL.md
+  - rules/gco-commit-conventions.md
+
+Added (1):
+  - commands/haunt-update.md
+
+Removed (0):
+
+The source has diverged from the binding circle.
+
+Shall I run the summoning ritual to bind these changes?
+
+Actions:
+- Run deployment: bash Haunt/scripts/setup-haunt.sh
+- Review changes: git diff Haunt/
+- Show manifest: cat .haunt/.deployment-manifest.json
+```
+
+**Interactive Mode:**
+
+If the user says "yes" or confirms, execute:
+
+```bash
+bash Haunt/scripts/setup-haunt.sh
+```
+
+Otherwise, provide the command for manual execution.
+
+#### Scenario 3: No Manifest (Exit Code 2)
+
+```
+*The binding circle is incomplete...*
+
+No deployment manifest found. You have not yet performed the initial summoning.
+
+Run the setup script to create your first deployment:
+
+  bash Haunt/scripts/setup-haunt.sh
+
+This will:
+- Deploy agents to ~/.claude/agents/
+- Deploy rules to ~/.claude/rules/
+- Deploy skills to ~/.claude/skills/
+- Deploy commands to ~/.claude/commands/
+- Generate deployment manifest for future sync checks
+
+After deployment, run `/haunt-update` to verify synchronization.
+```
+
+#### Scenario 4: Script Not Found (Exit Code 127)
+
+```
+*The divination tools are missing...*
+
+Cannot check sync status - Haunt/scripts/sync-status.sh not found.
+
+This means REQ-169 (Create Sync Status Detection Script) is not yet complete.
+
+Current workaround:
+- Manually compare Haunt/ files with deployed files
+- Run: bash Haunt/scripts/setup-haunt.sh --dry-run
+- Or wait for REQ-169 to be implemented
+
+Once the sync-status script is available, this command will work automatically.
+```
+
+### Advanced Usage
+
+#### Show Detailed Manifest
+
+```
+/haunt-update --manifest
+```
+
+Display the full deployment manifest with file checksums:
+
+```json
+{
+  "version": "2.0",
+  "source_path": "/Users/username/github_repos/ghost-county/Haunt",
+  "deployed_at": "2025-12-12T14:30:00Z",
+  "files": {
+    "agents/gco-dev.md": {
+      "checksum": "abc123...",
+      "size": 2048
+    },
+    ...
+  }
+}
+```
+
+#### Force Update (Skip Confirmation)
+
+```
+/haunt-update --force
+```
+
+Automatically run setup-haunt.sh if drift is detected (no confirmation prompt).
+
+Execute:
+
+```bash
+bash Haunt/scripts/sync-status.sh
+if [ $? -eq 1 ]; then
+    echo "Drift detected. Running update..."
+    bash Haunt/scripts/setup-haunt.sh
+fi
+```
+
+### Error Handling
+
+**If sync-status.sh fails unexpectedly:**
+
+```
+*The spirits are confused...*
+
+Sync check failed with unexpected error:
+<error message>
+
+Try:
+1. Verify .haunt/.deployment-manifest.json exists
+2. Check Haunt/scripts/sync-status.sh is executable
+3. Run manually: bash Haunt/scripts/sync-status.sh
+4. Review logs for details
+```
+
+**If setup-haunt.sh fails during update:**
+
+```
+*The ritual was interrupted...*
+
+Deployment failed. Review the error above.
+
+Common issues:
+- Permission denied: Check file permissions
+- Script not found: Verify Haunt/scripts/setup-haunt.sh exists
+- Syntax error: Check for script corruption
+
+Manual recovery:
+  cd /path/to/Claude
+  bash Haunt/scripts/setup-haunt.sh --verify
+```
+
+### Implementation Notes
+
+- This command depends on REQ-169 (sync-status.sh) being complete
+- The deployment manifest is generated by REQ-167 and REQ-168
+- If sync-status.sh doesn't exist, provide helpful error with workaround
+- Always use absolute paths when running scripts
+- Capture full output from sync-status.sh for detailed reporting
+- Use Ghost County theming for all messages
+
+### Quick Reference
+
+| Command | Purpose |
+|---------|---------|
+| `/haunt-update` | Check sync status and offer to update |
+| `/haunt-update --manifest` | Show deployment manifest |
+| `/haunt-update --force` | Auto-update if drift detected |
+
+### Related Commands
+
+- `/haunt` - Show framework status
+- `/summon` - Spawn an agent
+- `/ritual` - Run daily/weekly rituals
