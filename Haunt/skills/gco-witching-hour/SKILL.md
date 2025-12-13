@@ -177,7 +177,24 @@ Fix the root cause and add safeguards against recurrence.
 - Update agent memory with pattern and solution
 - Document in witching-hour report lessons learned
 
-**Update agent memory:**
+**Document the Insight:**
+
+After successful banishment, record the lesson learned for future reference:
+
+```python
+add_long_term_insight(
+    "Root cause: PostgreSQL connection pool exhaustion caused by unclosed cursors in async handlers. "
+    "Solution: Added explicit cursor.close() calls in finally blocks and reduced pool size from 50 to 20. "
+    "Prevention: Added connection pool monitoring alerts and defensive timeout on all DB operations."
+)
+```
+
+This builds institutional knowledge across debugging sessions. The insight should include:
+- **Root cause**: The fundamental technical issue (not symptoms)
+- **Solution**: What actually fixed it (specific changes made)
+- **Prevention**: How to avoid this in the future (safeguards, patterns, alerts)
+
+**Memory pattern template:**
 ```
 Pattern: [What pattern was this bug an instance of?]
 Root Cause: [What was the fundamental issue?]
@@ -406,6 +423,18 @@ Create `.haunt/progress/witching-hour-YYYY-MM-DD-[bug-description].md`:
 [What did we learn from this investigation?]
 
 ### Agent Memory Entry
+
+Record the insight for future debugging sessions:
+
+```python
+add_long_term_insight(
+    "Root cause: [fundamental issue]. "
+    "Solution: [how resolved]. "
+    "Prevention: [safeguards added]"
+)
+```
+
+Template for manual documentation:
 ```
 Pattern: [pattern name]
 Root Cause: [fundamental issue]
