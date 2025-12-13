@@ -97,10 +97,13 @@ check_local_resources() {
 }
 
 # Clone the repository for remote execution
+# NOTE: This function is called in a subshell $(...), so we must send
+# info/success messages to stderr, not stdout. Only the clone_dir goes to stdout.
 clone_repo_for_setup() {
     local clone_dir="${TMPDIR:-/tmp}/haunt-setup-$$"
 
-    info "Remote execution detected - cloning repository..."
+    # Send info to stderr since stdout is captured for return value
+    echo -e "${CYAN}ℹ${NC} Remote execution detected - cloning repository..." >&2
 
     # Check for git
     if ! command -v git &> /dev/null; then
@@ -111,7 +114,7 @@ clone_repo_for_setup() {
 
     # Clone the repo
     if [[ "$VERBOSE" == true ]]; then
-        git clone --depth 1 --branch "$GITHUB_REPO_BRANCH" "$GITHUB_REPO_URL" "$clone_dir"
+        git clone --depth 1 --branch "$GITHUB_REPO_BRANCH" "$GITHUB_REPO_URL" "$clone_dir" >&2
     else
         git clone --depth 1 --branch "$GITHUB_REPO_BRANCH" "$GITHUB_REPO_URL" "$clone_dir" 2>/dev/null
     fi
@@ -121,9 +124,10 @@ clone_repo_for_setup() {
         exit 3
     fi
 
-    success "Repository cloned to $clone_dir"
+    # Send success to stderr since stdout is captured for return value
+    echo -e "${GREEN}✓${NC} Repository cloned to $clone_dir" >&2
 
-    # Return the clone directory
+    # Return the clone directory (only this goes to stdout)
     echo "$clone_dir"
 }
 
