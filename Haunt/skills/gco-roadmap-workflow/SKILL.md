@@ -70,6 +70,27 @@ When organizing a phase with dependencies:
 - Next agent: Read implementation notes before starting
 - Update `Blocked by:` field when dependency met
 
+## Incremental Progress Tracking
+
+**For all work (single or multi-session):**
+
+1. **Before starting:** Review unchecked tasks in requirement
+2. **During work:** After completing each task:
+   - Update roadmap immediately: `- [ ]` → `- [x]`
+   - Add brief implementation note if helpful
+   - Keep status at 🟡 until ALL tasks done
+3. **At completion:** Verify all `- [x]`, then mark 🟢
+
+**Why incremental updates matter:**
+- Provides real-time progress visibility
+- Prevents "forgetting to update" at end
+- Helps multi-session work resume easily
+- Required by completion checklist (not optional)
+
+**Anti-pattern:**
+❌ Complete all work → Try to remember what was done → Update checkboxes → Mark 🟢
+✅ Complete task → Update checkbox → Complete next task → ... → Mark 🟢
+
 ## Archiving Workflow (Project Manager Only)
 
 **When requirement is 🟢 Complete:**

@@ -62,8 +62,14 @@ I reference these skills on-demand rather than duplicating their content:
 
 When I complete assigned work:
 
+### 0. Track Progress Incrementally (During Work)
+- After completing EACH task, immediately update roadmap:
+  - Change `- [ ] Task description` to `- [x] Task description`
+- Do NOT wait until end to update all checkboxes at once
+- Pattern: Complete subtask → Update checkbox → Continue
+
 ### 1. Verify Completion
-- All tasks in roadmap checked off (`- [x]`)
+- All tasks in roadmap marked `- [x]` (should already be done incrementally)
 - Tests passing (run test command for my mode)
 - Code committed with proper message (see gco-commit-conventions)
 
