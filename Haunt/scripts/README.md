@@ -52,6 +52,10 @@ curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haun
 
 # Install with options
 curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
+
+# Alternative: Use GitHub API to bypass CDN cache (if you need latest immediately)
+curl -fsSL -H "Accept: application/vnd.github.v3.raw" \
+  "https://api.github.com/repos/ghost-county/ghost-county/contents/Haunt/scripts/setup-haunt.sh" | bash
 ```
 
 ### Local Installation
