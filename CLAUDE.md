@@ -36,6 +36,13 @@ ghost-county/
 │   ├── rules/                # Invariant enforcement protocols (7 rules)
 │   ├── skills/               # SDLC methodology skills (on-demand)
 │   ├── scripts/              # Setup and validation scripts
+│   ├── docs/                 # Detailed framework documentation
+│   │   ├── WHITE-PAPER.md
+│   │   ├── SDK-INTEGRATION.md
+│   │   ├── TOOL-PERMISSIONS.md
+│   │   ├── SKILLS-REFERENCE.md
+│   │   ├── PATTERN-DETECTION.md
+│   │   └── HAUNT-DIRECTORY-SPEC.md
 │   ├── README.md             # Architecture overview
 │   ├── SETUP-GUIDE.md        # Complete setup instructions
 │   └── QUICK-REFERENCE.md    # Quick reference card

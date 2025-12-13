@@ -8,26 +8,26 @@ Run directly from the internet - no manual cloning required:
 
 ```bash
 # Install (clones repo temporarily, keeps it for reference)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
 
 # Install and cleanup (removes cloned repo after setup)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
 
 # Preview what would be installed (dry run)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --dry-run
 ```
 
 ### Installation Options
 
 ```bash
 # Install to current project only (not global)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
 
 # Install to both global and project
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=both --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=both --cleanup
 
 # Verify existing installation
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --verify
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --verify
 ```
 
 ## What Gets Installed
@@ -86,7 +86,7 @@ cd /path/to/your/project
 git init  # if not already a git repo
 
 # 2. Run the Haunt setup
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
 
 # 3. Start Claude with the Project Manager to begin planning
 claude -a Project-Manager

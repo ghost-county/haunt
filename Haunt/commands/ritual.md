@@ -1,25 +1,69 @@
-# Ritual (Maintenance Workflows)
+# Ritual (Daily Scripts Command)
 
-Execute Ghost County maintenance rituals. These are recurring workflows that keep the haunting healthy.
+Execute Ghost County daily ritual scripts. These recurring workflows maintain project health and momentum.
 
 ## Ritual: $ARGUMENTS
 
 ### Available Rituals
 
-| Ritual | Purpose | Frequency |
-|--------|---------|-----------|
-| `morning` | Morning seance - review roadmap, identify today's work | Daily |
-| `evening` | Evening banishment - summarize progress, prepare handoff | Daily |
-| `weekly` | Weekly refactor - code quality, agent improvements | Weekly |
-| `pattern-hunt` | Hunt for recurring anti-patterns | Weekly |
+| Ritual | Purpose | Frequency | Script |
+|--------|---------|-----------|--------|
+| `morning` | Morning review - roadmap status, test health, work focus | Daily | `morning-review.sh` |
+| `evening` | Evening handoff - session summary, progress report | Daily | `evening-handoff.sh` |
+| `weekly` | Midnight hour - deep weekly reflection and planning | Weekly | `midnight-hour.sh` |
 
 ### Execution
 
-Based on the requested ritual, run the appropriate script:
+**Beginning the ritual...**
 
-- **morning**: `bash Haunt/scripts/rituals/morning-review.sh`
-- **evening**: `bash Haunt/scripts/rituals/evening-handoff.sh`
-- **weekly**: `bash Haunt/scripts/rituals/weekly-refactor.sh`
-- **pattern-hunt**: `bash Haunt/scripts/rituals/pattern-hunt-weekly.sh`
+Based on the requested ritual type, execute the appropriate script from `Haunt/scripts/rituals/`:
 
-If no ritual specified, show the list of available rituals.
+#### Morning Ritual
+```bash
+bash Haunt/scripts/rituals/morning-review.sh
+```
+
+Provides:
+- Git activity (last 24h)
+- Roadmap progress tracking
+- Test suite status
+- Project health score
+- Infrastructure checks
+- Recommendations for the day
+
+#### Evening Ritual
+```bash
+bash Haunt/scripts/rituals/evening-handoff.sh
+```
+
+Provides:
+- Session summary (commits, files changed)
+- Completed work overview
+- Infrastructure status
+- Next session preparation
+
+#### Weekly Ritual
+```bash
+bash Haunt/scripts/rituals/midnight-hour.sh
+```
+
+Provides:
+- Deep weekly reflection
+- Commit pattern analysis
+- Agent memory consolidation
+- Strategic planning insights
+
+### Usage
+
+- `/ritual morning` - Run morning review
+- `/ritual evening` - Run evening handoff
+- `/ritual weekly` - Run midnight hour weekly reflection
+- `/ritual` (no argument) - Show available rituals
+
+### Output
+
+After execution completes, display:
+
+**The ritual is complete.**
+
+Include a summary of the key findings from the script output.

@@ -14,11 +14,16 @@ BOLD='\033[1m'
 # Parse command line flags
 SAVE_REPORT=false
 SHOW_HELP=false
+SKIP_MEMORY=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
         --save)
             SAVE_REPORT=true
+            shift
+            ;;
+        --skip-memory)
+            SKIP_MEMORY=true
             shift
             ;;
         --help)
@@ -41,19 +46,21 @@ Evening Handoff Script - Haunt
 Usage: ./evening-handoff.sh [OPTIONS]
 
 Options:
-  --save    Save handoff report to .haunt/progress/handoff-{date}.md
-  --help    Show this help message
+  --save          Save handoff report to .haunt/progress/handoff-{date}.md
+  --skip-memory   Skip memory consolidation (REM sleep)
+  --help          Show this help message
 
 Description:
   Generates an evening handoff report showing:
   - Session summary (commits, files changed, completed work)
   - Infrastructure status
   - Tomorrow's priorities from roadmap
-  - Agent memory save placeholder
+  - Agent memory consolidation (optional)
 
 Examples:
-  ./evening-handoff.sh           # Display report only
-  ./evening-handoff.sh --save    # Display and save to file
+  ./evening-handoff.sh                  # Display report with memory consolidation
+  ./evening-handoff.sh --save           # Display and save to file
+  ./evening-handoff.sh --skip-memory    # Skip memory consolidation
 
 EOF
     exit 0
@@ -200,11 +207,37 @@ if [ -n "$BLOCKED" ]; then
     add_to_report ""
 fi
 
-# Agent Memory Save Placeholder
-add_to_report "${BOLD}${BLUE}═══ Agent Memory Save ═══${RESET}"
-add_to_report "${YELLOW}📝 Placeholder: Agent memory save functionality${RESET}"
-add_to_report "   To save session learnings, use:"
-add_to_report "   ${CYAN}store_memory(content=\"[summary]\", category=\"dev-infrastructure\", tags=[\"session\"])${RESET}"
+# Agent Memory Consolidation (REM Sleep)
+add_to_report "${BOLD}${BLUE}═══ Memory Consolidation (REM Sleep) ═══${RESET}"
+if [ "$SKIP_MEMORY" = true ]; then
+    add_to_report "${YELLOW}○ Skipped (--skip-memory flag)${RESET}"
+else
+    # Check if memory file exists and has content
+    MEMORY_FILE="$HOME/.agent-memory/memories.json"
+    CONSOLIDATION_SCRIPT="$(dirname "$0")/../utils/consolidate-memory.py"
+
+    if [ ! -f "$MEMORY_FILE" ]; then
+        add_to_report "${YELLOW}○ No agent memories to consolidate${RESET}"
+    elif [ ! -f "$CONSOLIDATION_SCRIPT" ]; then
+        add_to_report "${RED}✗ Consolidation script not found: ${CONSOLIDATION_SCRIPT}${RESET}"
+    elif ! command -v python3 &> /dev/null; then
+        add_to_report "${RED}✗ python3 not available${RESET}"
+    else
+        # Run consolidation
+        CONSOLIDATION_OUTPUT=$(python3 "$CONSOLIDATION_SCRIPT" 2>&1)
+        CONSOLIDATION_EXIT=$?
+
+        if [ $CONSOLIDATION_EXIT -eq 0 ]; then
+            # Success - display output
+            echo "$CONSOLIDATION_OUTPUT" | while read line; do
+                add_to_report "${GREEN}${line}${RESET}"
+            done
+        else
+            add_to_report "${RED}✗ Memory consolidation failed${RESET}"
+            add_to_report "${YELLOW}  Error: ${CONSOLIDATION_OUTPUT}${RESET}"
+        fi
+    fi
+fi
 add_to_report ""
 
 # Footer

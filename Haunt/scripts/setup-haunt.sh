@@ -275,13 +275,13 @@ ${BOLD}REMOTE INSTALLATION:${NC}
     This script can be run directly from the internet:
 
     # Quick install (clones repo, runs setup, keeps repo)
-    curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
 
     # Install and cleanup (removes cloned repo after setup)
-    curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
+    curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
 
     # Install with options
-    curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
+    curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
 
 ${BOLD}EXAMPLES:${NC}
     # Manifest full haunt (first time - global scope by default)

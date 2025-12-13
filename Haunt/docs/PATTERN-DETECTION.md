@@ -426,9 +426,9 @@ jobs:
 
 ## Additional Resources
 
-- **[QUICKSTART.md](scripts/rituals/pattern-detector/QUICKSTART.md)** - 2-minute getting started guide
-- **[06-Patterns-and-Defeats.md](../Ghost_County_Framework/06-Patterns-and-Defeats.md)** - Pattern defeat methodology
-- **[05-Operations.md](../Ghost_County_Framework/05-Operations.md)** - Weekly refactor ritual
+- **[QUICKSTART.md](../scripts/rituals/pattern-detector/QUICKSTART.md)** - 2-minute getting started guide
+- **[06-Patterns-and-Defeats.md](../../Agentic_SDLC_Framework/06-Patterns-and-Defeats.md)** - Pattern defeat methodology (v1.0 legacy)
+- **[05-Operations.md](../../Agentic_SDLC_Framework/05-Operations.md)** - Weekly refactor ritual (v1.0 legacy)
 
 ## Support
 

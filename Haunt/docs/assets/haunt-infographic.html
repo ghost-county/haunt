@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Haunt Framework - Infographic</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+            position: relative;
+        }
+
+        .header h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 5rem;
+            color: #9d4edd;
+            text-shadow: 0 0 30px rgba(157, 78, 221, 0.5),
+                         0 0 60px rgba(157, 78, 221, 0.3);
+            letter-spacing: 8px;
+            margin-bottom: 10px;
+        }
+
+        .header .tagline {
+            font-size: 1.4rem;
+            color: #7b8794;
+            font-weight: 300;
+        }
+
+        .header .subtitle {
+            font-size: 1.1rem;
+            color: #5a6670;
+            margin-top: 8px;
+        }
+
+        /* Ghost SVG - Pixel Art Style */
+        .ghost {
+            width: 70px;
+            height: 90px;
+            position: relative;
+            display: inline-block;
+            image-rendering: pixelated;
+        }
+
+        .ghost-body {
+            fill: #f8f8f8;
+            stroke: #1a1a2e;
+            stroke-width: 2;
+        }
+
+        .ghost-shadow {
+            fill: #d0d0e0;
+        }
+
+        .ghost-eyes {
+            fill: #000000;
+        }
+
+        .ghost-mouth {
+            fill: #000000;
+        }
+
+        .ghost-outline {
+            fill: #2a2a3e;
+        }
+
+        /* Section styling */
+        .section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #9d4edd, transparent);
+        }
+
+        .section h2 {
+            font-family: 'Creepster', cursive;
+            font-size: 2.5rem;
+            color: #c77dff;
+            margin-bottom: 30px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .section h2 .icon {
+            font-size: 2rem;
+        }
+
+        /* What is Haunt */
+        .what-is-haunt {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            align-items: center;
+        }
+
+        .problem-list {
+            list-style: none;
+        }
+
+        .problem-list li {
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            background: rgba(255,0,0,0.1);
+            border-left: 4px solid #ff6b6b;
+            border-radius: 0 10px 10px 0;
+            font-size: 1.1rem;
+        }
+
+        .problem-list li::before {
+            content: '💀 ';
+        }
+
+        .solution-box {
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(58, 134, 255, 0.2));
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(157, 78, 221, 0.4);
+        }
+
+        .solution-box h3 {
+            font-size: 1.5rem;
+            color: #c77dff;
+            margin-bottom: 20px;
+        }
+
+        .solution-box p {
+            font-size: 1.2rem;
+            line-height: 1.8;
+            color: #d0d0d0;
+        }
+
+        /* Agent Cards */
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 20px;
+        }
+
+        .agent-card {
+            background: rgba(0,0,0,0.3);
+            border-radius: 15px;
+            padding: 25px 15px;
+            text-align: center;
+            border: 1px solid rgba(157, 78, 221, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.3);
+        }
+
+        .agent-card .ghost-container {
+            margin-bottom: 15px;
+        }
+
+        .agent-card h4 {
+            font-size: 1rem;
+            color: #c77dff;
+            margin-bottom: 8px;
+        }
+
+        .agent-card p {
+            font-size: 0.85rem;
+            color: #7b8794;
+            line-height: 1.4;
+        }
+
+        /* Memory Layers */
+        .memory-stack {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .memory-layer {
+            display: flex;
+            align-items: center;
+            padding: 20px 25px;
+            border-radius: 10px;
+            position: relative;
+        }
+
+        .memory-layer .layer-num {
+            font-family: 'Creepster', cursive;
+            font-size: 2rem;
+            color: #9d4edd;
+            margin-right: 20px;
+            min-width: 50px;
+        }
+
+        .memory-layer .layer-content h4 {
+            font-size: 1.2rem;
+            color: #e8e8e8;
+            margin-bottom: 5px;
+        }
+
+        .memory-layer .layer-content p {
+            font-size: 0.95rem;
+            color: #7b8794;
+        }
+
+        .memory-layer:nth-child(1) { background: rgba(157, 78, 221, 0.3); }
+        .memory-layer:nth-child(2) { background: rgba(157, 78, 221, 0.25); }
+        .memory-layer:nth-child(3) { background: rgba(157, 78, 221, 0.2); }
+        .memory-layer:nth-child(4) { background: rgba(157, 78, 221, 0.15); }
+        .memory-layer:nth-child(5) { background: rgba(157, 78, 221, 0.1); }
+
+        /* Seance Flow */
+        .seance-flow {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .seance-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 30px;
+        }
+
+        .step-number {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: #9d4edd;
+            min-width: 80px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+        }
+
+        .step-content {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 4px solid #9d4edd;
+        }
+
+        .step-content h4 {
+            font-size: 1.3rem;
+            color: #c77dff;
+            margin-bottom: 10px;
+        }
+
+        .step-content p {
+            color: #b0b0b0;
+            line-height: 1.6;
+        }
+
+        .step-ghosts {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+
+        .mini-ghost {
+            background: rgba(157, 78, 221, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #c77dff;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        /* Roadmap Visual */
+        .roadmap-visual {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .status-card {
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .status-card .emoji {
+            font-size: 3rem;
+            margin-bottom: 10px;
+        }
+
+        .status-card h4 {
+            font-size: 1.1rem;
+            margin-bottom: 5px;
+        }
+
+        .status-card p {
+            font-size: 0.9rem;
+            color: #7b8794;
+        }
+
+        .status-card.not-started { background: rgba(128, 128, 128, 0.2); border: 2px solid #808080; }
+        .status-card.not-started h4 { color: #a0a0a0; }
+
+        .status-card.in-progress { background: rgba(255, 193, 7, 0.2); border: 2px solid #ffc107; }
+        .status-card.in-progress h4 { color: #ffc107; }
+
+        .status-card.complete { background: rgba(76, 175, 80, 0.2); border: 2px solid #4caf50; }
+        .status-card.complete h4 { color: #4caf50; }
+
+        .status-card.blocked { background: rgba(244, 67, 54, 0.2); border: 2px solid #f44336; }
+        .status-card.blocked h4 { color: #f44336; }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: #5a6670;
+        }
+
+        .footer .logo {
+            font-family: 'Creepster', cursive;
+            font-size: 2rem;
+            color: #9d4edd;
+            margin-bottom: 10px;
+        }
+
+        /* Floating ghosts animation */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .float-ghost {
+            animation: float 3s ease-in-out infinite;
+        }
+
+        .float-ghost:nth-child(2) { animation-delay: 0.5s; }
+        .float-ghost:nth-child(3) { animation-delay: 1s; }
+        .float-ghost:nth-child(4) { animation-delay: 1.5s; }
+        .float-ghost:nth-child(5) { animation-delay: 2s; }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .what-is-haunt { grid-template-columns: 1fr; }
+            .agents-grid { grid-template-columns: repeat(3, 1fr); }
+            .roadmap-visual { grid-template-columns: repeat(2, 1fr); }
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 3rem; }
+            .agents-grid { grid-template-columns: repeat(2, 1fr); }
+            .seance-step { flex-direction: column; }
+            .step-number { min-width: auto; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>HAUNT</h1>
+            <p class="tagline">Summon Your Dev Team</p>
+            <p class="subtitle">A framework for building autonomous development teams with external memory</p>
+        </header>
+
+        <!-- Get Started -->
+        <section class="section" style="text-align: center;">
+            <h2>Get Started</h2>
+            <p style="margin-bottom: 20px; color: #7b8794; font-size: 1.1rem;">
+                One command. That's it.
+            </p>
+            <div style="background: #0d0d14; border-radius: 10px; padding: 20px; display: inline-block; max-width: 100%; overflow-x: auto;">
+                <code style="color: #c77dff; font-size: 1rem; white-space: nowrap;">curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash</code>
+            </div>
+            <p style="margin-top: 15px; color: #5a6670; font-size: 0.9rem;">
+                Requires: Claude Code CLI, Git, Bash
+            </p>
+        </section>
+
+        <!-- What is Haunt -->
+        <section class="section">
+            <h2>What is Haunt?</h2>
+            <div class="what-is-haunt">
+                <div>
+                    <h3 style="color: #ff6b6b; margin-bottom: 20px; font-size: 1.3rem;">The Problem with AI Coding</h3>
+                    <ul class="problem-list">
+                        <li>Context lost every session</li>
+                        <li>No consistent process</li>
+                        <li>Agents can't coordinate</li>
+                        <li>Quality varies wildly</li>
+                    </ul>
+                </div>
+                <div class="solution-box">
+                    <h3>The Haunt Solution</h3>
+                    <p>
+                        Haunt transforms AI models into <strong>specialized team members</strong> with
+                        <strong>persistent memory</strong>, <strong>coordinated workflows</strong>, and
+                        <strong>enforced quality standards</strong>.
+                    </p>
+                    <p style="margin-top: 15px; font-style: italic; color: #9d4edd;">
+                        Context is everything. One agent, one task, one goal. Focused agents are effective agents.
+                    </p>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Spirit Team -->
+        <section class="section">
+            <h2>The Agents</h2>
+            <p style="margin-bottom: 30px; color: #7b8794; font-size: 1.1rem;">
+                Each spirit has a specialized role. They don't talk to each other—they communicate through the roadmap.
+            </p>
+            <div class="agents-grid">
+                <!-- Project Manager Ghost - O mouth, balanced tails -->
+                <div class="agent-card float-ghost">
+                    <div class="ghost-container">
+                        <svg class="ghost" viewBox="0 0 64 90">
+                            <path d="M32 4 C18 4 8 14 6 28 L4 52 Q2 62 8 72 L4 80 Q2 88 10 84 L16 76 Q14 86 22 82 L28 74 Q30 84 36 80 L42 72 Q44 82 52 78 L56 70 Q62 62 60 52 L58 28 C56 14 46 4 32 4 Z" fill="#f0f0f0" opacity="0.95"/>
+                            <ellipse cx="24" cy="32" rx="4" ry="6" fill="#000"/>
+                            <ellipse cx="40" cy="32" rx="4" ry="6" fill="#000"/>
+                            <ellipse cx="32" cy="48" rx="4" ry="5" fill="#000"/>
+                        </svg>
+                    </div>
+                    <h4>Project Manager</h4>
+                    <p>Roadmap keeper, requirement analyzer, work dispatcher</p>
+                </div>
+
+                <!-- Dev Ghost - no mouth, asymmetric tails leaning right -->
+                <div class="agent-card float-ghost">
+                    <div class="ghost-container">
+                        <svg class="ghost" viewBox="0 0 64 90">
+                            <path d="M32 4 C18 4 8 14 6 28 L4 50 Q2 60 6 70 L2 76 Q0 84 8 80 L12 72 Q10 82 18 78 L24 70 Q26 80 34 76 L40 68 Q44 78 52 74 L58 66 Q64 58 62 48 L60 28 C58 14 46 4 32 4 Z" fill="#f0f0f0" opacity="0.95"/>
+                            <ellipse cx="24" cy="32" rx="4" ry="6" fill="#000"/>
+                            <ellipse cx="40" cy="32" rx="4" ry="6" fill="#000"/>
+                        </svg>
+                    </div>
+                    <h4>Dev</h4>
+                    <p>Backend, Frontend, or Infrastructure implementation</p>
+                </div>
+
+                <!-- Research Ghost - small mouth, tails leaning left -->
+                <div class="agent-card float-ghost">
+                    <div class="ghost-container">
+                        <svg class="ghost" viewBox="0 0 64 90">
+                            <path d="M32 4 C18 4 8 14 6 28 L2 48 Q0 58 4 68 L6 76 Q8 84 16 80 L22 72 Q24 82 32 78 L38 70 Q42 80 50 76 L54 68 Q58 78 62 72 L60 60 Q62 50 58 40 L56 28 C54 14 46 4 32 4 Z" fill="#f0f0f0" opacity="0.95"/>
+                            <ellipse cx="24" cy="32" rx="4" ry="6" fill="#000"/>
+                            <ellipse cx="40" cy="32" rx="4" ry="6" fill="#000"/>
+                            <ellipse cx="32" cy="48" rx="3" ry="4" fill="#000"/>
+                        </svg>
+                    </div>
+                    <h4>Research</h4>
+                    <p>Technical investigation, library docs, validation</p>
+                </div>
+
+                <!-- Code Reviewer Ghost - no mouth, wavy bottom -->
+                <div class="agent-card float-ghost">
+                    <div class="ghost-container">
+                        <svg class="ghost" viewBox="0 0 64 90">
+                            <path d="M32 4 C18 4 8 14 6 28 L4 52 Q2 62 6 72 L8 80 Q10 88 18 82 L22 74 Q26 84 32 78 L38 72 Q42 82 48 76 L52 68 Q56 78 60 70 L62 58 Q64 48 60 38 L58 28 C56 14 46 4 32 4 Z" fill="#f0f0f0" opacity="0.95"/>
+                            <ellipse cx="24" cy="32" rx="4" ry="6" fill="#000"/>
+                            <ellipse cx="40" cy="32" rx="4" ry="6" fill="#000"/>
+                        </svg>
+                    </div>
+                    <h4>Code Reviewer</h4>
+                    <p>PR review, pattern detection, quality gates</p>
+                </div>
+
+                <!-- Release Manager Ghost - wide O mouth, dramatic tails -->
+                <div class="agent-card float-ghost">
+                    <div class="ghost-container">
+                        <svg class="ghost" viewBox="0 0 64 90">
+                            <path d="M32 4 C18 4 8 14 6 28 L3 50 Q0 62 6 74 L2 82 Q0 90 10 84 L18 74 Q20 86 30 80 L34 72 Q38 84 48 78 L54 68 Q60 80 64 72 L62 56 Q64 46 60 36 L58 28 C56 14 46 4 32 4 Z" fill="#f0f0f0" opacity="0.95"/>
+                            <ellipse cx="24" cy="32" rx="4" ry="6" fill="#000"/>
+                            <ellipse cx="40" cy="32" rx="4" ry="6" fill="#000"/>
+                            <ellipse cx="32" cy="48" rx="5" ry="6" fill="#000"/>
+                        </svg>
+                    </div>
+                    <h4>Release Manager</h4>
+                    <p>Deployment, changelogs, release coordination</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Memory Layers -->
+        <section class="section">
+            <h2>The Memory Stack</h2>
+            <p style="margin-bottom: 30px; color: #7b8794; font-size: 1.1rem;">
+                Persistent memory, ephemeral agents. Context lives in the stack. Spirits load only what they need.
+            </p>
+            <div class="memory-stack">
+                <div class="memory-layer">
+                    <span class="layer-num">1</span>
+                    <div class="layer-content">
+                        <h4>📜 RULES — Always-On Invariants</h4>
+                        <p>Session startup, commit format, file locations. Auto-loaded. Non-negotiable.</p>
+                    </div>
+                </div>
+                <div class="memory-layer">
+                    <span class="layer-num">2</span>
+                    <div class="layer-content">
+                        <h4>👻 AGENTS — Identity Memory</h4>
+                        <p>"I am a Dev spirit." Values, tool permissions, personality. Loaded on spawn.</p>
+                    </div>
+                </div>
+                <div class="memory-layer">
+                    <span class="layer-num">3</span>
+                    <div class="layer-content">
+                        <h4>📚 SKILLS — Procedural Memory</h4>
+                        <p>TDD workflow, code review checklist, requirements rubric. Loaded on-demand.</p>
+                    </div>
+                </div>
+                <div class="memory-layer">
+                    <span class="layer-num">4</span>
+                    <div class="layer-content">
+                        <h4>📋 CLAUDE.md — Project Context</h4>
+                        <p>Repo structure, active work summary, tech stack. Always loaded.</p>
+                    </div>
+                </div>
+                <div class="memory-layer">
+                    <span class="layer-num">5</span>
+                    <div class="layer-content">
+                        <h4>🗺️ ROADMAP — Working Memory</h4>
+                        <p>Current requirements, task checklists, dependencies. Checked at startup.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- The Séance -->
+        <section class="section">
+            <h2>The Séance — Summoning the Swarm</h2>
+            <p style="margin-bottom: 30px; color: #7b8794; font-size: 1.1rem;">
+                Start with <code style="color: #c77dff;">/seance</code> — describe what you want to build, and the ritual begins.
+            </p>
+            <div class="seance-flow">
+                <div class="seance-step">
+                    <span class="step-number">1</span>
+                    <div class="step-content">
+                        <h4>User Invokes the Spirits</h4>
+                        <p>"I want to build a task management API with a React frontend."</p>
+                    </div>
+                </div>
+
+                <div class="seance-step">
+                    <span class="step-number">2</span>
+                    <div class="step-content">
+                        <h4>Project Manager Materializes</h4>
+                        <p>Creates formal requirements, performs strategic analysis (JTBD, Kano, RICE), breaks work into sized items (S: 1-4h, M: 4-8h), assigns to spirit specialists.</p>
+                        <div class="step-ghosts">
+                            <span class="mini-ghost">👻 REQ-001 → Dev-Backend</span>
+                            <span class="mini-ghost">👻 REQ-002 → Dev-Frontend</span>
+                            <span class="mini-ghost">👻 REQ-003 → Dev-Infrastructure</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seance-step">
+                    <span class="step-number">3</span>
+                    <div class="step-content">
+                        <h4>The Spirits are Summoned in Parallel</h4>
+                        <p>Multiple terminals, multiple spirits. Backend builds the API while Frontend builds components. They communicate via the roadmap—updating status, noting blockers.</p>
+                        <div class="step-ghosts">
+                            <span class="mini-ghost">⚪ Not Started</span>
+                            <span class="mini-ghost">🟡 In Progress</span>
+                            <span class="mini-ghost">🟢 Complete</span>
+                            <span class="mini-ghost">🔴 Blocked</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="seance-step">
+                    <span class="step-number">4</span>
+                    <div class="step-content">
+                        <h4>Quality Gates & Release</h4>
+                        <p>Code Reviewer validates PRs. Release Manager coordinates deployment. PM archives completed work and unblocks the next batch.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Roadmap Status -->
+        <section class="section">
+            <h2>The Roadmap — Single Source of Truth</h2>
+            <p style="margin-bottom: 10px; color: #7b8794; font-size: 1.1rem;">
+                All coordination flows through <code style="color: #c77dff;">.haunt/plans/roadmap.md</code>
+            </p>
+            <div class="roadmap-visual">
+                <div class="status-card not-started">
+                    <div class="emoji">⚪</div>
+                    <h4>Not Started</h4>
+                    <p>Ready to pick up, dependencies met</p>
+                </div>
+                <div class="status-card in-progress">
+                    <div class="emoji">🟡</div>
+                    <h4>In Progress</h4>
+                    <p>spirit actively working</p>
+                </div>
+                <div class="status-card complete">
+                    <div class="emoji">🟢</div>
+                    <h4>Complete</h4>
+                    <p>All criteria met, tests passing</p>
+                </div>
+                <div class="status-card blocked">
+                    <div class="emoji">🔴</div>
+                    <h4>Blocked</h4>
+                    <p>Waiting for dependency</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="logo">GHOST COUNTY</div>
+            <p>Haunt v2.0 • Summon Your Dev Team</p>
+            <p style="margin-top: 10px;">github.com/ghost-county/ghost-county</p>
+        </footer>
+    </div>
+</body>
+</html>

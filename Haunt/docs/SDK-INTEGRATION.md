@@ -68,7 +68,7 @@ Task tool's `subagent_type` controls tool access.
 
 **Framework integration:**
 - Agent YAML documents intended tools
-- docs/TOOL-PERMISSIONS.md provides reference
+- TOOL-PERMISSIONS.md provides reference
 - Subagent_type maps to agent roles
 
 ## What We Keep Custom (Framework Methodology)
@@ -290,7 +290,7 @@ Use these with the Task tool:
 **Cause:** Subagent_type doesn't include needed tool
 
 **Fix:**
-1. Check docs/TOOL-PERMISSIONS.md for subagent capabilities
+1. Check TOOL-PERMISSIONS.md for subagent capabilities
 2. Use different subagent_type if appropriate
 3. Have orchestrator perform the operation
 
@@ -307,7 +307,7 @@ Use these with the Task tool:
 
 ## References
 
-- [SDK Context Integration Research](.haunt/plans/sdk-context-integration.md)
-- [Tool Permissions Reference](docs/TOOL-PERMISSIONS.md)
-- [Session Startup Skill](skills/gco-session-startup/SKILL.md)
-- [Pattern Defeat Skill](skills/gco-pattern-defeat/SKILL.md)
+- [SDK Context Integration Research](../../.haunt/plans/sdk-context-integration.md)
+- [Tool Permissions Reference](TOOL-PERMISSIONS.md)
+- [Session Startup Skill](../skills/gco-session-startup/SKILL.md)
+- [Pattern Defeat Skill](../skills/gco-pattern-defeat/SKILL.md)
