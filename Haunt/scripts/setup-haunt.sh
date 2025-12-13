@@ -146,7 +146,12 @@ cleanup_cloned_repo() {
 # ============================================================================
 
 # Global configuration - these may be updated if running remotely
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd 2>/dev/null || echo "")"
+# Handle being piped via curl (BASH_SOURCE is unset in that case)
+if [[ -n "${BASH_SOURCE[0]:-}" ]]; then
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd 2>/dev/null || echo "")"
+else
+    SCRIPT_DIR=""
+fi
 PROJECT_ROOT=""
 REPO_ROOT=""
 PROJECT_AGENTS_DIR=""
@@ -3566,6 +3571,7 @@ main() {
 # ============================================================================
 
 # Only run main if script is executed (not sourced)
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+# Handle being piped via curl (BASH_SOURCE is unset in that case)
+if [[ -z "${BASH_SOURCE[0]:-}" ]] || [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
     main "$@"
 fi
