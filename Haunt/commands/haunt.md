@@ -1,20 +1,75 @@
-# Ghost County Session Start
+# Haunt Status (Framework Overview)
 
-You are starting a Haunt development session. Follow the gco-session-startup skill to initialize properly.
+Display the current status of the Haunt framework - active work, agent assignments, recent completions, and available spirits.
 
-## Session Initialization Protocol
+**Alias**: `/haunt status`
 
-1. **Read the Roadmap**: Check `.haunt/plans/roadmap.md` for your assignment
-2. **Identify Work**: Find requirements with your agent type assigned
-3. **Claim Work**: Mark your requirement as In Progress (🟡)
-4. **Execute**: Complete the work following TDD workflow
-5. **Complete**: Mark as Done (🟢) and update implementation notes
+## Show Framework Status
 
-## Quick Actions
+Read and present the current state from `.haunt/plans/roadmap.md`:
 
-- To see current haunting status: `/haunting`
-- To spawn an agent: `/summon <task>`
-- To run parallel work: `/seance`
-- To research something: `/divine <topic>`
+### Status Report Format
 
-Begin by reading the roadmap and identifying your next task.
+**The spirits report from the realm...**
+
+#### 1. Current Focus
+- Display the "Current Focus:" section goal
+- Show the active batch/phase name
+
+#### 2. Active Hauntings (🟡 In Progress)
+For each 🟡 requirement:
+```
+🟡 REQ-XXX: [Title]
+   Agent: [Agent type]
+   Effort: [S/M]
+   Blocked by: [Dependencies or "None"]
+```
+
+#### 3. Recently Manifested (🟢 Complete)
+For each 🟢 in "Recently Completed" section:
+```
+🟢 REQ-XXX: [Title]
+   Completed: [Date if present]
+   Agent: [Agent type]
+```
+
+#### 4. Available Spirits
+List all agent types available for summoning:
+```
+The following spirits await your call:
+- gco-dev (Backend, Frontend, Infrastructure modes)
+- gco-project-manager (Roadmap coordination)
+- gco-research (Investigation and analysis)
+- gco-code-reviewer (Code quality)
+- gco-release-manager (Merge and deploy)
+```
+
+### Quick Actions
+
+After viewing status:
+- `/summon <agent> <task>` - Summon a specific spirit for work
+- `/seance` - Begin orchestrated workflow
+- `/haunting` - View full roadmap overview
+- `/banish --all-complete` - Archive completed work
+
+### Ghost County Theming
+
+Use mystical language for status reports:
+
+**Opening:**
+"The spirits gather in the ethereal realm to report..."
+"From beyond the veil, the hauntings reveal themselves..."
+
+**Active Work:**
+"Current hauntings in progress..."
+"Spirits actively manifesting..."
+
+**Completions:**
+"Recently banished to the archives..."
+"Spirits that have completed their task..."
+
+**No Active Work:**
+"The realm is quiet. No active hauntings detected."
+"All spirits rest. Awaiting new summons."
+
+Read the roadmap and present the framework status.
