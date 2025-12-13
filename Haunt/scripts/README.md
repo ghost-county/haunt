@@ -45,13 +45,13 @@ Install directly from GitHub without cloning the repository:
 
 ```bash
 # Quick install (clones repo temporarily, keeps it for reference)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
 
 # Install and cleanup (removes cloned repo after setup)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
 
 # Install with options
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/master/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
 ```
 
 ### Local Installation
@@ -144,10 +144,30 @@ Located in `scripts/utils/`. Supporting utilities.
 
 | Script | Purpose |
 |--------|---------|
-| `agent-memory-server.py` | MCP server for agent memory |
+| `agent-memory-server.py` | MCP server for agent memory (reference implementation) |
 | `post-setup-message.sh` | Display post-setup guidance |
 | `migrate-to-sdlc.sh` | Migrate existing projects to SDLC |
 | `setup-precommit-hooks-addon.sh` | Add pre-commit hooks |
+
+### Agent Memory Server
+
+The `agent-memory-server.py` is a **reference implementation** demonstrating the 5-layer memory hierarchy concept. It is suitable for learning and simple projects, but has limitations:
+
+**Limitations:**
+- No semantic search (exact text matching only)
+- No embeddings support
+- Simple consolidation only (no sophisticated RAG)
+- Single-user design (no multi-tenancy)
+
+**For production use** with advanced features like semantic search, embeddings, and team collaboration, see:
+- **Documentation:** `.haunt/docs/research/agent-memory-mcp-research.md`
+- **Alternatives:** MCP Memory Keeper, MCP Memory Service, Memento MCP
+
+**Usage:**
+```bash
+# Start the reference server
+python ~/.claude/mcp-servers/agent-memory-server.py
+```
 
 ## Related Documentation
 

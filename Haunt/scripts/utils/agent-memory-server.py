@@ -1,9 +1,26 @@
 #!/usr/bin/env python3
 """
-MCP Memory Server for Ghost County (Haunt)
+Agent Memory MCP Server - Reference Implementation
 
 Provides 5-layer memory hierarchy for AI agents with
 consolidation (REM sleep) capabilities.
+
+LIMITATIONS (Reference Implementation Only):
+- No semantic search (exact text matching only)
+- No embeddings support (cannot query by meaning)
+- Simple consolidation only (no sophisticated RAG algorithms)
+- Single-user design (no multi-tenancy or team collaboration)
+- JSON file storage (doesn't scale beyond ~1000 entries)
+
+For production use with advanced features (semantic search, embeddings,
+team collaboration), see alternatives documented in:
+.haunt/docs/research/agent-memory-mcp-research.md
+
+This server is suitable for:
+- Learning MCP memory server architecture
+- Simple single-developer projects
+- Testing 5-layer memory hierarchy concepts
+- Development and prototyping
 
 Start: python ~/.claude/mcp-servers/agent-memory-server.py
 """
