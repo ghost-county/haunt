@@ -261,7 +261,7 @@ These remain at project root or in their current locations:
 | `Skills/` | Reusable skills library (shared across projects) |
 | `Haunt/skills/` | Ghost County-specific skills (roadmap-workflow, feature-contracts, etc.) |
 | `Haunt/` | Framework definitions and global agents (templates) |
-| `Agentic_SDLC_Framework/` | Old framework (for comparison/migration) |
+| `Agentic_SDLC_Framework/` | Legacy v1.0 framework (archived) |
 | `Knowledge/` | Educational curriculum (deliverable content) |
 | `CLAUDE.md` | Project-level Claude Code instructions (config) |
 | `.gitignore` | Project-level git ignore (covers .haunt/) |
@@ -276,7 +276,7 @@ These remain at project root or in their current locations:
 - Update references gradually over 2-3 releases
 
 ### Phase 2: Migration Tooling
-- `migrate-to-sdlc-dir.sh` moves existing projects
+- `migrate-to-haunt.sh` moves existing projects
 - Preserves git history with `git mv` where possible
 - Creates backup before migration
 - Rollback capability if needed
@@ -290,13 +290,13 @@ These remain at project root or in their current locations:
 
 ```bash
 # Dry-run to preview changes
-bash scripts/migrate-to-sdlc-dir.sh --dry-run
+bash scripts/migrate-to-haunt.sh --dry-run
 
 # Perform migration
-bash scripts/migrate-to-sdlc-dir.sh
+bash scripts/migrate-to-haunt.sh
 
 # Rollback if needed
-bash scripts/migrate-to-sdlc-dir.sh --rollback
+bash scripts/migrate-to-haunt.sh --rollback
 ```
 
 ---
@@ -312,7 +312,7 @@ Add this to project root `.gitignore`:
 .haunt/completed/
 .haunt/docs/
 
-# Preserve SDLC tests and scripts (optionally shareable)
+# Preserve tests and scripts (optionally shareable)
 !.haunt/tests/
 !.haunt/scripts/
 !.haunt/README.md
@@ -335,7 +335,7 @@ Add this to project root `.gitignore`:
 - [ ] Update documentation to show `.haunt/` structure
 
 ### Stage 3: Migration (REQ-086)
-- [ ] Create `migrate-to-sdlc-dir.sh` script
+- [ ] Create `migrate-to-haunt.sh` script
 - [ ] Test migration on sample project
 - [ ] Document migration process
 - [ ] Provide rollback capability
@@ -356,14 +356,14 @@ Add this to project root `.gitignore`:
 ## Benefits Summary
 
 ### For Developers
-- **Cleaner repository root:** No scattered SDLC directories
+- **Cleaner repository root:** No scattered project artifact directories
 - **Clear separation:** Framework artifacts vs. project code
 - **Gitignore simplicity:** One `.haunt/` entry instead of multiple
 - **Portable:** `.haunt/` can be copied to new projects
 
 ### For Agents
 - **Predictable paths:** Always know where to find roadmap
-- **Centralized location:** All SDLC files in one place
+- **Centralized location:** All Haunt files in one place
 - **Migration clarity:** Path mapping table guides updates
 - **Backward compatible:** Gradual migration with fallbacks
 

@@ -49,7 +49,7 @@ Browse Haunt skills: `Haunt/skills/*/SKILL.md`
 Rules are markdown files in `.claude/rules/` that auto-load and enforce protocols:
 
 - `session-startup.md` - 5-step startup checklist (environment, tests, git, changes, assignment)
-- `file-conventions.md` - SDLC artifact locations (plans, completed, tests, docs)
+- `file-conventions.md` - Haunt artifact locations (plans, completed, tests, docs)
 - `commit-conventions.md` - Commit format: `[REQ-XXX] Action: Description`
 - `status-updates.md` - Worker vs PM responsibilities for roadmap updates
 - `assignment-lookup.md` - 4-step assignment sequence (Direct → Active Work → Roadmap → Ask PM)

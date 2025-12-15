@@ -52,7 +52,7 @@ ${BOLD}${CYAN}WHAT WAS INSTALLED:${NC}
     ✓ tdd-workflow        - Test-driven development workflow
     ✓ roadmap-workflow    - Feature planning and batch management
     ✓ feature-contracts   - Immutable acceptance criteria patterns
-    ${CYAN}... and 10+ more SDLC skills available${NC}
+    ${CYAN}... and 10+ more Haunt skills available${NC}
 
 ${BOLD}${CYAN}NEXT STEPS:${NC}
 

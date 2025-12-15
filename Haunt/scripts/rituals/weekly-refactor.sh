@@ -165,7 +165,7 @@ if [ "$SKIP_PATTERNS" = false ]; then
             fi
         else
             print_warning "No pattern tests found in .haunt/tests/patterns/"
-            print_info "Create pattern tests with: Skills/SDLC/pattern-defeat/SKILL.md"
+            print_info "Create pattern tests with: Haunt/skills/gco-pattern-defeat/SKILL.md"
         fi
     else
         print_warning "Directory .haunt/tests/patterns/ does not exist"
@@ -388,7 +388,7 @@ echo "  - Archive stale memories"
 echo "  - Update agent character sheets"
 echo "  - Run REM sleep process"
 echo ""
-print_info "See: Skills/SDLC/weekly-refactor/SKILL.md Phase 4 for details"
+print_info "See: Haunt/docs/SKILLS-REFERENCE.md for detailed skill documentation"
 
 # Summary
 print_header "Weekly Refactor Complete"

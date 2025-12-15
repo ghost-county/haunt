@@ -35,7 +35,7 @@ Read(file_path="./Skills/session-startup/SKILL.md")
 
 # RIGHT
 Read(file_path="/Users/name/project/src/config.js")
-Read(file_path="/Users/name/project/Skills/SDLC/session-startup/SKILL.md")
+Read(file_path="/Users/name/project/Haunt/skills/gco-session-startup/SKILL.md")
 ```
 
 ### 3. Verify Paths Before Operations
@@ -58,19 +58,21 @@ Common path mistakes in this repository:
 
 | Wrong Path | Correct Path |
 |------------|--------------|
-| `Skills/session-startup/` | `Skills/SDLC/session-startup/` |
-| `Skills/code-patterns/` | `Skills/SDLC/code-patterns/` |
-| `Skills/commit-conventions/` | `Skills/SDLC/commit-conventions/` |
-| `agents/dev.md` | `Haunt/agents/dev.md` or `.claude/agents/dev.md` |
+| `Skills/session-startup/` | `Haunt/skills/gco-session-startup/` |
+| `Skills/code-patterns/` | `Haunt/skills/gco-code-patterns/` |
+| `Skills/commit-conventions/` | `Haunt/skills/gco-commit-conventions/` |
+| `agents/dev.md` | `Haunt/agents/gco-dev.md` or `.claude/agents/gco-dev.md` |
 
 **Skills directory structure:**
 ```
-Skills/
-├── SDLC/                    # Ghost County methodology skills
-│   ├── session-startup/
-│   ├── requirements-development/
-│   ├── code-patterns/
-│   └── ...
+Haunt/skills/                 # Ghost County methodology skills
+├── gco-session-startup/
+├── gco-code-patterns/
+├── gco-commit-conventions/
+├── gco-roadmap-workflow/
+└── ...
+
+Skills/                       # Domain-specific skills
 ├── requirements-elicitation/  # Requirements analysis skill
 ├── file-operations/           # This skill
 ├── skill-creator/             # Skill authoring guidance
@@ -199,7 +201,7 @@ When file operations fail, check in order:
 1. **Is path absolute?** Must start with `/`
 2. **Did you Read first?** Required before Write/Edit on existing files
 3. **Does the file/directory exist?** Use Glob to verify
-4. **Is the path correct?** Check Skills/SDLC/ vs Skills/third-party/ etc.
+4. **Is the path correct?** Check Haunt/skills/ vs Skills/third-party/ etc.
 5. **For Edit: Is old_string exact?** Copy from Read output, preserve whitespace
 6. **For Edit: Is old_string unique?** Include more context or use replace_all
 

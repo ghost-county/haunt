@@ -33,7 +33,7 @@ scripts/
 └── utils/                      # Utility scripts
     ├── agent-memory-server.py  # MCP memory server
     ├── post-setup-message.sh   # Post-setup guidance display
-    ├── migrate-to-sdlc.sh      # Migration helper
+    ├── migrate-to-haunt.sh     # Migration helper
     └── setup-precommit-hooks-addon.sh # Pre-commit hooks setup
 ```
 
@@ -150,7 +150,7 @@ Located in `scripts/utils/`. Supporting utilities.
 |--------|---------|
 | `agent-memory-server.py` | MCP server for agent memory (reference implementation) |
 | `post-setup-message.sh` | Display post-setup guidance |
-| `migrate-to-sdlc.sh` | Migrate existing projects to SDLC |
+| `migrate-to-haunt.sh` | Migrate existing projects to Haunt structure |
 | `setup-precommit-hooks-addon.sh` | Add pre-commit hooks |
 
 ### Agent Memory Server

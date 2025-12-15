@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 
 #==============================================================================
-# migrate-to-sdlc.sh
+# migrate-to-haunt.sh
 #
 # Purpose: Migrate existing Haunt files from root-level directories
 #          to the new .haunt/ consolidated structure.
 #
 # Usage:
-#   bash migrate-to-sdlc.sh              # Perform migration
-#   bash migrate-to-sdlc.sh --dry-run    # Preview changes
-#   bash migrate-to-sdlc.sh --rollback   # Reverse migration
-#   bash migrate-to-sdlc.sh --no-backup  # Skip backup creation
+#   bash migrate-to-haunt.sh              # Perform migration
+#   bash migrate-to-haunt.sh --dry-run    # Preview changes
+#   bash migrate-to-haunt.sh --rollback   # Reverse migration
+#   bash migrate-to-haunt.sh --no-backup  # Skip backup creation
 #
 # Migration Mapping:
 #   plans/roadmap.md                → .haunt/plans/roadmap.md
@@ -446,7 +446,7 @@ update_gitignore() {
 .haunt/completed/
 .haunt/docs/
 
-# Preserve SDLC tests and scripts (optionally shareable)
+# Preserve tests and scripts (optionally shareable)
 !.haunt/tests/
 !.haunt/scripts/
 !.haunt/README.md
@@ -569,7 +569,7 @@ parse_arguments() {
                 ;;
             -h|--help)
                 cat << EOF
-Usage: bash migrate-to-sdlc.sh [OPTIONS]
+Usage: bash migrate-to-haunt.sh [OPTIONS]
 
 Migrate existing Haunt files to .haunt/ structure.
 
@@ -580,12 +580,12 @@ Options:
   -h, --help      Show this help message
 
 Examples:
-  bash migrate-to-sdlc.sh --dry-run    # Preview changes
-  bash migrate-to-sdlc.sh              # Perform migration
-  bash migrate-to-sdlc.sh --rollback   # Undo migration
+  bash migrate-to-haunt.sh --dry-run    # Preview changes
+  bash migrate-to-haunt.sh              # Perform migration
+  bash migrate-to-haunt.sh --rollback   # Undo migration
 
 For more information, see:
-  Haunt/SDLC-DIRECTORY-SPEC.md
+  Haunt/docs/HAUNT-DIRECTORY-SPEC.md
 
 EOF
                 exit 0

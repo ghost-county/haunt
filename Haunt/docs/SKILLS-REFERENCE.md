@@ -22,27 +22,27 @@ Quick reference table for all workflow skills in the Ghost County framework.
 
 ## See Also
 
-- **Full Skill Definitions**: `Skills/SDLC/[skill-name]/SKILL.md`
+- **Full Skill Definitions**: `Haunt/skills/gco-[skill-name]/SKILL.md`
 - **Agent Definitions**: `Haunt/agents/` (references these skills)
 - **Framework README**: `Haunt/README.md` (architecture overview)
 
 ## Skills Directory Structure
 
 ```
-Skills/
-├── SDLC/
-│   ├── requirements-rubric/SKILL.md
-│   ├── code-review/SKILL.md
-│   ├── commit-conventions/SKILL.md
-│   ├── code-patterns/SKILL.md
-│   ├── tdd-workflow/SKILL.md
-│   ├── feature-contracts/SKILL.md
-│   ├── pattern-defeat/SKILL.md
-│   ├── session-startup/SKILL.md
-│   ├── weekly-refactor/SKILL.md
-│   ├── roadmap-planning/SKILL.md
-│   ├── roadmap-workflow/SKILL.md
-│   └── context7-usage/SKILL.md
+Haunt/skills/
+├── gco-roadmap-workflow/SKILL.md
+├── gco-commit-conventions/SKILL.md
+├── gco-feature-contracts/SKILL.md
+├── gco-code-patterns/SKILL.md
+├── gco-session-startup/SKILL.md
+├── gco-tdd-workflow/SKILL.md
+├── gco-context7-usage/SKILL.md
+├── gco-pattern-defeat/SKILL.md
+├── gco-seance/SKILL.md
+├── gco-witching-hour/SKILL.md
+├── gco-coven-mode/SKILL.md
+├── gco-task-decomposition/SKILL.md
+└── gco-playwright-tests/SKILL.md
 ```
 
 ## Quick Navigation

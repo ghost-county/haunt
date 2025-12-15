@@ -1840,7 +1840,7 @@ CONTRACT_EOF
 
     if [[ ! -f "${project_root}/.haunt/.gitignore" ]]; then
         if [[ "$DRY_RUN" == false ]]; then
-            cat > "${project_root}/.haunt/.gitignore" << 'SDLC_GITIGNORE_EOF'
+            cat > "${project_root}/.haunt/.gitignore" << 'HAUNT_GITIGNORE_EOF'
 # Ignore working files (ephemeral)
 plans/
 progress/
@@ -1861,7 +1861,7 @@ session-*.md
 
 # But preserve templates
 !README.md
-SDLC_GITIGNORE_EOF
+HAUNT_GITIGNORE_EOF
         fi
         success "Created .haunt/.gitignore"
         ((created_count++))
@@ -1907,7 +1907,7 @@ SDLC_GITIGNORE_EOF
 # Project-local Claude Code configuration
 .claude/
 
-# Haunt SDLC artifacts (entire directory)
+# Haunt project artifacts (entire directory)
 .haunt/
 ROOT_GITIGNORE_EOF
             success "Updated .gitignore with .claude/ and .haunt/ entries"
@@ -2011,7 +2011,7 @@ ${project_name} - [Add brief description of this project]
 
 \`\`\`
 ${project_name}/
-├── .haunt/                    # SDLC artifacts
+├── .haunt/                    # Haunt project artifacts
 │   ├── plans/roadmap.md      # Project roadmap (Active Work source)
 │   ├── completed/            # Archived completed work
 │   └── progress/             # Session progress

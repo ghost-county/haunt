@@ -197,7 +197,7 @@ fi
 - `.haunt/plans/` - Roadmap and requirements
 - `.haunt/completed/` - Archived work
 - `.haunt/progress/` - Session tracking
-- `.haunt/tests/` - SDLC tests
+- `.haunt/tests/` - Pattern and behavior tests
 - `.haunt/docs/` - Documentation
 
 **Verification:**

@@ -1,18 +1,18 @@
 # Migration Script Documentation
 
-## migrate-to-sdlc.sh
+## migrate-to-haunt.sh
 
 **Purpose:** Safely migrate existing Haunt project files from root-level directories to the consolidated `.haunt/` structure.
 
 **Version:** 1.0
 **Created:** 2025-12-10
-**Related:** REQ-086, SDLC-DIRECTORY-SPEC.md
+**Related:** REQ-086, HAUNT-DIRECTORY-SPEC.md
 
 ---
 
 ## Overview
 
-The migration script automates the process of moving SDLC working files from scattered root-level directories (`plans/`, `progress/`, `completed/`, `tests/`, `INITIALIZATION.md`) into a single `.haunt/` directory. This improves project organization and separates framework artifacts from project source code.
+The migration script automates the process of moving Haunt working files from scattered root-level directories (`plans/`, `progress/`, `completed/`, `tests/`, `INITIALIZATION.md`) into a single `.haunt/` directory. This improves project organization and separates framework artifacts from project source code.
 
 ### What Gets Migrated
 
@@ -32,7 +32,7 @@ The migration script automates the process of moving SDLC working files from sca
 
 - `.claude/` - Project-specific agent configurations
 - `Haunt/` - Framework definitions and scripts
-- `Skills/` - Reusable skills library (organized by category: SDLC/, code-patterns/, etc.)
+- `Skills/` - Reusable skills library (domain-specific skills)
 - `CLAUDE.md` - Project instructions
 - Your actual project source code
 
@@ -44,13 +44,13 @@ The migration script automates the process of moving SDLC working files from sca
 
 ```bash
 # Preview what will be moved (recommended first step)
-bash Haunt/scripts/utils/migrate-to-sdlc.sh --dry-run
+bash Haunt/scripts/utils/migrate-to-haunt.sh --dry-run
 
 # Perform the migration
-bash Haunt/scripts/utils/migrate-to-sdlc.sh
+bash Haunt/scripts/utils/migrate-to-haunt.sh
 
 # If something goes wrong, rollback
-bash Haunt/scripts/utils/migrate-to-sdlc.sh --rollback
+bash Haunt/scripts/utils/migrate-to-haunt.sh --rollback
 ```
 
 ### Command-Line Options
@@ -78,7 +78,7 @@ By default, the script creates a timestamped backup before moving any files:
 Preview exactly what will happen without making changes:
 
 ```bash
-bash migrate-to-sdlc.sh --dry-run
+bash migrate-to-haunt.sh --dry-run
 ```
 
 Output shows:
@@ -90,7 +90,7 @@ Output shows:
 Undo the migration completely:
 
 ```bash
-bash migrate-to-sdlc.sh --rollback
+bash migrate-to-haunt.sh --rollback
 ```
 
 The script:
@@ -151,7 +151,7 @@ Before migrating, the script verifies:
 
 ```bash
 # Step 1: Preview the migration
-$ bash Haunt/scripts/utils/migrate-to-sdlc.sh --dry-run
+$ bash Haunt/scripts/utils/migrate-to-haunt.sh --dry-run
 
 [INFO] Dry-run mode enabled.
 [SUCCESS] Prerequisites check passed.
@@ -163,7 +163,7 @@ Directories:    9
 Errors:         0
 
 # Step 2: Perform the migration
-$ bash Haunt/scripts/utils/migrate-to-sdlc.sh
+$ bash Haunt/scripts/utils/migrate-to-haunt.sh
 
 [SUCCESS] Backup directory created: .haunt-backup-20251210-130453
 [INFO] Created directory: .haunt
@@ -194,7 +194,7 @@ $ cat .haunt/plans/roadmap.md
 
 # Step 4: Commit the changes
 $ git add .haunt/ .gitignore
-$ git commit -m "Migrate SDLC files to .haunt/ structure"
+$ git commit -m "Migrate Haunt files to .haunt/ structure"
 
 # Step 5: Remove backup
 $ rm -rf .haunt-backup-20251210-130453
@@ -206,7 +206,7 @@ $ rm -rf .haunt-backup-20251210-130453
 
 ```bash
 # Oh no! Something went wrong after migration
-$ bash Haunt/scripts/utils/migrate-to-sdlc.sh --rollback
+$ bash Haunt/scripts/utils/migrate-to-haunt.sh --rollback
 
 [INFO] Rollback mode enabled.
 [INFO] Found backup: .haunt-backup-20251210-130453
@@ -240,7 +240,7 @@ rm -rf .haunt/
 mv .haunt/ .haunt.backup/
 
 # Then run migration again
-bash Haunt/scripts/utils/migrate-to-sdlc.sh
+bash Haunt/scripts/utils/migrate-to-haunt.sh
 ```
 
 ### Error: "Not in a valid Haunt project"
@@ -252,18 +252,18 @@ bash Haunt/scripts/utils/migrate-to-sdlc.sh
 # Make sure you're in the project root
 cd /path/to/your/project
 
-# Verify you have SDLC markers
+# Verify you have Haunt markers
 ls -la CLAUDE.md .claude/
 
 # Then run migration
-bash Haunt/scripts/utils/migrate-to-sdlc.sh
+bash Haunt/scripts/utils/migrate-to-haunt.sh
 ```
 
 ### Warning: "No source directories/files found"
 
-**Problem:** No SDLC files exist to migrate.
+**Problem:** No Haunt files exist to migrate.
 
-**Solution:** This is normal for new projects. The migration script is only needed for existing projects with scattered SDLC files.
+**Solution:** This is normal for new projects. The migration script is only needed for existing projects with scattered Haunt files.
 
 ### Issue: Rollback fails with "No backup found"
 
@@ -333,7 +333,7 @@ The migration script automatically adds these entries to your `.gitignore`:
 .haunt/completed/
 .haunt/docs/
 
-# Preserve SDLC tests and scripts (optionally shareable)
+# Preserve tests and scripts (optionally shareable)
 !.haunt/tests/
 !.haunt/scripts/
 !.haunt/README.md
@@ -349,13 +349,13 @@ git add .haunt/ .gitignore
 git add -u
 
 # Commit the migration
-git commit -m "Migrate SDLC files to .haunt/ directory structure
+git commit -m "Migrate Haunt files to .haunt/ directory structure
 
 - Consolidate plans/, progress/, completed/, tests/ into .haunt/
 - Update .gitignore to preserve tests and scripts
 - Improve project organization and separation of concerns
 
-See: Haunt/SDLC-DIRECTORY-SPEC.md"
+See: Haunt/docs/HAUNT-DIRECTORY-SPEC.md"
 ```
 
 ---
@@ -388,7 +388,7 @@ rm -rf .haunt-backup-*
 
 ```bash
 # Skip backup creation for faster migration
-bash migrate-to-sdlc.sh --no-backup
+bash migrate-to-haunt.sh --no-backup
 
 # WARNING: No rollback possible without backup!
 ```
@@ -418,7 +418,7 @@ mv tests/patterns/* .haunt/tests/patterns/
 
 ## Related Documentation
 
-- **SDLC-DIRECTORY-SPEC.md** - Complete `.haunt/` directory specification
+- **HAUNT-DIRECTORY-SPEC.md** - Complete `.haunt/` directory specification
 - **setup-haunt.sh** - Initial project setup (includes `.haunt/` creation)
 - **verify-precommit-setup.sh** - Validates `.haunt/` structure exists
 

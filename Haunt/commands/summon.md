@@ -302,7 +302,7 @@ Grouping by domain...
 
 Summoning the spirits...
 ✓ REQ-171: Consolidate Haunt documentation → gco-dev (background)
-✓ REQ-132: Rename .sdlc to .haunt → gco-dev (background)
+✓ REQ-132: Update directory structure → gco-dev (background)
 ✓ REQ-150: Create /ritual command → gco-dev (background)
 ... (9 more)
 

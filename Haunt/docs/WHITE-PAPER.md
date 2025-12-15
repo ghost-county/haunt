@@ -968,7 +968,7 @@ ghost-county/
 │   ├── rules/gco-*.md              # Invariant enforcement
 │   ├── skills/gco-*/SKILL.md       # Reusable workflows
 │   └── scripts/setup-haunt.sh      # Deployment script
-├── .haunt/                         # Project SDLC artifacts
+├── .haunt/                         # Haunt project artifacts
 │   ├── plans/roadmap.md            # Active requirements
 │   ├── completed/                  # Archived work
 │   ├── progress/                   # Session notes
