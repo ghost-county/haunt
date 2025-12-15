@@ -283,6 +283,77 @@ Then spawn appropriate gco-* agents based on roadmap assignments:
 Confirm roadmap location:
 > "Your roadmap is ready at `.haunt/plans/roadmap.md`. You can summon spirits later with `/summon <agent>` or begin implementation yourself."
 
+### Step 6: Garden and Archive (After Agents Complete Work)
+
+**When spawned agents finish their work**, automatically perform roadmap gardening:
+
+**Gardening Process:**
+
+1. **Wait for agent completion** - Track all spawned agents, wait for them to return
+2. **Read completed work** - Review `.haunt/plans/roadmap.md` for all 🟢 Complete items
+3. **Verify task checkboxes** - For each 🟢 requirement:
+   - Check all tasks are `- [x]` (not `- [ ]`)
+   - If any unchecked: Report to user, don't archive
+4. **Archive completed work** - For fully complete requirements:
+   - Use `/banish` logic to move to `.haunt/completed/roadmap-archive.md`
+   - Remove from active roadmap
+5. **Generate completion report** - Summarize what was accomplished:
+
+```
+🌙 The spirits have returned. Their work is done.
+
+Completed:
+- 🟢 REQ-042: Implement JWT token generation
+- 🟢 REQ-043: Add login endpoint
+- 🟢 REQ-044: Add logout endpoint
+
+Archived to .haunt/completed/roadmap-archive.md
+
+Active roadmap cleaned. Ready for the next summoning.
+```
+
+**Partial Completion Handling:**
+
+If some work is incomplete:
+```
+🌙 The spirits have returned. Some work remains.
+
+Completed and Archived:
+- 🟢 REQ-042: Implement JWT token generation
+
+Still In Progress:
+- 🟡 REQ-043: Add login endpoint (2/5 tasks complete)
+- 🟡 REQ-044: Add logout endpoint (blocked - waiting on REQ-043)
+
+Continue work with: /summon gco-dev-backend REQ-043
+```
+
+**Verification Issues:**
+
+If checkboxes not updated:
+```
+⚠️ Roadmap needs attention:
+
+REQ-042 marked 🟢 but tasks not checked:
+- [ ] Implement token generation logic
+- [ ] Add refresh token support
+- [x] Write unit tests
+
+Cannot archive until all tasks verified. Please update roadmap.
+```
+
+**When to Skip Gardening:**
+
+- Mode 2 Choice A (user just added items, didn't summon)
+- User declined summoning in Mode 1 or 3
+- No agents were spawned
+
+**Error Handling:**
+
+- If agent fails: Report error, don't attempt gardening
+- If roadmap parse fails: Report issue, leave roadmap unchanged
+- If archive write fails: Report error, keep items in roadmap
+
 ## Example Flows
 
 ### Mode 1 Example: With Prompt (New Project)
@@ -428,6 +499,27 @@ Agent:
 Summoning gco-dev-backend for REQ-042...
 Summoning gco-dev-backend for REQ-043...
 Summoning gco-dev-backend for REQ-044...
+
+[Agents work in parallel...]
+
+[After all agents complete:]
+
+Agent:
+🌙 The spirits have returned. Their work is done.
+
+Verifying roadmap...
+✅ All tasks checked off for REQ-042, REQ-043, REQ-044
+✅ All requirements properly completed
+
+Archiving to .haunt/completed/roadmap-archive.md...
+
+Completed and Archived:
+- 🟢 REQ-042: Implement JWT token generation
+- 🟢 REQ-043: Add login endpoint
+- 🟢 REQ-044: Add logout endpoint
+
+Active roadmap cleaned. Batch 3: Authentication complete.
+Ready for the next summoning.
 ```
 
 ### Mode 3 Example: New Project Prompt
@@ -601,6 +693,17 @@ Before completing the Seance:
 - [ ] All output stays in `.haunt/plans/`
 - [ ] Themed prompts enhance without obscuring workflow
 - [ ] Error handling for invalid user input
+
+**Gardening Phase (After Agent Completion):**
+- [ ] Waited for all spawned agents to complete
+- [ ] Read roadmap and identified all 🟢 Complete items
+- [ ] Verified all tasks are `- [x]` for each completed requirement
+- [ ] Archived fully complete requirements to `.haunt/completed/roadmap-archive.md`
+- [ ] Removed archived requirements from active roadmap
+- [ ] Generated completion summary report
+- [ ] Reported any verification issues (unchecked tasks)
+- [ ] Handled partial completion appropriately
+- [ ] Skipped gardening when no agents were spawned
 
 ## Skill References
 
