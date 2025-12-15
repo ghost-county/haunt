@@ -173,6 +173,56 @@ bash scripts/setup-agentic-sdlc.sh --verbose
 
 ---
 
+## Integration Patterns (Hybrid Workflows)
+
+Haunt agents work seamlessly with Claude Code's built-in agents (Explore, Plan, general-purpose).
+
+### Pattern 1: Explore → gco-dev (Research then Implement)
+
+**Use when:** You need to investigate existing code before implementing changes.
+
+```
+User: "Refactor authentication to use JWT"
+
+Main Agent (general-purpose):
+  └─> Spawns Explore (built-in) - searches codebase for auth patterns
+  └─> Spawns gco-dev (Haunt) - implements JWT using Explore findings
+```
+
+**Why it works:** Explore is read-only and fast (Haiku), gco-dev has full implementation tools.
+
+### Pattern 2: Plan → gco-project-manager (Planning Handoff)
+
+**Use when:** You want high-level planning before detailed roadmapping.
+
+```
+User: "Plan out a task management feature"
+
+Main Agent:
+  └─> Spawns Plan (built-in) - creates strategic breakdown
+  └─> Spawns gco-project-manager (Haunt) - converts to formal roadmap
+```
+
+**Why it works:** Plan agent provides quick strategic thinking, PM formalizes with Ghost County requirements format.
+
+### Pattern 3: general-purpose → gco-code-reviewer (Implement then Review)
+
+**Use when:** You want implementation separated from quality review.
+
+```
+User: "Add dark mode toggle component"
+
+Main Agent:
+  └─> Spawns general-purpose (built-in) - implements component
+  └─> Spawns gco-code-reviewer (Haunt) - reviews against code patterns
+```
+
+**Why it works:** Separate agents prevent "review your own work" bias.
+
+**See:** `Haunt/docs/INTEGRATION-PATTERNS.md` for detailed examples and anti-patterns.
+
+---
+
 ## Common Workflows
 
 ### Planning a Feature

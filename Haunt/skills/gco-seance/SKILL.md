@@ -506,6 +506,50 @@ The Seance skill is a **thin orchestration layer** that:
 
 **The PM agent does all the real work** (requirements, analysis, roadmap creation).
 
+### Hybrid Workflow: Plan → gco-project-manager Handoff
+
+The Seance skill can leverage Claude Code's built-in Plan agent for high-level strategic planning before invoking gco-project-manager for detailed roadmap creation.
+
+**When to use this pattern:**
+- User wants strategic breakdown first ("Plan out this feature")
+- Complex features benefit from two-phase planning (strategy → formalization)
+- User explicitly requests Plan agent or mentions "planning mode"
+
+**Example Flow:**
+
+```
+User: "/seance Plan out a task management app"
+
+Main Agent:
+  1. Detects "Plan out" trigger phrase
+  2. Spawns Plan agent (built-in):
+     - Prompt: "Create strategic breakdown for task management app"
+     - Output: High-level plan with phases, major components, tech stack recommendations
+
+  3. Reviews Plan agent output with user:
+     "Here's the strategic plan. Would you like me to formalize this into a Ghost County roadmap?"
+
+  4. If yes, spawns gco-project-manager (Haunt):
+     - Context: Plan agent's strategic breakdown
+     - Instruction: "Convert this plan into formal requirements and roadmap"
+     - Output: requirements-document.md, requirements-analysis.md, roadmap.md
+
+  5. Summoning prompt (standard flow from here)
+```
+
+**Why it works:**
+- Plan agent (Sonnet) provides quick strategic thinking without getting into requirements details
+- gco-project-manager formalizes with Ghost County requirements format (14-dimension rubric, JTBD/Kano/RICE analysis)
+- Separation of concerns: Strategy → Formalization → Implementation
+
+**Trigger phrases:**
+- "Plan out..."
+- "Create a plan for..."
+- "Strategic breakdown of..."
+- "High-level plan..."
+
+**Anti-pattern:** Don't invoke Plan agent for simple incremental features - it adds unnecessary overhead.
+
 ### Error Handling
 
 **If `.haunt/` detection fails:**

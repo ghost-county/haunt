@@ -139,6 +139,70 @@ tools: Glob, Grep, Read, WebSearch, WebFetch, mcp__context7__*, mcp__agent_memor
 # Tool Access Philosophy: Read-only enforcement prevents accidental modifications during research.
 ```
 
+## Model Selection
+
+Agent character sheets can specify a preferred model via the `model` field in YAML frontmatter. This allows optimizing performance and cost for different agent types.
+
+### Supported Model Values
+
+| Value | Meaning | When to Use |
+|-------|---------|-------------|
+| `haiku` | Fast, cost-effective Claude Haiku | Quick searches, research tasks, read-only operations |
+| `sonnet` | Balanced Claude Sonnet | Complex reasoning, planning, code review |
+| `opus` | Most capable Claude Opus | Critical decisions, architecture design |
+| `inherit` | Use spawning agent's model | Task-based model selection (default for most agents) |
+
+### Model Selection Guidelines
+
+**Use `haiku` for:**
+- Web searches and research (gco-research)
+- Quick code reviews (syntax/style checks)
+- Fast file searches and pattern matching
+- Read-only operations with low reasoning requirements
+
+**Use `sonnet` for:**
+- Complex code implementation
+- Planning and roadmap management (gco-project-manager)
+- Code review requiring architectural understanding
+- Risk assessment and release management
+
+**Use `opus` for:**
+- Critical architectural decisions
+- Security reviews
+- Complex refactoring across many files
+- High-stakes debugging
+
+**Use `inherit` for:**
+- Implementation agents (gco-dev) where task complexity varies
+- Allows caller to specify appropriate model for the task
+- Maintains flexibility for different use cases
+
+### Example Configuration
+
+```yaml
+---
+name: gco-research
+description: Investigation and validation agent.
+tools: Glob, Grep, Read, Write, WebSearch, WebFetch, mcp__context7__*, mcp__agent_memory__*
+skills: gco-session-startup
+model: haiku
+# Tool permissions enforced by Task tool subagent_type (Research-Analyst, Research-Critic)
+# Model: haiku for fast web searches and research tasks
+---
+```
+
+### Task-Based Model Selection with `inherit`
+
+When using `model: inherit`, the spawning agent can specify which model to use for that specific task:
+
+```
+/summon dev --model=haiku "Fix typo in README"
+/summon dev --model=sonnet "Refactor authentication system"
+/summon dev --model=opus "Redesign database schema"
+```
+
+If no model specified when spawning, the agent uses the current session's model. This allows dynamic model selection based on task complexity while maintaining a sensible default.
+
 ## Best Practices
 
 ### For Agent Designers
@@ -147,6 +211,7 @@ tools: Glob, Grep, Read, WebSearch, WebFetch, mcp__context7__*, mcp__agent_memor
 2. **Principle of Least Privilege** - Only request tools the agent actually needs
 3. **Document Rationale** - Add Tool Access Philosophy comment explaining tool choices
 4. **Consider Variants** - Create read-only variants for safety-critical use cases
+5. **Choose Appropriate Model** - Select model based on agent's typical workload (haiku for speed, sonnet for reasoning, inherit for flexibility)
 
 ### For Framework Users
 
