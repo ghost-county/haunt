@@ -31,6 +31,7 @@ Every requirement MUST follow this structure:
 - `path/to/file.ext` (create | modify)
 
 **Effort:** XS | S | M | SPLIT
+**Complexity:** SIMPLE | MODERATE | COMPLEX | UNKNOWN
 **Agent:** [Agent type]
 **Completion:** [Specific, testable criteria]
 **Blocked by:** [REQ-XXX or "None"]
@@ -155,6 +156,91 @@ REQ-XXX: Fix authentication redirect loop
 5. Organize into batch for coordination
 6. Each piece should be independently testable and deployable
 
+## Complexity Indicators
+
+Use complexity indicators to estimate cognitive difficulty independent of size:
+
+| Indicator | Definition | Characteristics |
+|-----------|------------|-----------------|
+| **SIMPLE** | Clear requirements, single pattern | Well-defined scope, obvious implementation path, no unknowns, minimal decisions |
+| **MODERATE** | Some investigation needed | 2-3 patterns involved, some decisions required, bounded unknowns |
+| **COMPLEX** | Significant unknowns | Cross-cutting concerns, multiple integration points, architectural decisions |
+| **UNKNOWN** | Cannot estimate | Needs spike/research before sizing - triggers research requirement |
+
+### Complexity vs Effort
+
+Complexity and effort are **independent dimensions**:
+
+| Example | Effort | Complexity | Explanation |
+|---------|--------|------------|-------------|
+| Update config value | XS | SIMPLE | Small change, obvious implementation |
+| Add CRUD endpoint | S | SIMPLE | Straightforward pattern, well-defined |
+| Optimize slow query | S | MODERATE | Requires investigation, multiple approaches |
+| Integrate new API | M | MODERATE | Clear scope, but integration decisions needed |
+| Fix race condition | S | COMPLEX | Small change, but diagnosis is hard |
+| Redesign auth flow | M | COMPLEX | Multiple components, architectural impact |
+| Evaluate new framework | S | UNKNOWN | Need research spike first |
+
+### When to Use UNKNOWN
+
+Use UNKNOWN when you cannot confidently estimate complexity because:
+
+1. **Technology unfamiliar** - Working with new library, API, or pattern
+2. **Problem unclear** - Root cause not identified (e.g., intermittent bugs)
+3. **Scope undefined** - Requirements need clarification
+4. **Risk uncertain** - Cannot assess impact without investigation
+
+**UNKNOWN triggers a research spike:**
+1. Create a research requirement (S or M sized)
+2. Block the original requirement on the research
+3. Research deliverable: complexity assessment + implementation approach
+4. Re-estimate original requirement with findings
+
+**Example: UNKNOWN → Research Spike**
+```
+### ⚪ REQ-101: Implement real-time notifications
+
+**Effort:** SPLIT
+**Complexity:** UNKNOWN
+**Blocked by:** REQ-102
+
+---
+
+### ⚪ REQ-102: Research notification implementation options
+
+**Type:** Research
+**Effort:** S
+**Complexity:** MODERATE
+**Completion:** Comparison of WebSocket vs SSE vs polling with recommendation
+**Blocked by:** None
+```
+
+### Complexity Selection Guide
+
+Ask these questions to determine complexity:
+
+1. **Can I describe the implementation in 2-3 sentences?**
+   - YES → SIMPLE
+   - SOMEWHAT → MODERATE
+   - NO → COMPLEX or UNKNOWN
+
+2. **How many system boundaries does this cross?**
+   - 0-1 → SIMPLE
+   - 2-3 → MODERATE
+   - 4+ → COMPLEX
+
+3. **What percentage of the work is investigation vs implementation?**
+   - <10% investigation → SIMPLE
+   - 10-30% investigation → MODERATE
+   - 30-50% investigation → COMPLEX
+   - >50% investigation → UNKNOWN (needs research spike)
+
+4. **Have I done something similar before?**
+   - Yes, many times → SIMPLE
+   - Yes, with variations → MODERATE
+   - Somewhat related → COMPLEX
+   - No, this is new → UNKNOWN
+
 ## Batch Organization
 
 Group related requirements into phases:
@@ -214,6 +300,7 @@ Every requirement MUST include:
 | Tasks | YES | Specific, actionable checklist items |
 | Files | YES | Exact paths with (create/modify) annotation |
 | Effort | YES | XS, S, M, or SPLIT |
+| Complexity | YES | SIMPLE, MODERATE, COMPLEX, or UNKNOWN |
 | Agent | YES | Agent type who will implement |
 | Completion | YES | Testable criteria for marking complete |
 | Blocked by | YES | REQ-XXX or "None" |

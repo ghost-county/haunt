@@ -1879,11 +1879,12 @@ SDLC_GITIGNORE_EOF
     local gitignore_file="${project_root}/.gitignore"
     local sdlc_entry_found=false
 
-    # Check if .gitignore exists and contains Ghost County entries
+    # Check if .gitignore exists and contains Haunt entries
+    # Match both old "# Ghost County" and new "# Haunt" headers for idempotency
     if [[ -f "$gitignore_file" ]]; then
-        if grep -q "^# Ghost County" "$gitignore_file" 2>/dev/null ; then
+        if grep -qE "^# (Ghost County|Haunt)" "$gitignore_file" 2>/dev/null ; then
             sdlc_entry_found=true
-            info "Skipped: .gitignore already contains Ghost County entries"
+            info "Skipped: .gitignore already contains Haunt entries"
             ((skipped_count++))
         fi
     fi
@@ -1900,22 +1901,14 @@ SDLC_GITIGNORE_EOF
             cat >> "$gitignore_file" << 'ROOT_GITIGNORE_EOF'
 
 # ============================================================================
-# Haunt - Project-Local Directories
+# Haunt Framework - Git Ignore
 # ============================================================================
 
-# .claude/ - Project-local Claude Code configuration
+# Project-local Claude Code configuration
 .claude/
 
-# .haunt/ - Project SDLC artifacts (ephemeral working files)
-.haunt/plans/
-.haunt/progress/
-.haunt/completed/
-.haunt/docs/
-
-# Preserve SDLC tests and scripts (optionally shareable)
-!.haunt/tests/
-!.haunt/scripts/
-!.haunt/README.md
+# Haunt SDLC artifacts (entire directory)
+.haunt/
 ROOT_GITIGNORE_EOF
             success "Updated .gitignore with .claude/ and .haunt/ entries"
         else

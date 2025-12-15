@@ -12,6 +12,9 @@ Generate test scenarios from requirements - the quality assurance ritual that tr
 | `/qa REQ-XXX --format=checklist` | Markdown checklist | Manual QA checklist with setup/scenarios/edge cases |
 | `/qa REQ-XXX --format=gherkin` | Gherkin/BDD | Given-When-Then scenarios for BDD frameworks |
 | `/qa REQ-XXX --format=playwright` | TypeScript/JavaScript | Playwright test skeleton ready for implementation |
+| `/qa REQ-XXX --charter` | Exploratory charter | Structured exploratory testing session charter |
+| `/qa REQ-XXX --charter --timebox=60` | Exploratory charter | Charter with specific time box (minutes) |
+| `/qa REQ-XXX --charter --focus=risks` | Exploratory charter | Charter focusing on risk areas |
 
 ### Execution Workflow
 
@@ -27,13 +30,28 @@ args = "$ARGUMENTS".strip()
 # Extract REQ-XXX
 req_match = re.search(r'REQ-\d+', args)
 if not req_match:
-    print("❌ No requirement ID found. Usage: /qa REQ-XXX [--format=<format>]")
+    print("❌ No requirement ID found. Usage: /qa REQ-XXX [--format=<format>|--charter]")
     exit(1)
 
 req_id = req_match.group(0)
 
-# Extract format (default: checklist)
-if '--format=gherkin' in args:
+# Check for charter mode first (takes precedence)
+if '--charter' in args:
+    output_format = 'charter'
+
+    # Extract time box (default: 60 minutes)
+    timebox_match = re.search(r'--timebox=(\d+)', args)
+    timebox = int(timebox_match.group(1)) if timebox_match else 60
+
+    # Extract focus area (default: all)
+    if '--focus=risks' in args:
+        focus = 'risks'
+    elif '--focus=edges' in args:
+        focus = 'edges'
+    else:
+        focus = 'all'
+# Standard format selection
+elif '--format=gherkin' in args:
     output_format = 'gherkin'
 elif '--format=playwright' in args:
     output_format = 'playwright'
@@ -230,6 +248,99 @@ test.describe('{req_id}: {req_title}', () => {
 });
 ```
 
+### Output Format: Exploratory Charter
+
+```markdown
+# Exploratory Test Charter: Testing {req_title}
+
+**Charter ID:** CHARTER-{req_id}-{date}
+**Requirement:** {req_id} - {req_title}
+**Date:** {date}
+**Tester:** {tester_name}
+
+---
+
+## Mission Statement
+
+**Explore** {feature_or_component}
+**With** {available_tools_and_data}
+**To discover** {bugs_edge_cases_unexpected_behaviors}
+
+---
+
+## Scope
+
+### In Scope
+{areas_derived_from_tasks}
+
+### Out of Scope
+- Areas not mentioned in requirement
+- Unrelated functionality
+
+---
+
+## Time Box
+
+| Duration | Focus |
+|----------|-------|
+| **Total Time:** | {timebox} minutes |
+| **Setup:** | {timebox * 0.15} minutes |
+| **Exploration:** | {timebox * 0.70} minutes |
+| **Debrief:** | {timebox * 0.15} minutes |
+
+---
+
+## Areas to Explore
+
+### Primary Areas (Derived from Tasks)
+
+{for_each_task_generate_exploration_area}
+
+### Risk Areas
+
+| Risk | Priority | Exploration Focus |
+|------|----------|-------------------|
+| {risk_from_complexity} | High | {test_focus} |
+| {risk_from_integration} | Medium | {test_focus} |
+| {risk_from_data} | Medium | {test_focus} |
+
+### Edge Cases to Investigate
+
+- **Boundaries:** {boundary_conditions_from_completion_criteria}
+- **Empty/Null States:** {empty_state_scenarios}
+- **Error Conditions:** {error_scenarios_from_tasks}
+- **Performance:** {performance_considerations}
+- **Concurrency:** {concurrent_access_scenarios}
+
+---
+
+## Test Ideas
+
+{generated_from_tasks_and_completion_criteria}
+
+---
+
+## Session Log Template
+
+### Observations
+
+| Time | Action | Observation | Severity |
+|------|--------|-------------|----------|
+| | | | |
+
+### Bugs Found
+
+| ID | Summary | Steps | Severity | Status |
+|----|---------|-------|----------|--------|
+| | | | | |
+
+---
+
+## Debrief Summary
+
+(Complete after session)
+```
+
 ### Example Usage
 
 **Checklist format (default):**
@@ -245,6 +356,21 @@ test.describe('{req_id}: {req_title}', () => {
 **Playwright format:**
 ```
 /qa REQ-196 --format=playwright > tests/e2e/req-196.spec.ts
+```
+
+**Exploratory charter (standard 60-min session):**
+```
+/qa REQ-196 --charter
+```
+
+**Exploratory charter (30-min quick session):**
+```
+/qa REQ-196 --charter --timebox=30
+```
+
+**Exploratory charter (focused on risks):**
+```
+/qa REQ-196 --charter --focus=risks
 ```
 
 ### Output Messages
@@ -307,6 +433,38 @@ Next steps:
   3. Run: npx playwright test {req_id}
 ```
 
+**Success (Exploratory Charter):**
+```
+🔮 EXPLORATORY CHARTER GENERATED 🔮
+
+Requirement: {req_id}: {req_title}
+Format: Exploratory Test Charter
+
+Session Parameters:
+- Time Box: {timebox} minutes
+- Focus: {focus}
+
+Charter Contents:
+- Mission Statement: Defined
+- Scope: {task_count} areas to explore
+- Risk Areas: {risk_count} identified
+- Edge Cases: {edge_count} scenarios
+- Session Log: Template included
+
+✓ Charter ready for exploratory testing
+
+Next steps:
+  1. Save charter to: .haunt/docs/qa/charter-{req_id}-{date}.md
+  2. Schedule {timebox}-minute testing session
+  3. Follow charter structure during exploration
+  4. Record findings in Session Log section
+  5. Complete Debrief Summary after session
+  6. Log significant patterns: /apparition remember "..."
+
+Template reference:
+  See Haunt/templates/exploratory-charter.md for full template details
+```
+
 **Error (Requirement not found):**
 ```
 ❌ REQUIREMENT NOT FOUND
@@ -330,9 +488,11 @@ Supported formats:
   --format=checklist   (manual QA checklist)
   --format=gherkin     (BDD scenarios)
   --format=playwright  (Playwright test skeleton)
+  --charter            (exploratory test charter)
 
-Example:
+Examples:
   /qa REQ-XXX --format=gherkin
+  /qa REQ-XXX --charter --timebox=60
 ```
 
 ### Test Scenario Derivation Rules
@@ -359,11 +519,13 @@ When generating test scenarios from requirement tasks:
 ### Notes
 
 - Test scenarios are derived from acceptance criteria, not implementation details
-- Checklist format is best for manual QA and exploratory testing
+- Checklist format is best for manual QA and scripted testing
 - Gherkin format integrates with Cucumber, Behave, or SpecFlow
 - Playwright format requires completion of TODO comments before execution
+- **Charter format** is best for exploratory testing sessions - guided but flexible
 - All formats should be saved to appropriate test directories for version control
 - Consider running `/qa` during requirement refinement (before implementation) to validate completeness
+- Exploratory charters capture human intuition and can feed pattern detection via `/seer`
 
 ### Integration with Workflow
 
@@ -373,6 +535,7 @@ When generating test scenarios from requirement tasks:
 2. **Before Implementation**: Generate test skeletons for TDD
 3. **After Implementation**: Create QA checklist for verification
 4. **For Reviews**: Provide test guidance to reviewers
+5. **For Exploration**: Generate charter for structured exploratory sessions
 
 **Workflow integration:**
 
@@ -382,6 +545,18 @@ When generating test scenarios from requirement tasks:
   └─> /qa REQ-XXX --format=playwright  # Generate test skeleton
   └─> /summon dev Implement REQ-XXX    # Dev writes tests + code
   └─> /qa REQ-XXX                      # Generate QA checklist for review
+  └─> /qa REQ-XXX --charter            # Generate charter for exploratory testing
+```
+
+**Exploratory testing workflow:**
+
+```
+/qa REQ-XXX --charter --timebox=60     # Generate 60-min charter
+  └─> Tester follows charter structure
+  └─> Records findings in Session Log
+  └─> Completes Debrief Summary
+  └─> /apparition remember "..."        # Log significant patterns
+  └─> /seer --hunt                      # Check for recurring issues
 ```
 
 ### See Also
@@ -389,4 +564,7 @@ When generating test scenarios from requirement tasks:
 - `/summon dev` - Spawn agent to implement requirement
 - `/haunting` - View active requirements and status
 - `/exorcism <pattern>` - Generate pattern defeat tests
+- `/seer` - Pattern detection for recurring issues
+- `/apparition` - Agent memory interface for logging findings
+- `Haunt/templates/exploratory-charter.md` - Full charter template with detailed guidance
 - `Haunt/skills/gco-tdd-workflow/SKILL.md` - Test-driven development guidance
