@@ -46,9 +46,25 @@ wc -l .haunt/plans/roadmap.md
 ```
 
 **If 501-750 lines:**
+Auto-run `/banish --all-complete` to archive completed requirements:
+```bash
+/banish --all-complete
 ```
-⚠ WARNING: Roadmap is XXX lines (limit: 500)
-Consider archiving completed items to .haunt/completed/roadmap-archive.md
+
+After archiving, recheck roadmap size:
+```bash
+wc -l .haunt/plans/roadmap.md
+```
+
+**If archiving succeeds and roadmap is now < 500 lines:**
+```
+✓ Roadmap auto-archived (N items removed). Now XXX lines. Continue.
+```
+
+**If roadmap is still > 500 lines after archiving:**
+```
+⚠ WARNING: Roadmap is XXX lines even after auto-archiving
+Manual review required. Some 🟢 items may need custom archiving.
 See gco-roadmap-format.md for archiving guidelines.
 Continue with caution.
 ```
