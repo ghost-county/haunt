@@ -114,15 +114,15 @@ if [[ -f ".haunt/plans/roadmap.md" ]]; then
     print_success "Haunting manifest found"
 
     # Count requirements by status
-    not_started=$(grep -c "⚪" .haunt/plans/roadmap.md 2>/dev/null || echo "0")
-    in_progress=$(grep -c "🟡" .haunt/plans/roadmap.md 2>/dev/null || echo "0")
-    completed=$(grep -c "🟢" .haunt/plans/roadmap.md 2>/dev/null || echo "0")
-    blocked=$(grep -c "🔴" .haunt/plans/roadmap.md 2>/dev/null || echo "0")
+    not_started=$(grep -c "⚪" .haunt/plans/roadmap.md 2>/dev/null | tail -1 | tr -d '\n' || echo "0")
+    in_progress=$(grep -c "🟡" .haunt/plans/roadmap.md 2>/dev/null | tail -1 | tr -d '\n' || echo "0")
+    completed=$(grep -c "🟢" .haunt/plans/roadmap.md 2>/dev/null | tail -1 | tr -d '\n' || echo "0")
+    blocked=$(grep -c "🔴" .haunt/plans/roadmap.md 2>/dev/null | tail -1 | tr -d '\n' || echo "0")
 
     total=$((not_started + in_progress + completed + blocked))
 
     if [[ "$total" -gt 0 ]]; then
-        completion_rate=$(awk "BEGIN {printf \"%.1f\", ($completed / $total) * 100}")
+        completion_rate=$(awk "BEGIN {printf \"%.1f\", ($completed / $total) * 100}" | tail -1 | tr -d '\n')
         echo ""
         echo -e "${BOLD}Progress Summary:${NC}"
         echo -e "  🟢 Completed:    ${GREEN}$completed${NC} ($completion_rate%)"
@@ -323,7 +323,7 @@ print_section "Project Health Score"
 
 echo ""
 if [[ "$health_max" -gt 0 ]]; then
-    health_percent=$(awk "BEGIN {printf \"%.0f\", ($health_score / $health_max) * 100}")
+    health_percent=$(awk "BEGIN {printf \"%.0f\", ($health_score / $health_max) * 100}" | tail -1 | tr -d '\n')
 
     # Color-code based on health
     if [[ "$health_percent" -ge 80 ]]; then
@@ -346,7 +346,7 @@ if [[ "$health_max" -gt 0 ]]; then
 
     # Health bar visualization
     bar_length=50
-    filled=$(awk "BEGIN {printf \"%.0f\", ($health_percent / 100) * $bar_length}")
+    filled=$(awk "BEGIN {printf \"%.0f\", ($health_percent / 100) * $bar_length}" | tail -1 | tr -d '\n')
     empty=$((bar_length - filled))
 
     printf "  ["
