@@ -108,7 +108,7 @@ MOCK_PATTERNS = {
             "description": "Raising exceptions without providing context about what operation failed or what data was involved",
             "evidence": [
                 "Skills/xlsx-editor/SKILL.md: 3 commits adding context to exceptions",
-                "Skills/SDLC/roadmap-workflow/SKILL.md: modified 4 times",
+                "Haunt/skills/gco-roadmap-workflow/SKILL.md: modified 4 times",
                 "Git: 'fix error message' appears in 6 commits"
             ],
             "frequency": "per-feature",
@@ -119,7 +119,7 @@ MOCK_PATTERNS = {
             "name": "Inconsistent File Path Handling",
             "description": "Mixing relative and absolute paths, causing failures in different execution contexts",
             "evidence": [
-                "Agentic_SDLC/scripts/: multiple scripts modified for path handling",
+                "Haunt/scripts/: multiple scripts modified for path handling",
                 "Git: 'fix path' in 4 commits over 2 weeks"
             ],
             "frequency": "monthly",

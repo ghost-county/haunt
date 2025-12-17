@@ -13,9 +13,9 @@ The Seance is Ghost County's primary workflow orchestration layer - a ritual tha
 - **Existing Projects:** Incremental workflow for single enhancement/bug/issue
 - **Trigger Phrases:** "start a seance", "hold a seance", "time for a seance", "let's seance"
 
-## Six Operating Modes
+## Three Operating Modes
 
-The Seance workflow has six modes - three context-aware (interactive) and three explicit (phase-specific):
+The Seance workflow has three context-aware modes:
 
 ### Mode 1: With Prompt (Immediate Workflow)
 
@@ -92,162 +92,6 @@ Your choice?
 - `.haunt/plans/requirements-analysis.md`
 - `.haunt/plans/roadmap.md`
 
-
-### Mode 4: Explicit Scrying (--scry / --plan)
-
-**Triggered by:** `/seance --scry` or `/seance --plan` (with optional idea)
-
-**Purpose:** Run only the planning phase - transform raw ideas into formal roadmaps.
-
-**Flow:**
-1. Check if idea provided in command args
-2. If no idea: Ask "What would you like to scry?" and wait for user input
-3. Execute idea-to-roadmap workflow (same as Mode 1/2A/3)
-4. Output roadmap to `.haunt/plans/roadmap.md`
-5. **Do NOT prompt to summon** - user explicitly requested planning only
-6. Confirm roadmap created and suggest next step: `/seance --summon`
-
-**Output:**
-- `.haunt/plans/roadmap.md` updated with new requirements
-- Success message with roadmap location
-- Suggestion: "Ready to execute? Run `/seance --summon`"
-
-**When to Use:**
-- User wants to plan without immediate execution
-- Separating planning from execution phases
-- Building up a roadmap before batch execution
-
-**Example:**
-```
-User: /seance --scry "Add OAuth login"
-Agent:
-🔮 Scrying the future...
-[Planning workflow...]
-✅ Roadmap created with 5 requirements
-Ready to execute? Run `/seance --summon`
-```
-
-### Mode 5: Explicit Summoning (--summon / --execute)
-
-**Triggered by:** `/seance --summon` or `/seance --execute`
-
-**Purpose:** Run only the execution phase - spawn agents for existing roadmap items.
-
-**Flow:**
-1. Read `.haunt/plans/roadmap.md`
-2. Parse and find all ⚪ Not Started items
-3. Parse and find all 🟡 In Progress items
-4. Filter out items with unmet dependencies ("Blocked by: REQ-XXX")
-5. Group remaining items by batch
-6. Spawn appropriate agents for all unblocked items in parallel
-7. Wait for agents to complete (or run in background)
-8. **Automatically trigger Mode 6 (--reap) after completion**
-
-**Output:**
-- Spawned agents working on requirements
-- Real-time progress updates as agents complete
-- Automatic archival and cleanup via Mode 6
-
-**When to Use:**
-- Roadmap already exists (from previous `/seance --scry`)
-- Resuming work on existing roadmap
-- Batch execution of multiple requirements
-- User wants execution without re-planning
-
-**Example:**
-```
-User: /seance --summon
-Agent:
-Reading roadmap...
-Found 8 open requirements (5 ⚪ Not Started, 3 🟡 In Progress)
-
-👻 The spirits rise...
-Summoning gco-dev-backend for REQ-042...
-Summoning gco-dev-backend for REQ-043...
-Summoning gco-dev-frontend for REQ-044...
-
-[Agents work autonomously...]
-[All agents complete...]
-
-🌾 Automatically reaping the harvest...
-[Mode 6 archival happens...]
-```
-
-**Error Handling:**
-- If no roadmap exists: "No roadmap found. Run `/seance --scry` first."
-- If no open items: "All requirements complete. Roadmap is clear!"
-- If all items blocked: "All requirements blocked by dependencies. Resolve blockers first."
-
-### Mode 6: Explicit Reaping (--reap / --archive)
-
-**Triggered by:** `/seance --reap` or `/seance --archive`
-
-**Purpose:** Run only the archival phase - clean up completed work.
-
-**Flow:**
-1. Read `.haunt/plans/roadmap.md`
-2. Find all 🟢 Complete items
-3. **Verification Phase:**
-   - For each 🟢 item, check all tasks are `- [x]` (not `- [ ]`)
-   - Verify completion criteria met (if possible)
-   - Flag any incomplete items
-4. **Archival Phase:**
-   - Read or create `.haunt/completed/roadmap-archive.md`
-   - Append all verified 🟢 items with completion dates
-   - Remove archived items from active roadmap
-5. **Reporting Phase:**
-   - Generate completion summary
-   - Show what was archived
-   - Report any verification issues
-   - Confirm roadmap cleaned
-
-**Output:**
-- Clean roadmap with only ⚪, 🟡, 🔴 items
-- Archived history in `.haunt/completed/roadmap-archive.md`
-- Completion summary report
-
-**When to Use:**
-- After summoning completes
-- Weekly/sprint-end cleanup ritual
-- When roadmap has many 🟢 items (>10)
-- Manual cleanup when automatic reaping didn't run
-
-**Example:**
-```
-User: /seance --reap
-Agent:
-🌾 Reaping the harvest...
-
-Verifying completion...
-✓ REQ-087: All 5 tasks checked
-✓ REQ-088: All 3 tasks checked
-✓ REQ-089: All 4 tasks checked
-⚠ REQ-090: 2/3 tasks unchecked - skipping archival
-
-Archiving 3 requirements to .haunt/completed/roadmap-archive.md...
-
-🌙 The harvest is complete.
-
-Completed and Archived:
-- 🟢 REQ-087: Implement OAuth provider integration
-- 🟢 REQ-088: Add login redirect flow
-- 🟢 REQ-089: Secure token storage
-
-Needs Attention:
-- 🟢 REQ-090: Add logout endpoint (incomplete tasks)
-
-Active roadmap cleaned.
-```
-
-**Verification Rules:**
-- All tasks must be `- [x]` (checked)
-- If any tasks unchecked, skip archival and report
-- User can fix and re-run `/seance --reap`
-
-**Error Handling:**
-- If no 🟢 items: "No completed requirements to archive."
-- If archive write fails: "Error writing archive. Check permissions."
-
 ## Workflow Steps
 
 ### Step 1: Detect Mode and Context
@@ -272,38 +116,18 @@ else:
 **Mode 1 (With Prompt):**
 - New Project: "🕯️ No .haunt/ detected. Beginning full séance ritual..."
 - Existing Project: "🕯️ Existing project detected. Beginning incremental séance..."
-**Mode 2 (Choice Prompt with Interactive UI):**
 
-Use the `AskUserQuestion` tool to present selectable options:
-
-```python
-AskUserQuestion(
-    questions=[{
-        "question": "What brings you to the veil?",
-        "header": "Seance",
-        "multiSelect": False,
-        "options": [
-            {
-                "label": "Add something new",
-                "description": "I have an idea, feature, or bug to add"
-            },
-            {
-                "label": "Summon the spirits",
-                "description": "The roadmap is ready. Let's work."
-            }
-        ]
-    }]
-)
+**Mode 2 (Choice Prompt):**
 ```
+🕯️ The spirits stir. What brings you to the veil?
 
-This provides:
-- Clickable option selection
-- Automatic "Tell Claude what to do" escape hatch
-- Better UX than text-based prompts
+[A] Add something new — I have an idea, feature, or bug to add
+[B] Summon the spirits — The roadmap is ready. Let's work.
+
+Your choice?
+```
 
 **Mode 3 (New Project Prompt):**
-```
-🕯️ A fresh haunting ground. What would you like to build?
 ```
 🕯️ A fresh haunting ground. What would you like to build?
 ```

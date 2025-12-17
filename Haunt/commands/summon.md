@@ -31,9 +31,9 @@ If `--mode` is not specified, research agents default to **standard** mode.
 
 ### Full Coven Summoning
 
-**Format:** `/summon all`
+**Format:** `/summon all` or `/summon --all`
 
-Spawns agents for all unblocked ⚪ Not Started requirements from the roadmap in parallel.
+Spawns agents for all unblocked open requirements (⚪ Not Started and 🟡 In Progress) from the roadmap in parallel. Agents work continuously until all items are 🟢 Complete.
 
 ### Interactive Mode
 
@@ -156,7 +156,7 @@ mode, task = parse_summon_args('--mode=quick "Find authentication patterns"')
 # task = 'Find authentication patterns'
 ```
 
-## Full Coven Summoning Logic (`/summon all`)
+## Full Coven Summoning Logic (`/summon all` or `/summon --all`)
 
 ### Execution Workflow
 
@@ -168,7 +168,8 @@ ROADMAP=".haunt/plans/roadmap.md"
 ```
 
 Read `.haunt/plans/roadmap.md` and identify:
-- All lines matching: `### ⚪ REQ-`
+- All lines matching: `### ⚪ REQ-` (Not Started)
+- All lines matching: `### 🟡 REQ-` (In Progress)
 - Extract REQ number and title from each line
 
 #### 2. Filter Out Blocked Items
@@ -290,7 +291,7 @@ The spirit will report back when complete.
 🕯️ GATHERING THE FULL COVEN 🕯️
 
 Scanning roadmap for unblocked work...
-Found 12 ⚪ Not Started requirements
+Found 12 open requirements (10 ⚪ Not Started, 2 🟡 In Progress)
 
 Filtering blocked items...
 ✓ 12 unblocked and ready for work
@@ -327,7 +328,7 @@ Each agent will update their requirement status:
 
 No unblocked work found in the roadmap.
 
-All ⚪ Not Started items are blocked by dependencies.
+All open items (⚪ Not Started, 🟡 In Progress) are blocked by dependencies.
 Complete blocking requirements first, then summon again.
 
 Check roadmap:

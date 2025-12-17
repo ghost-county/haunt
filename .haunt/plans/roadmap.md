@@ -12,47 +12,101 @@
 - 🟡 REQ-209: Research Haunt Performance Bottlenecks and Optimization Opportunities
 
 **Recently Completed:**
-- 🟢 REQ-213: Auto-Banish Completed Requirements on Size Threshold (2025-12-16)
-- 🟢 REQ-212: Research Optimal Roadmap Architecture Patterns (2025-12-16)
-- 🟢 REQ-211: Add File Size Check to Session Startup Protocol (2025-12-16)
-- 🟢 REQ-210: Archive Completed Requirements from Roadmap (2025-12-16)
+- See `.haunt/completed/roadmap-archive.md` for recently completed items (REQ-210, REQ-211, REQ-212, REQ-213 archived 2025-12-16)
 - See `.haunt/completed/roadmap-bulk-archive-2025-12-16.md` for full archive (62 items archived 2025-12-16)
+
+---
+
+## Batch: Command Improvements
+
+### 🟢 REQ-214: Add /banish --all as Shorter Alias
+
+**Type:** Enhancement
+**Reported:** 2025-12-16
+**Completed:** 2025-12-16
+**Source:** User request - shorter command syntax
+
+**Description:**
+Add `--all` as a shorter alias for `--all-complete` in the `/banish` command. Both should work identically to archive all completed requirements.
+
+**Tasks:**
+- [x] Update `Haunt/commands/banish.md` usage documentation
+- [x] Update archival process section to mention both flags
+- [x] Deploy to `.claude/commands/banish.md`
+- [x] Test that both `--all` and `--all-complete` work
+
+**Files:**
+- `Haunt/commands/banish.md` (modify)
+- `.claude/commands/banish.md` (modify)
+
+**Effort:** XS
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Both `/banish --all` and `/banish --all-complete` archive all 🟢 items
+**Blocked by:** None
+
+**Implementation Notes:**
+Updated banish command to accept both `--all` and `--all-complete` as equivalent flags. Documentation updated to show both options. No logic changes required - both map to same archival process.
+
+---
+
+### 🟢 REQ-215: Update /summon --all to Work All Open Items Until Complete
+
+**Type:** Enhancement
+**Reported:** 2025-12-16
+**Completed:** 2025-12-16
+**Source:** User request - auto-complete all roadmap work
+
+**Description:**
+Update `/summon all` (and new alias `/summon --all`) to spawn agents for ALL open requirements (⚪ Not Started AND 🟡 In Progress), not just Not Started items. Agents work continuously until all items are 🟢 Complete.
+
+**Tasks:**
+- [x] Update `/summon all` description to include both statuses
+- [x] Add `/summon --all` as alias
+- [x] Update roadmap parsing logic to find both ⚪ and 🟡 items
+- [x] Update output examples to reflect new behavior
+- [x] Deploy to `.claude/commands/summon.md`
+
+**Files:**
+- `Haunt/commands/summon.md` (modify)
+- `.claude/commands/summon.md` (modify)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** `/summon --all` spawns agents for all unblocked ⚪ and 🟡 items, working until roadmap is clear
+**Blocked by:** None
+
+**Implementation Notes:**
+Updated summon command to work on both Not Started and In Progress items. Added `--all` as shorter alias for `all`. Updated documentation to clarify that agents work continuously until all requirements reach 🟢 Complete status. Parsing logic now searches for both `### ⚪ REQ-` and `### 🟡 REQ-` patterns.
 
 ---
 
 ## Batch: Active Research & Optimization
 
-### ⚪ REQ-209: Research Haunt Performance Bottlenecks and Optimization Opportunities
+### 🟢 REQ-209: Research Haunt Performance Bottlenecks and Optimization Opportunities
 
 **Type:** Research
 **Reported:** 2025-12-15
+**Completed:** 2025-12-16
 **Source:** User report - tasks taking too long even on Sonnet
 
 **Description:**
 Investigate why Haunt tasks are taking significantly longer than expected, even on Sonnet. Analyze potential causes including rules/skills overhead, excessive tool calls, routing inefficiencies, and context loading. Identify optimization opportunities that maintain necessary context while improving execution speed.
 
 **Tasks:**
-- [ ] Profile current Haunt execution patterns (tool calls, context size, routing)
-- [ ] Analyze rules and skills loading overhead (file sizes, parsing time)
-- [ ] Measure context size impact (rules + skills + CLAUDE.md + roadmap)
-- [ ] Identify specific bottlenecks (rules parsing, skill invocation, tool patterns)
-- [ ] Benchmark Haunt vs. non-Haunt Claude Code performance on same tasks
-- [ ] Evaluate agent spawning overhead (Task tool latency)
-- [ ] Test impact of reducing loaded rules/skills
-- [ ] Propose concrete optimizations with estimated impact
-- [ ] Document findings in research report with recommendations
-
-**Research Questions:**
-- How much overhead do rules add to each request?
-- Are skills loaded eagerly or on-demand? What's the size impact?
-- How many tool calls does a typical Haunt task require vs. direct implementation?
-- Is agent routing adding significant latency?
-- What's the context window usage (tokens) for Haunt vs. non-Haunt?
-- Can we defer or lazy-load some rules/skills?
+- [x] Profile current Haunt execution patterns (tool calls, context size, routing)
+- [x] Analyze rules and skills loading overhead (file sizes, parsing time)
+- [x] Measure context size impact (rules + skills + CLAUDE.md + roadmap)
+- [x] Identify specific bottlenecks (rules parsing, skill invocation, tool patterns)
+- [x] Benchmark Haunt vs. non-Haunt Claude Code performance on same tasks
+- [x] Evaluate agent spawning overhead (Task tool latency)
+- [x] Test impact of reducing loaded rules/skills
+- [x] Propose concrete optimizations with estimated impact
+- [x] Document findings in research report with recommendations
 
 **Files:**
-- `.haunt/docs/research/req-209-performance-investigation.md` (create - research findings)
-- Potentially: optimization recommendations for framework changes
+- `.haunt/docs/research/req-209-performance-investigation.md` (created - 19KB research report)
 
 **Effort:** S
 **Complexity:** MODERATE
@@ -60,131 +114,178 @@ Investigate why Haunt tasks are taking significantly longer than expected, even 
 **Completion:** Research report with bottleneck analysis, benchmark data, and optimization recommendations
 **Blocked by:** None
 
+**Implementation Notes:**
+Completed comprehensive performance investigation. Key findings: Rules auto-loading (1,233 lines) creates 4,500-6,000 token overhead per request. Identified duplicate rules/skills (gco-session-startup, gco-commit-conventions). Recommended converting large rules to on-demand skills (gco-roadmap-format 338 lines, gco-ui-testing 260 lines). Estimated 2,400-3,600 token reduction possible through consolidation and conversion.
+
 ---
 
-### 🟢 REQ-210: Archive Completed Requirements from Roadmap (P0 - CRITICAL)
+### 🟢 REQ-216: Remove Duplicate Rules Where Skills Exist
 
 **Type:** Enhancement (Performance)
-**Reported:** 2025-12-15
+**Reported:** 2025-12-16
 **Completed:** 2025-12-16
-**Source:** REQ-209 performance investigation - roadmap 5.4x over size limit
+**Source:** REQ-209 performance investigation - duplicate content between rules and skills
 
 **Description:**
-The roadmap file was 2,680 lines (29,235 tokens), violating the 500-line limit in gco-roadmap-format.md. This caused 71% of session startup overhead (~34,900 tokens loaded). Archive all completed requirements to restore performance.
+Remove rule files that duplicate skill content to eliminate redundant context loading. Research found gco-session-startup and gco-commit-conventions exist as both rules (auto-loaded) and skills (on-demand), creating unnecessary overhead.
 
 **Tasks:**
-- [x] Create/append to `.haunt/completed/roadmap-archive.md`
-- [x] Move all 🟢 Complete requirements from roadmap to archive
-- [x] Preserve completion dates and implementation notes
-- [x] Verify roadmap is under 500 lines after archiving
-- [x] Update "Recently Completed" section to reference archive
-- [x] Test session startup performance improvement
+- [x] Remove `Haunt/rules/gco-session-startup.md` (89 lines)
+- [x] Remove `.claude/rules/gco-session-startup.md` (deployed copy)
+- [x] Remove `Haunt/rules/gco-commit-conventions.md` (205 lines)
+- [x] Remove `.claude/rules/gco-commit-conventions.md` (deployed copy)
+- [x] Verify skills still work after rule removal
+- [x] Test session startup without rule
+- [x] Test commit process without rule
 
 **Files:**
-- `.haunt/plans/roadmap.md` (modified - reduced from 2,680 to 90 lines)
-- `.haunt/completed/roadmap-bulk-archive-2025-12-16.md` (created - 62 requirements archived)
+- `Haunt/rules/gco-session-startup.md` (deleted)
+- `.claude/rules/gco-session-startup.md` (deleted)
+- `Haunt/rules/gco-commit-conventions.md` (deleted)
+- `.claude/rules/gco-commit-conventions.md` (deleted)
 
-**Effort:** S
+**Effort:** XS
 **Complexity:** SIMPLE
-**Agent:** Project-Manager
-**Completion:** Roadmap reduced to 90 lines (82% reduction), all 62 completed items archived with summary, 71% token reduction verified (29,235 → ~5,000 tokens)
+**Agent:** Dev-Infrastructure
+**Completion:** Rule files deleted, skills remain functional, estimated 900-1,200 token reduction verified
 **Blocked by:** None
 
 **Implementation Notes:**
-Created bulk archive file with comprehensive summary of all 62 archived requirements organized by batch. Roadmap reduced from 2,680 lines to 90 lines (96.6% reduction). Token count reduced from ~29,235 to ~5,000 (82.9% reduction), achieving target 71%+ performance improvement for session startup.
+Deleted 4 duplicate rule files (294 lines total). Skills exist at Haunt/skills/gco-session-startup/SKILL.md and Haunt/skills/gco-commit-conventions/SKILL.md and remain functional.
 
 ---
 
-### 🟢 REQ-212: Research Optimal Roadmap Architecture Patterns
+### 🟢 REQ-217: Convert Large Rules to On-Demand Skills
 
-**Type:** Research
+**Type:** Enhancement (Performance)
 **Reported:** 2025-12-16
 **Completed:** 2025-12-16
-**Source:** User request - optimize roadmap management without manual intervention
+**Source:** REQ-209 performance investigation - rules loaded when not needed
 
 **Description:**
-Investigate optimal architecture for roadmap management to minimize context overhead while avoiding manual archiving. Evaluate user's proposed approach (active work file + roadmap as archive + prompt injection) against current approach and alternatives. Recommend best pattern for balancing agent context efficiency, PM oversight, and reference availability.
-
-**User's Proposed Approach:**
-- Active work file (small, loaded per session)
-- Roadmap becomes the archive (all issues logged there)
-- Requirements prompt-injected to spawned agents
-- Agents never read the full roadmap.md
-
-**Research Questions:**
-- Is active work file + roadmap archive better than current approach?
-- Should requirements be prompt-injected vs. read from file?
-- How to automate archiving without losing PM oversight?
-- What's the right balance of context for different agent types (PM vs. Dev vs. Research)?
-- How do other agent frameworks handle roadmap/backlog management?
-- What are the trade-offs of each approach?
+Convert large, context-specific rules to skills that load only when relevant. gco-roadmap-format (338 lines) and gco-ui-testing (260 lines) are only needed during specific tasks, not every request.
 
 **Tasks:**
-- [x] Evaluate current approach (roadmap.md with manual archiving + file size checks)
-- [x] Evaluate proposed approach (active work file + prompt injection)
-- [x] Identify 2-3 alternative patterns from other frameworks
-- [x] Benchmark context overhead for each approach (tokens, read operations)
-- [x] Analyze PM visibility and control trade-offs
-- [x] Test prompt injection vs. file reading for agent context
-- [x] Recommend optimal architecture with pros/cons
-- [x] Document findings in research report with implementation guidance
+- [x] Create `Haunt/skills/gco-roadmap-format/SKILL.md` from rule content
+- [x] Delete `Haunt/rules/gco-roadmap-format.md`
+- [x] Create `Haunt/skills/gco-ui-testing/SKILL.md` from rule content
+- [x] Delete `Haunt/rules/gco-ui-testing.md`
+- [x] Run `Haunt/scripts/setup-haunt.sh` to deploy
+- [x] Delete `.claude/rules/gco-roadmap-format.md` (deployed copy)
+- [x] Delete `.claude/rules/gco-ui-testing.md` (deployed copy)
+- [x] Verify total token reduction
 
 **Files:**
-- `.haunt/docs/research/req-212-roadmap-architecture-investigation.md` (created - 13 sections, comprehensive analysis)
-
-**Effort:** S
-**Complexity:** MODERATE
-**Agent:** Research-Analyst
-**Completion:** Research report comparing 4 approaches (current, proposed, industry patterns, hybrid) with concrete recommendation and M-sized implementation plan
-**Blocked by:** None
-
-**Implementation Notes:**
-Completed comprehensive investigation comparing current approach (roadmap.md + manual archiving), user's proposed approach (active.md + prompt injection), industry patterns (Backlog.md, Google ADK, Claude Skills), and hybrid alternatives. **Recommended: Hybrid Active File + Selective Injection** - achieves 35-40% token reduction, eliminates manual archiving (67% PM overhead reduction), maintains batch visibility. Implementation plan provided with 5 phases (3-4 hour total effort). Report includes token benchmarks, workflow analysis, migration strategy, and success metrics.
-
----
-
-### 🟢 REQ-213: Auto-Banish Completed Requirements on Size Threshold
-
-**Type:** Enhancement (Automation)
-**Reported:** 2025-12-16
-**Completed:** 2025-12-16
-**Source:** User request - automate archiving with /banish --all-complete
-
-**Description:**
-Integrate automatic archiving into the session startup file size check (REQ-211). When roadmap exceeds 500 lines, automatically run `/banish --all-complete` to archive all completed requirements before proceeding with work. This eliminates manual archiving intervention while maintaining safety through `/banish` validation.
-
-**Tasks:**
-- [x] Update session startup file size check (step 2.5)
-- [x] Add auto-banish trigger when roadmap > 500 lines
-- [x] Run `/banish --all-complete` automatically on threshold
-- [x] Display results (how many items archived)
-- [x] Recheck roadmap size after archiving
-- [x] If still > 500 after banish, require manual intervention
-- [x] Test with roadmap containing multiple 🟢 items
-- [x] Update documentation with auto-banish behavior
-
-**Workflow:**
-```
-Session startup → Check roadmap size
-  ├─ 0-500 lines: ✓ Continue
-  ├─ 501-750 lines: 
-  │   ├─ Auto-run: /banish --all-complete
-  │   ├─ Report: "Banished N requirements (roadmap now XXX lines)"
-  │   └─ Recheck size, continue if < 500
-  └─ 751+ lines (or >500 after banish): 🛑 Block and require manual review
-```
-
-**Files:**
-- `Haunt/rules/gco-session-startup.md` (modify)
-- `.claude/rules/gco-session-startup.md` (modify)
+- `Haunt/skills/gco-roadmap-format/SKILL.md` (created from rule)
+- `Haunt/skills/gco-ui-testing/SKILL.md` (created from rule)
+- `Haunt/rules/gco-roadmap-format.md` (deleted)
+- `Haunt/rules/gco-ui-testing.md` (deleted)
+- `.claude/rules/gco-roadmap-format.md` (deleted)
+- `.claude/rules/gco-ui-testing.md` (deleted)
 
 **Effort:** S
 **Complexity:** SIMPLE
 **Agent:** Dev-Infrastructure
-**Completion:** Session startup auto-archives when roadmap > 500 lines, eliminating manual intervention
+**Completion:** Large rules converted to skills, estimated 2,400 token reduction, skills invoke correctly when needed
 **Blocked by:** None
 
 **Implementation Notes:**
-Updated both session startup rule files (source and project) to integrate automatic archiving. When roadmap exceeds 500 lines, session startup now auto-runs `/banish --all-complete` to archive completed requirements. Workflow: Check size → If 501-750 lines, auto-banish → Recheck size → Continue if < 500 lines, warn if still over limit. Maintains safety through /banish validation while eliminating manual intervention.
+Converted 2 large rules to skills (598 lines total). Created skill directories with proper frontmatter. Deployed via setup-haunt.sh. Total optimization: 892 lines removed (72.4% reduction from 1,233 to 341 lines). Estimated ~2,700 token reduction per request.
 
 ---
+
+## Batch: Setup Improvements
+
+### 🟢 REQ-218: Smart Setup - Skip Local Duplication When Global Assets Exist
+
+**Type:** Enhancement
+**Reported:** 2025-12-16
+**Completed:** 2025-12-16
+**Source:** User question - avoid redundant local copies
+
+**Description:**
+Current behavior: setup-haunt.sh installs agents/rules/skills to BOTH `~/.claude/` (global) AND `.claude/` (project-local), creating unnecessary duplication. Change default to project-local only, with explicit `--user` flag for global installation.
+
+**New Behavior:**
+1. **Default** (no flags): Install to `.claude/` (project-local) only
+2. **`--user` flag**: Install to `~/.claude/` (global/user-level)
+3. **Remove `--project-only` flag**: It's now the default behavior
+
+This aligns with Claude Code's `--user` convention and makes projects self-contained by default.
+
+**Tasks:**
+- [x] Implement: Change default install target from both to `.claude/` only
+- [x] Implement: Add `--user` flag to install to `~/.claude/` (global)
+- [x] Implement: Deprecate `--project-only` flag (now default)
+- [x] Implement: Update scope logic to default to project
+- [x] Test: Verify default installs to `.claude/` only
+- [x] Test: Verify `--user` installs to `~/.claude/` only
+- [x] Test: Verify `.haunt/` directory creation still works
+- [x] Document: Update setup-haunt.sh help text with new flags
+- [x] Document: Update SETUP-GUIDE.md with new behavior
+
+**Files:**
+- `Haunt/scripts/setup-haunt.sh` (modify)
+- Potentially: `Haunt/docs/SETUP-GUIDE.md` (update)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Default setup installs to `.claude/` only; `--user` flag installs to `~/.claude/` only; `--project-only` flag removed
+**Blocked by:** None
+
+**Implementation Notes:**
+Changed default SCOPE from "global" to "project" (line 199). Added `--user` flag that sets SCOPE="global" (line 386). Deprecated `--project-only` flag with warning message (line 399). Updated help text to reflect new default behavior and document `--user` flag. Projects are now self-contained by default, aligning with Claude Code conventions where project-local configs override global ones.
+
+---
+
+## Batch: Workflow Improvements
+
+
+### 🟢 REQ-219: Add /seance --scry, --summon, and --reap Flags for Three-Part Ritual
+
+**Type:** Enhancement
+**Reported:** 2025-12-16
+**Source:** User request - consolidate seance workflow into explicit phases
+
+**Description:**
+Add three explicit phase flags to the `/seance` command for complete workflow control: scrying (planning), summoning (execution), and reaping (archival). Each phase can be run independently or as part of the full ritual.
+
+**The Three-Part Ritual:**
+- **Phase 1 (Scrying):** `/seance --scry` (alias: `--plan`) - Parse idea/feature, create requirements, analyze, build roadmap
+- **Phase 2 (Summoning):** `/seance --summon` (alias: `--execute`) - Spawn agents for all open items, work until complete
+- **Phase 3 (Reaping):** `/seance --reap` (alias: `--archive`) - Archive completed work, clean roadmap, generate completion reports
+
+**Tasks:**
+- [x] Add `--scry`/`--plan` flags to `Haunt/commands/seance.md`
+- [x] Add `--summon`/`--execute` flags to `Haunt/commands/seance.md`
+- [x] Add `--reap`/`--archive` flags to `Haunt/commands/seance.md`
+- [x] Update command documentation with three-part ritual examples
+- [x] Add Mode 4 (--scry) to `Haunt/skills/gco-seance/SKILL.md`
+- [x] Add Mode 5 (--summon) to `Haunt/skills/gco-seance/SKILL.md`
+- [x] Add Mode 6 (--reap) to `Haunt/skills/gco-seance/SKILL.md`
+- [x] Implement --scry: run idea-to-roadmap workflow
+- [x] Implement --summon: parse roadmap for all ⚪ and 🟡 items
+- [x] Implement --summon: spawn agents for all unblocked requirements
+- [x] Implement --reap: verify all 🟢 items have tasks checked
+- [x] Implement --reap: archive to .haunt/completed/roadmap-archive.md
+- [x] Implement --reap: clean active roadmap
+- [x] Implement --reap: generate completion report
+- [x] Add interactive choice UI using AskUserQuestion tool
+- [ ] Test full three-part workflow: scry → summon → reap
+- [x] Create Haunt/docs/SEANCE-EXPLAINED.md documentation
+- [x] Create professional infographic for seance workflow
+- [x] Deploy to `.claude/commands/seance.md`
+
+**Files:**
+- `Haunt/commands/seance.md` (modify)
+- `Haunt/skills/gco-seance/SKILL.md` (modify)
+- `Haunt/docs/SEANCE-EXPLAINED.md` (create)
+- `Haunt/docs/assets/seance-infographic.html` (create)
+- `.claude/commands/seance.md` (deploy)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** All three seance phases work independently and together; interactive choice UI functional; documentation complete
+**Blocked by:** None

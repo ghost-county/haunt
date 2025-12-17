@@ -145,21 +145,6 @@ add_to_report ""
 add_to_report "${BOLD}${BLUE}═══ Infrastructure Status ═══${RESET}"
 add_to_report ""
 
-# NATS status
-if pgrep -f nats-server > /dev/null; then
-    add_to_report "${GREEN}✓ NATS server running${RESET}"
-
-    # Check pending work queue
-    if nats stream ls > /dev/null 2>&1; then
-        PENDING=$(nats stream info WORK --json 2>/dev/null | python3 -c "import sys,json; d=json.load(sys.stdin); print(d['state']['messages'])" 2>/dev/null)
-        if [ -n "$PENDING" ]; then
-            add_to_report "${CYAN}  └─ Work queue: ${PENDING} messages pending${RESET}"
-        fi
-    fi
-else
-    add_to_report "${RED}✗ NATS server stopped${RESET}"
-fi
-
 # Memory server status
 if pgrep -f agent-memory > /dev/null; then
     add_to_report "${GREEN}✓ Agent memory server running${RESET}"

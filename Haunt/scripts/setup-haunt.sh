@@ -195,8 +195,8 @@ ensure_resources() {
     init_paths
 }
 
-# Scope configuration (will be set based on --scope flag)
-SCOPE="global"  # Default: global
+# Scope configuration (will be set based on --scope or --user flag)
+SCOPE="project"  # Default: project-local (.claude/)
 GLOBAL_AGENTS_DIR="${HOME}/.claude/agents"
 GLOBAL_AGENTS_BACKUP_DIR="${HOME}/.claude/agents.backup"
 GLOBAL_SKILLS_DIR="${HOME}/.claude/skills"
@@ -254,12 +254,12 @@ ${BOLD}USAGE:${NC}
     bash scripts/setup-haunt.sh [OPTIONS]
 
 ${BOLD}DESCRIPTION:${NC}
-    Haunt framework setup script. This script summons:
+    Haunt framework setup script. By default, summons to project-local .claude/:
 
-    • Spirit agents to ~/.claude/agents/
+    • Spirit agents to .claude/agents/ (use --user for ~/.claude/)
     • Haunt methodology skills from Haunt/skills/
     • Verifies spiritual infrastructure (MCP servers)
-    • Manifests required directory structure
+    • Manifests required directory structure (.haunt/)
     • Ensures idempotent execution (safe to run multiple times)
 
 ${BOLD}OPTIONS:${NC}
@@ -267,14 +267,16 @@ ${BOLD}OPTIONS:${NC}
 
     ${BOLD}--dry-run${NC}           Show what would be done without executing
 
+    ${BOLD}--user${NC}              Summon to ~/.claude/ (global/user-level)
+
     ${BOLD}--scope=<value>${NC}     Summoning scope for agents and MCP servers:
-                        • ${BOLD}global${NC}  - Summon to ~/.claude/ (default)
-                        • ${BOLD}project${NC} - Summon to ./.claude/ (current directory)
+                        • ${BOLD}project${NC} - Summon to ./.claude/ (default)
+                        • ${BOLD}global${NC}  - Summon to ~/.claude/ (same as --user)
                         • ${BOLD}both${NC}    - Summon to both locations
 
     ${BOLD}--agents-only${NC}       Only summon spirit agents
     ${BOLD}--skills-only${NC}       Only conjure project-specific skills
-    ${BOLD}--project-only${NC}      Only manifest project structure (skip agents)
+    ${BOLD}--project-only${NC}      ${YELLOW}[DEPRECATED]${NC} Project is now the default
 
     ${BOLD}--verify${NC}            Only verify existing haunt, don't modify
     ${BOLD}--fix${NC}               Exorcise issues found during verification
@@ -300,11 +302,11 @@ ${BOLD}REMOTE INSTALLATION:${NC}
     curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
 
 ${BOLD}EXAMPLES:${NC}
-    # Manifest full haunt (first time - global scope by default)
+    # Manifest full haunt (default: project-local to .claude/)
     bash scripts/setup-haunt.sh
 
-    # Summon for current project only
-    bash scripts/setup-haunt.sh --scope=project
+    # Summon to global/user-level (~/.claude/)
+    bash scripts/setup-haunt.sh --user
 
     # Summon to both global and project scopes
     bash scripts/setup-haunt.sh --scope=both
@@ -312,16 +314,16 @@ ${BOLD}EXAMPLES:${NC}
     # Divine what would be summoned without executing
     bash scripts/setup-haunt.sh --dry-run
 
-    # Preview project scope summoning
-    bash scripts/setup-haunt.sh --scope=project --dry-run
+    # Preview global/user summoning
+    bash scripts/setup-haunt.sh --user --dry-run
 
-    # Only summon global spirits
+    # Only summon project-local agents
     bash scripts/setup-haunt.sh --agents-only
 
-    # Only summon project spirits
-    bash scripts/setup-haunt.sh --scope=project --agents-only
+    # Only summon global agents
+    bash scripts/setup-haunt.sh --user --agents-only
 
-    # Manifest project structure only (skip spirits)
+    # Manifest project structure only (skip agents)
     bash scripts/setup-haunt.sh --project-only
 
     # Verify existing haunt
@@ -381,6 +383,10 @@ parse_arguments() {
                 fi
                 shift
                 ;;
+            --user)
+                SCOPE="global"
+                shift
+                ;;
             --agents-only)
                 AGENTS_ONLY=true
                 shift
@@ -390,7 +396,9 @@ parse_arguments() {
                 shift
                 ;;
             --project-only)
-                PROJECT_ONLY=true
+                warning "--project-only is deprecated (project is now the default)"
+                warning "This flag will be removed in a future version"
+                # PROJECT_ONLY is now redundant since project is the default
                 shift
                 ;;
             --verify)

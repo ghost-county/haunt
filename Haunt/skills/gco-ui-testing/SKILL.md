@@ -1,8 +1,13 @@
+---
+name: gco-ui-testing
+description: Playwright E2E test generation protocol for frontend features. Invoke when implementing user-facing UI components, user flows, or interactive features that require browser-based testing. Enforces TDD workflow and test coverage requirements.
+---
+
 # UI Testing Protocol
 
-This rule enforces Playwright E2E test generation for frontend features to reduce manual verification overhead.
+This skill enforces Playwright E2E test generation for frontend features to reduce manual verification overhead.
 
-## When This Rule Applies
+## When This Skill Applies
 
 **REQUIRED:** Generate Playwright E2E tests when implementing ANY of the following:
 
@@ -56,12 +61,12 @@ For Ghost County or framework development:
 
 ## Integration with Existing Skills
 
-This rule works with the `gco-playwright-tests` skill:
+This skill works with the `gco-playwright-tests` skill:
 
 **Workflow:**
-1. **Rule triggers** (automatic): When you identify UI work, this rule enforces E2E test requirement
-2. **Skill provides guidance** (on-demand): Invoke `gco-playwright-tests` skill for test generation patterns
-3. **Skill has examples**: The skill contains test templates, best practices, and common patterns
+1. **This skill enforces** E2E test requirement for UI work
+2. **gco-playwright-tests provides** test generation patterns and templates
+3. **Skill has examples**: Test templates, best practices, and common patterns
 
 **Do NOT duplicate content from the skill.** Reference it instead:
 - For test templates: See `gco-playwright-tests` skill
@@ -134,12 +139,12 @@ If project has CI/CD pipeline, E2E tests MUST pass in CI before merge:
 
 ## Completion Checklist Integration
 
-This rule extends `gco-completion-checklist.md` for frontend work:
+This skill extends `gco-completion-checklist` for frontend work:
 
 **Standard completion checklist items:**
 1. All Tasks Checked Off
 2. Completion Criteria Met
-3. Tests Passing ← **This rule adds E2E test requirement here**
+3. Tests Passing ← **This skill adds E2E test requirement here**
 4. Files Updated
 5. Documentation Updated
 
@@ -256,5 +261,5 @@ When reviewing frontend PRs:
 - `Haunt/skills/gco-playwright-tests/SKILL.md` - Detailed test patterns and examples
 - `Haunt/skills/gco-tdd-workflow/SKILL.md` - General TDD guidance
 - `Haunt/commands/qa.md` - Generate test scenarios from requirements
-- `.claude/rules/gco-completion-checklist.md` - General completion requirements
+- `Haunt/skills/gco-completion-checklist/SKILL.md` - General completion requirements
 - `Haunt/docs/BROWSER-MCP-SETUP.md` - Browser MCP installation guide

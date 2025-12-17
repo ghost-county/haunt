@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Séance: Ghost County Development Ritual</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'SF Mono', 'Monaco', 'Menlo', 'Courier New', monospace;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 60px 40px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-size: 48px;
+            font-weight: 700;
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .header p {
+            font-size: 20px;
+            color: #a0a0a0;
+            font-weight: 300;
+        }
+
+        .phases {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+            margin-bottom: 60px;
+        }
+
+        .phase {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(167, 139, 250, 0.3);
+            border-radius: 16px;
+            padding: 32px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .phase::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--phase-color) 0%, transparent 100%);
+        }
+
+        .phase:hover {
+            transform: translateY(-8px);
+            border-color: var(--phase-color);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .phase-1 { --phase-color: #8b5cf6; }
+        .phase-2 { --phase-color: #ec4899; }
+        .phase-3 { --phase-color: #10b981; }
+
+        .phase-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .phase-title {
+            font-size: 28px;
+            font-weight: 600;
+            color: var(--phase-color);
+            margin-bottom: 12px;
+        }
+
+        .phase-subtitle {
+            font-size: 16px;
+            color: #a0a0a0;
+            margin-bottom: 24px;
+            font-style: italic;
+        }
+
+        .phase-commands {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+            border-left: 3px solid var(--phase-color);
+        }
+
+        .phase-commands code {
+            display: block;
+            color: #e0e0e0;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+
+        .phase-commands .mystical {
+            color: var(--phase-color);
+        }
+
+        .phase-commands .normie {
+            color: #a0a0a0;
+        }
+
+        .phase-steps {
+            list-style: none;
+        }
+
+        .phase-steps li {
+            padding: 12px 0;
+            padding-left: 28px;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.6;
+            color: #c0c0c0;
+        }
+
+        .phase-steps li::before {
+            content: '→';
+            position: absolute;
+            left: 8px;
+            color: var(--phase-color);
+            font-weight: bold;
+        }
+
+        .workflow {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(167, 139, 250, 0.2);
+            border-radius: 16px;
+            padding: 40px;
+            margin-bottom: 40px;
+        }
+
+        .workflow h2 {
+            font-size: 32px;
+            text-align: center;
+            margin-bottom: 40px;
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .workflow-diagram {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .workflow-step {
+            flex: 1;
+            min-width: 200px;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .workflow-step-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--step-color);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 36px;
+        }
+
+        .workflow-step-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--step-color);
+            margin-bottom: 8px;
+        }
+
+        .workflow-step-desc {
+            font-size: 13px;
+            color: #a0a0a0;
+        }
+
+        .workflow-arrow {
+            font-size: 32px;
+            color: rgba(167, 139, 250, 0.5);
+            flex-shrink: 0;
+        }
+
+        .comparison {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 40px;
+        }
+
+        .comparison-col {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(167, 139, 250, 0.2);
+            border-radius: 16px;
+            padding: 32px;
+        }
+
+        .comparison-col.without {
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .comparison-col.with {
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .comparison-col h3 {
+            font-size: 24px;
+            margin-bottom: 24px;
+            text-align: center;
+        }
+
+        .comparison-col.without h3 {
+            color: #ef4444;
+        }
+
+        .comparison-col.with h3 {
+            color: #10b981;
+        }
+
+        .comparison-col ul {
+            list-style: none;
+        }
+
+        .comparison-col ul li {
+            padding: 12px 0;
+            padding-left: 32px;
+            position: relative;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .comparison-col.without ul li::before {
+            content: '✗';
+            position: absolute;
+            left: 8px;
+            color: #ef4444;
+            font-weight: bold;
+        }
+
+        .comparison-col.with ul li::before {
+            content: '✓';
+            position: absolute;
+            left: 8px;
+            color: #10b981;
+            font-weight: bold;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 40px;
+            border-top: 1px solid rgba(167, 139, 250, 0.2);
+        }
+
+        .footer p {
+            font-size: 18px;
+            color: #a0a0a0;
+            margin-bottom: 12px;
+        }
+
+        .footer .tagline {
+            font-size: 24px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #a78bfa 0%, #ec4899 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        @media print {
+            body {
+                background: white;
+                color: black;
+            }
+            .phase, .workflow, .comparison-col {
+                border-color: #ccc;
+                break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🕯️ The Séance</h1>
+            <p>Ghost County's Complete Development Ritual: Idea → Shipped Feature</p>
+        </div>
+
+        <div class="phases">
+            <div class="phase phase-1">
+                <span class="phase-icon">🔮</span>
+                <div class="phase-title">Phase 1: Scrying</div>
+                <div class="phase-subtitle">Planning</div>
+                
+                <div class="phase-commands">
+                    <code class="mystical">/seance --scry</code>
+                    <code class="normie">/seance --plan</code>
+                </div>
+
+                <ul class="phase-steps">
+                    <li>Transform raw ideas into formal requirements</li>
+                    <li>Apply 14-dimension rubric</li>
+                    <li>Run strategic analysis (JTBD, Kano, RICE)</li>
+                    <li>Create sized, assigned roadmap</li>
+                    <li>Output: <code>.haunt/plans/roadmap.md</code></li>
+                </ul>
+            </div>
+
+            <div class="phase phase-2">
+                <span class="phase-icon">👻</span>
+                <div class="phase-title">Phase 2: Summoning</div>
+                <div class="phase-subtitle">Execution</div>
+                
+                <div class="phase-commands">
+                    <code class="mystical">/seance --summon</code>
+                    <code class="normie">/seance --execute</code>
+                </div>
+
+                <ul class="phase-steps">
+                    <li>Parse roadmap for ⚪ and 🟡 items</li>
+                    <li>Spawn agents in parallel</li>
+                    <li>Agents work autonomously (TDD, tests, commits)</li>
+                    <li>Work until 🟢 Complete</li>
+                    <li>Output: Shipped, tested features</li>
+                </ul>
+            </div>
+
+            <div class="phase phase-3">
+                <span class="phase-icon">🌾</span>
+                <div class="phase-title">Phase 3: Reaping</div>
+                <div class="phase-subtitle">Archival</div>
+                
+                <div class="phase-commands">
+                    <code class="mystical">/seance --reap</code>
+                    <code class="normie">/seance --archive</code>
+                </div>
+
+                <ul class="phase-steps">
+                    <li>Verify all 🟢 items complete</li>
+                    <li>Check tasks, tests, commits</li>
+                    <li>Archive to <code>.haunt/completed/</code></li>
+                    <li>Clean active roadmap</li>
+                    <li>Generate completion report</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="workflow">
+            <h2>Complete Ritual Flow</h2>
+            <div class="workflow-diagram">
+                <div class="workflow-step" style="--step-color: #8b5cf6;">
+                    <div class="workflow-step-icon">💭</div>
+                    <div class="workflow-step-title">Raw Idea</div>
+                    <div class="workflow-step-desc">"Add OAuth login"</div>
+                </div>
+
+                <div class="workflow-arrow">→</div>
+
+                <div class="workflow-step" style="--step-color: #8b5cf6;">
+                    <div class="workflow-step-icon">🔮</div>
+                    <div class="workflow-step-title">Scrying</div>
+                    <div class="workflow-step-desc">Requirements + Roadmap</div>
+                </div>
+
+                <div class="workflow-arrow">→</div>
+
+                <div class="workflow-step" style="--step-color: #ec4899;">
+                    <div class="workflow-step-icon">👻</div>
+                    <div class="workflow-step-title">Summoning</div>
+                    <div class="workflow-step-desc">Agents Execute</div>
+                </div>
+
+                <div class="workflow-arrow">→</div>
+
+                <div class="workflow-step" style="--step-color: #10b981;">
+                    <div class="workflow-step-icon">🌾</div>
+                    <div class="workflow-step-title">Reaping</div>
+                    <div class="workflow-step-desc">Archive & Clean</div>
+                </div>
+
+                <div class="workflow-arrow">→</div>
+
+                <div class="workflow-step" style="--step-color: #10b981;">
+                    <div class="workflow-step-icon">✅</div>
+                    <div class="workflow-step-title">Shipped</div>
+                    <div class="workflow-step-desc">Tested & Deployed</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison">
+            <div class="comparison-col without">
+                <h3>❌ Without the Séance</h3>
+                <ul>
+                    <li>Write requirements manually</li>
+                    <li>Spawn agents one by one</li>
+                    <li>Track completion manually</li>
+                    <li>Context-switch constantly</li>
+                    <li>Manual archival cleanup</li>
+                    <li>Coordination overhead scales with complexity</li>
+                </ul>
+            </div>
+
+            <div class="comparison-col with">
+                <h3>✅ With the Séance</h3>
+                <ul>
+                    <li>Say what you want (one line)</li>
+                    <li>Automatic requirements & roadmap</li>
+                    <li>Parallel agent execution</li>
+                    <li>Zero manual coordination</li>
+                    <li>Automatic archival & cleanup</li>
+                    <li>Come back to shipped features</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p>Choose Your Vibe</p>
+            <p class="tagline">Mystical (--scry, --summon, --reap) or Normie (--plan, --execute, --archive)</p>
+            <p style="margin-top: 40px; font-size: 14px; opacity: 0.6;">The full SDLC in one command. Trust the process. The spirits know the way. 🕯️</p>
+        </div>
+    </div>
+</body>
+</html>

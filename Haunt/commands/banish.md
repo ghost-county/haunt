@@ -6,7 +6,8 @@ Archive completed requirements from the roadmap, sending them to rest in the `.h
 
 ```
 /banish REQ-123           # Archive a specific completed requirement
-/banish --all-complete    # Archive all 🟢 Complete requirements
+/banish --all             # Archive all 🟢 Complete requirements
+/banish --all-complete    # Archive all 🟢 Complete requirements (alias for --all)
 ```
 
 ## Arguments: $ARGUMENTS
@@ -56,7 +57,9 @@ If any validation fails, STOP and report which criterion is not met.
 5. Remove the requirement from `.haunt/plans/roadmap.md`
 6. Report success with REQ number and archive location
 
-#### For All Complete (`/banish --all-complete`)
+#### For All Complete (`/banish --all` or `/banish --all-complete`)
+
+Both `--all` and `--all-complete` work identically:
 
 1. Read `.haunt/plans/roadmap.md`
 2. Find ALL requirements with 🟢 status
