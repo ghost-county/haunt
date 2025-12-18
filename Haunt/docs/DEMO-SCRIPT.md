@@ -19,7 +19,7 @@
 
 ### What to Say
 
-> "Haunt is a framework for running autonomous AI agent teams. Think of it as Claude Code, but instead of one agent, you can spawn multiple agents working in parallel on different parts of your codebase."
+> "Haunt is a framework for running autonomous AI agent teams. Think of it as Claude, but instead of one agent in one chat window, you can spawn multiple agents working in parallel on different parts of your codebase."
 
 ### Key Talking Points
 
@@ -35,13 +35,45 @@
 **Q:** "How many agents can run at once?"
 **A:** "As many Claude Code tabs as you can manage. Typically 3-5 for a small team, more for larger projects."
 
+### Install Haunt
+
+**Execute:** 
+
+```bash
+
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
+
+```
+
+**Start claude-code** 
+
+```bash
+
+claude --dangerously-skip-permissions
+
+```
 ---
 
 ## Section 2: The Séance (1-2 minutes)
 
-### What to Say
+### What to Prompt
 
-> "Let's start with an idea: 'Add dark mode to the app.' Watch how the séance workflow turns this vague idea into structured, trackable requirements."
+> "Let's start with an idea: \
+\
+Build a simple web app called "Popcorn Picker" for choosing who speaks next in meetings.\
+\
+Features:\
+\
+Text input to add participant names (one at a time or comma-separated)
+Display list of participants with ability to remove individuals
+Big "Pick Next" button that randomly selects someone with a brief animation
+Selected person shown prominently
+Option to mark someone as "already went" so they're skipped in future picks
+Reset button to start over\
+\
+Single HTML file with embedded CSS/JS. Make it look fun and satisfying to use. \
+\
+Watch how the séance workflow turns this vague idea into structured, trackable requirements."
 
 ### Key Talking Points
 
