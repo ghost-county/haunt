@@ -4,16 +4,17 @@
 
 ---
 
-## Current Focus: Performance Optimization
+## Current Focus: BMAD-Inspired Enhancements
 
-**Goal:** Restore roadmap performance by archiving 62 completed requirements.
+**Goal:** Implement 5 strategic framework enhancements (token efficiency, workflow flexibility, coordination visibility) while maintaining lightweight philosophy.
 
 **Active Work:**
-- 🟡 REQ-209: Research Haunt Performance Bottlenecks and Optimization Opportunities
+- None (all requirements ⚪ Not Started, ready for assignment)
 
 **Recently Completed:**
-- See `.haunt/completed/roadmap-archive.md` for recently completed items (REQ-210, REQ-211, REQ-212, REQ-213 archived 2025-12-16)
-- See `.haunt/completed/roadmap-bulk-archive-2025-12-16.md` for full archive (62 items archived 2025-12-16)
+- REQ-214, REQ-215, REQ-216, REQ-217, REQ-218, REQ-219 (Command and setup improvements)
+- REQ-209 (Performance research - BMAD analysis)
+- See `.haunt/completed/roadmap-archive.md` and `.haunt/completed/roadmap-bulk-archive-2025-12-16.md` for full archive
 
 ---
 
@@ -289,3 +290,439 @@ Add three explicit phase flags to the `/seance` command for complete workflow co
 **Agent:** Dev-Infrastructure
 **Completion:** All three seance phases work independently and together; interactive choice UI functional; documentation complete
 **Blocked by:** None
+
+---
+
+## Batch: BMAD Enhancements - Phase 1 (Quick Wins)
+
+**Goal:** Improve onboarding and PM coordination with low-risk documentation and tooling enhancements
+**Source:** `.haunt/docs/research/bmad-framework-analysis.md` (REQ-209 research)
+**Estimated Effort:** 5 S items = ~10 hours
+
+### 🟡 REQ-228: Create Séance Workflow Infographic
+
+**Type:** Enhancement (Documentation)
+**Reported:** 2025-12-18
+**Source:** BMAD research - visual workflow diagrams improve onboarding
+
+**Description:**
+Create SVG/Mermaid diagram showing complete séance workflow from idea to implementation (3 phases: Requirements Development → Requirements Analysis → Roadmap Creation). Embed in README.md to reduce onboarding cognitive load.
+
+**Tasks:**
+- [ ] Create Mermaid source diagram for séance workflow
+- [ ] Generate SVG from Mermaid (3-phase flow with inputs/outputs)
+- [ ] Store in `Haunt/docs/assets/seance-workflow.mmd` and `.svg`
+- [ ] Embed diagram in `Haunt/README.md` "How It Works" section
+- [ ] Test rendering in GitHub markdown preview
+
+**Files:**
+- `Haunt/docs/assets/seance-workflow.mmd` (create)
+- `Haunt/docs/assets/seance-workflow.svg` (create)
+- `Haunt/README.md` (modify - embed diagram)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Diagram renders in README.md, shows all 3 séance phases with clear inputs/outputs
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-229: Create Agent Coordination Diagram
+
+**Type:** Enhancement (Documentation)
+**Reported:** 2025-12-18
+**Source:** BMAD research - visual coordination model improves understanding
+
+**Description:**
+Create SVG/Mermaid diagram showing how agents coordinate asynchronously via roadmap status updates. Shows PM, Dev, Reviewer, Release roles and status transitions (⚪ → 🟡 → 🟢).
+
+**Tasks:**
+- [ ] Create Mermaid source diagram for agent coordination
+- [ ] Show roadmap as communication layer (central artifact)
+- [ ] Show agent roles and responsibilities
+- [ ] Show status icon transitions
+- [ ] Store in `Haunt/docs/assets/agent-coordination.mmd` and `.svg`
+- [ ] Embed diagram in `Haunt/docs/WHITE-PAPER.md`
+
+**Files:**
+- `Haunt/docs/assets/agent-coordination.mmd` (create)
+- `Haunt/docs/assets/agent-coordination.svg` (create)
+- `Haunt/docs/WHITE-PAPER.md` (modify - embed diagram)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Diagram renders in WHITE-PAPER.md, clearly shows asynchronous coordination via roadmap
+**Blocked by:** None
+
+---
+
+### 🟢 REQ-230: Create Session Startup Protocol Diagram
+
+**Type:** Enhancement (Documentation)
+**Reported:** 2025-12-18
+**Completed:** 2025-12-18
+**Source:** BMAD research - visual flowcharts reduce onboarding friction
+
+**Description:**
+Create SVG/Mermaid flowchart showing session startup sequence: Verify env → Check git → Run tests → Find assignment. Includes assignment lookup priority order.
+
+**Tasks:**
+- [x] Create Mermaid flowchart for session startup
+- [x] Show 4 main steps (env, git, tests, assignment)
+- [x] Show assignment lookup decision tree (Step 1-4 from gco-assignment-lookup)
+- [x] Store in `Haunt/docs/assets/session-startup-protocol.mmd`
+- [x] Embed diagram in `Haunt/SETUP-GUIDE.md`
+
+**Files:**
+- `Haunt/docs/assets/session-startup-protocol.mmd` (created)
+- `Haunt/SETUP-GUIDE.md` (modified - embedded Mermaid diagram)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Diagram renders in SETUP-GUIDE.md, shows complete session startup protocol
+**Blocked by:** None
+
+**Implementation Notes:**
+Created Mermaid flowchart showing 4-step session startup protocol with decision branches. Diagram uses color-coded nodes: critical (red) for fixing tests, success (green) for starting work, warning (yellow) for asking PM, decision (blue) for choice points. Embedded directly in SETUP-GUIDE.md with key principles summary. Mermaid source stored in `Haunt/docs/assets/session-startup-protocol.mmd` for future updates.
+
+---
+
+### 🟡 REQ-231: Implement /haunt status --batch Command
+
+**Type:** Enhancement (Tooling)
+**Reported:** 2025-12-18
+**Source:** BMAD research - coordination dashboard for PM visibility
+
+**Description:**
+Create command to display batch completion progress and identify blocking requirements. Parses roadmap for all batches, shows completion ratio, status, and blockers.
+
+**Tasks:**
+- [ ] Create `Haunt/commands/haunt.md` for status subcommands
+- [ ] Implement `--batch` flag handler
+- [ ] Parse roadmap for batch headers (## Batch: *)
+- [ ] Parse requirements per batch (count ⚪ 🟡 🟢 🔴)
+- [ ] Calculate completion ratio (X/Y complete)
+- [ ] Identify blocking requirements (🔴 items)
+- [ ] Display per-batch summary with status
+- [ ] Suggest unblocking actions for 🔴 items
+- [ ] Deploy to `.claude/commands/haunt.md`
+
+**Files:**
+- `Haunt/commands/haunt.md` (create)
+- `.claude/commands/haunt.md` (deploy)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** `/haunt status --batch` displays all batches with completion ratios and highlights blockers
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-232: Add Effort Estimation to Batch Status
+
+**Type:** Enhancement (Tooling)
+**Reported:** 2025-12-18
+**Source:** BMAD research - effort estimation helps PM planning
+
+**Description:**
+Extend batch status command to calculate estimated completion time based on effort sizing (XS=0.5hr, S=2hr, M=6hr). Displays "Est. XX hours remaining" per batch.
+
+**Tasks:**
+- [ ] Parse effort field from requirements (XS, S, M)
+- [ ] Map to hours: XS=0.5, S=2, M=6 (average estimates)
+- [ ] Sum effort for incomplete items per batch
+- [ ] Display "Est. X hours remaining" in batch status output
+- [ ] Account for only ⚪ and 🟡 items (skip 🟢)
+
+**Files:**
+- `Haunt/commands/haunt.md` (modify)
+- `.claude/commands/haunt.md` (deploy)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Batch status shows estimated hours remaining per batch
+**Blocked by:** REQ-231
+
+---
+
+## Batch: BMAD Enhancements - Phase 2 (Medium Effort)
+
+**Goal:** Add workflow flexibility and context retention features
+**Source:** `.haunt/docs/research/bmad-framework-analysis.md` (REQ-209 research)
+**Estimated Effort:** 2 S + 3 M items = ~22 hours
+
+### ⚪ REQ-225: Add /seance --quick Mode for Simple Tasks
+
+**Type:** Enhancement (Workflow)
+**Reported:** 2025-12-18
+**Source:** BMAD research - scale-adaptive planning reduces overhead
+
+**Description:**
+Add quick planning mode that bypasses strategic analysis for simple bug fixes and typo corrections. Completes planning in <60 seconds with minimal ceremony.
+
+**Tasks:**
+- [ ] Add `--quick` flag to `Haunt/commands/seance.md`
+- [ ] Update `Haunt/skills/gco-seance/SKILL.md` with Mode 4 (Quick)
+- [ ] Implement quick mode routing logic
+- [ ] Quick mode creates single REQ with:
+  - Title and description
+  - Basic completion criteria (2-3 bullets)
+  - File paths
+  - Agent assignment
+- [ ] Skip Phase 2 (no JTBD, Kano, RICE, SWOT, VRIO)
+- [ ] Document when quick mode is appropriate (XS-S tasks only)
+- [ ] Deploy to `.claude/commands/seance.md`
+
+**Files:**
+- `Haunt/commands/seance.md` (modify)
+- `Haunt/skills/gco-seance/SKILL.md` (modify)
+- `.claude/commands/seance.md` (deploy)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** `/seance --quick "Fix typo"` creates REQ in <60 seconds without strategic analysis
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-226: Add /seance --deep Mode for Strategic Features
+
+**Type:** Enhancement (Workflow)
+**Reported:** 2025-12-18
+**Source:** BMAD research - deep analysis for high-impact features
+
+**Description:**
+Add deep planning mode that includes extended strategic analysis for high-impact features (SWOT, VRIO, risk matrix, stakeholder impact). Creates separate strategic analysis document.
+
+**Tasks:**
+- [ ] Add `--deep` flag to `Haunt/commands/seance.md`
+- [ ] Update `Haunt/skills/gco-seance/SKILL.md` with Mode 5 (Deep)
+- [ ] Implement deep mode routing logic
+- [ ] Deep mode extends Phase 2 with:
+  - Expanded SWOT matrix
+  - VRIO competitive analysis
+  - Risk assessment matrix
+  - Stakeholder impact analysis
+- [ ] Create `.haunt/plans/REQ-XXX-strategic-analysis.md`
+- [ ] Document when deep mode is appropriate (M-SPLIT features)
+- [ ] Deploy to `.claude/commands/seance.md`
+
+**Files:**
+- `Haunt/commands/seance.md` (modify)
+- `Haunt/skills/gco-seance/SKILL.md` (modify)
+- `.claude/commands/seance.md` (deploy)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** `/seance --deep "Feature"` creates extended strategic analysis document
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-227: Update Séance Skill with Mode Selection Logic
+
+**Type:** Enhancement (Workflow)
+**Reported:** 2025-12-18
+**Source:** BMAD research - route to appropriate planning depth
+
+**Description:**
+Update séance skill to route to appropriate planning depth based on flags (--quick, --standard, --deep). Current workflow becomes --standard mode (default).
+
+**Tasks:**
+- [ ] Add mode detection logic to gco-seance skill
+- [ ] Quick mode: Skip Phase 2, minimal Phase 1
+- [ ] Standard mode: Current 3-phase workflow (default)
+- [ ] Deep mode: Extended Phase 2 with strategic artifacts
+- [ ] Document mode selection in skill
+- [ ] Test all 3 modes end-to-end
+
+**Files:**
+- `Haunt/skills/gco-seance/SKILL.md` (modify)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Séance skill correctly routes to quick/standard/deep modes based on flags
+**Blocked by:** REQ-225, REQ-226
+
+---
+
+### ⚪ REQ-223: Create /story Command for Story File Generation
+
+**Type:** Enhancement (Context Management)
+**Reported:** 2025-12-18
+**Source:** BMAD research - story files reduce context loss
+
+**Description:**
+Create command for PM to generate detailed story files containing full implementation context for complex features. Story files stored in `.haunt/plans/stories/REQ-XXX-story.md`.
+
+**Tasks:**
+- [ ] Create `Haunt/commands/story.md` command
+- [ ] Implement `/story create REQ-XXX` handler
+- [ ] Create `.haunt/plans/stories/` directory if missing
+- [ ] Generate `REQ-XXX-story.md` with template:
+  - Background and context
+  - Implementation approach
+  - Architectural decisions
+  - Code examples/references
+  - Edge cases
+  - Testing strategy
+- [ ] Restrict command to PM agent only
+- [ ] Deploy to `.claude/commands/story.md`
+
+**Files:**
+- `Haunt/commands/story.md` (create)
+- `.claude/commands/story.md` (deploy)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** `/story create REQ-042` generates story file with implementation context
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-224: Update Dev Agent Startup to Load Story Files
+
+**Type:** Enhancement (Context Management)
+**Reported:** 2025-12-18
+**Source:** BMAD research - auto-load context for complex features
+
+**Description:**
+Update Dev agent session startup to check for story files and load them if present. Story file content appended to assignment context (not replacement for roadmap).
+
+**Tasks:**
+- [ ] Update Dev-Backend agent character sheet
+- [ ] Update Dev-Frontend agent character sheet
+- [ ] Update Dev-Infrastructure agent character sheet
+- [ ] Add story file check to agent startup protocol:
+  - Check `.haunt/plans/stories/REQ-XXX-story.md`
+  - If exists, load content into context
+  - If missing, use roadmap completion criteria
+- [ ] Story file content appends to assignment (not replaces)
+- [ ] Test with and without story file present
+
+**Files:**
+- `Haunt/agents/gco-dev-backend.md` (modify)
+- `Haunt/agents/gco-dev-frontend.md` (modify)
+- `Haunt/agents/gco-dev-infrastructure.md` (modify)
+- `.claude/agents/gco-dev-backend.md` (deploy)
+- `.claude/agents/gco-dev-frontend.md` (deploy)
+- `.claude/agents/gco-dev-infrastructure.md` (deploy)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Dev agents auto-load story files when present, resume multi-session work with full context
+**Blocked by:** REQ-223
+
+---
+
+## Batch: BMAD Enhancements - Phase 3 (High Impact)
+
+**Goal:** Implement document sharding for maximum token efficiency
+**Source:** `.haunt/docs/research/bmad-framework-analysis.md` (REQ-209 research)
+**Estimated Effort:** 2 M + 1 S items = ~14 hours
+
+### ⚪ REQ-220: Implement Batch-Specific Roadmap Sharding
+
+**Type:** Enhancement (Performance)
+**Reported:** 2025-12-18
+**Source:** BMAD research - document sharding achieves 60-80% token savings
+
+**Description:**
+Create command to split monolithic roadmap into batch-specific files, reducing context loading overhead for large projects (10+ requirements). Main roadmap contains overview + active batch only.
+
+**Tasks:**
+- [ ] Create `/roadmap shard` subcommand in roadmap skill
+- [ ] Create `.haunt/plans/batches/` directory
+- [ ] Parse roadmap for batch headers (## Batch: *)
+- [ ] Extract each batch into separate file: `batch-N-[name].md`
+- [ ] Generate batch files with:
+  - Batch name and goal
+  - All requirements from that batch
+  - Metadata (created date, source batch)
+- [ ] Update main `roadmap.md` to contain:
+  - Header and active batch section
+  - Overview of other batches (no full content)
+  - Links to batch files
+- [ ] Test sharding with 50+ requirement roadmap
+
+**Files:**
+- `Haunt/skills/gco-roadmap-planning/SKILL.md` (modify - add shard logic)
+- `.haunt/plans/batches/` (create directory)
+- `.haunt/plans/batches/batch-*.md` (generated files)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** `/roadmap shard` creates batch files, main roadmap reduced to overview + active batch
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-221: Update Session Startup to Load Active Batch Only
+
+**Type:** Enhancement (Performance)
+**Reported:** 2025-12-18
+**Source:** BMAD research - load only relevant context
+
+**Description:**
+Update session startup (assignment lookup) to load only the batch containing the assigned requirement when roadmap is sharded. Fallback to full roadmap if not sharded (backward compatibility).
+
+**Tasks:**
+- [ ] Update gco-assignment-lookup rule
+- [ ] Check if `.haunt/plans/batches/` exists (roadmap is sharded)
+- [ ] Read `roadmap.md` for overview and active batch
+- [ ] If assigned REQ found in different batch:
+  - Load `batches/batch-N-[name].md`
+  - Parse requirement details from batch file
+- [ ] If roadmap not sharded, use existing behavior (full roadmap)
+- [ ] Test with sharded and non-sharded roadmaps
+
+**Files:**
+- `.claude/rules/gco-assignment-lookup.md` (modify)
+- `Haunt/rules/gco-assignment-lookup.md` (modify - if exists as source)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Session startup loads only active batch for sharded roadmaps, 60-80% token reduction verified
+**Blocked by:** REQ-220
+
+---
+
+### ⚪ REQ-222: Archive Completed Batches Automatically
+
+**Type:** Enhancement (Workflow)
+**Reported:** 2025-12-18
+**Source:** BMAD research - automatic batch lifecycle management
+
+**Description:**
+When all requirements in a batch reach 🟢 Complete, automatically archive the batch file and activate the next batch (move to main roadmap.md).
+
+**Tasks:**
+- [ ] Update PM agent archiving workflow
+- [ ] Detect when all batch items are 🟢
+- [ ] Move batch file to `.haunt/completed/batch-N-archive.md`
+- [ ] Load next batch file content
+- [ ] Append next batch to `roadmap.md` (becomes active)
+- [ ] Update `Blocked by` fields if dependencies unblocked
+- [ ] Notify PM of batch completion and next batch activation
+
+**Files:**
+- `Haunt/agents/gco-pm.md` (modify - add batch lifecycle logic)
+- `.claude/agents/gco-pm.md` (deploy)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Completed batches auto-archive, next batch auto-activates, dependencies updated
+**Blocked by:** REQ-220

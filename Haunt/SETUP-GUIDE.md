@@ -849,6 +849,58 @@ claude -a Code-Reviewer  # Review completed work
 claude -a Research-Analyst  # Investigate technical questions
 ```
 
+### Session Startup Protocol
+
+Every agent session follows a structured startup protocol to ensure stable foundation and clear assignment:
+
+```mermaid
+flowchart TD
+    Start([Session Startup]) --> Step1[1. Verify Environment]
+
+    Step1 --> CheckEnv{pwd && git status}
+    CheckEnv --> |Review output| Step2[2. Check Recent Changes]
+
+    Step2 --> GitLog[git log --oneline -5]
+    GitLog --> |Understand context| Step3{3. Run Tests}
+
+    Step3 --> TestCheck{Tests Pass?}
+    TestCheck --> |YES| Step4[4. Find Assignment]
+    TestCheck --> |NO - CRITICAL| FixTests[FIX TESTS FIRST]
+    FixTests --> |Tests Fixed| Step4
+
+    Step4 --> DirectAssign{Step 1: Direct<br/>Assignment?}
+    DirectAssign --> |YES| StartWork([Begin Work])
+    DirectAssign --> |NO| CheckActive{Step 2: Active Work<br/>in CLAUDE.md?}
+
+    CheckActive --> |YES - Match Found| StartWork
+    CheckActive --> |NO| CheckRoadmap{Step 3: Roadmap<br/>has ⚪ or 🟡?}
+
+    CheckRoadmap --> |YES| UpdateStatus[Update to 🟡]
+    UpdateStatus --> StartWork
+    CheckRoadmap --> |NO| AskPM[Step 4: Ask PM<br/>for Assignment]
+
+    AskPM --> |Assignment Given| StartWork
+
+    classDef critical fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    classDef success fill:#51cf66,stroke:#2f9e44,color:#fff
+    classDef warning fill:#ffd43b,stroke:#fab005,color:#000
+    classDef decision fill:#74c0fc,stroke:#1971c2,color:#000
+
+    class FixTests critical
+    class StartWork success
+    class DirectAssign,CheckActive,CheckRoadmap,TestCheck decision
+    class AskPM warning
+```
+
+**Key Principles:**
+
+1. **Environment verification first** - Confirm working directory and git status before any work
+2. **Test validation is critical** - If tests fail, stop everything and fix them immediately
+3. **Assignment lookup hierarchy** - Four-step priority: Direct → Active Work → Roadmap → Ask PM
+4. **Never assume work** - If no assignment found, explicitly ask Project Manager
+
+The complete protocol is defined in `.claude/rules/gco-assignment-lookup.md` and enforced automatically at session start.
+
 ### Recommended Reading Order
 
 1. **README.md** - Architecture overview and FAQ
