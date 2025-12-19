@@ -9,6 +9,7 @@ Manage roadmap sharding and batch organization for improved token efficiency.
 /roadmap shard --active "Batch 1" # Shard and mark specific batch as active
 /roadmap unshard                  # Merge all batch files back to monolithic roadmap
 /roadmap activate "Batch Name"    # Activate a different batch (move to main roadmap)
+/roadmap archive "Batch Name"     # Archive completed batch and activate next
 ```
 
 ## Sharding Overview
@@ -377,22 +378,200 @@ The realm refocuses. New batch activated.
 
 ---
 
+## Archive Command (`/roadmap archive "Batch Name"`)
+
+Archive a completed batch and automatically activate the next batch.
+
+### Archival Logic
+
+1. **Verify batch completion**: All requirements in batch must be 🟢 Complete
+2. **Move batch file**: Move from `.haunt/plans/batches/` to `.haunt/completed/batches/`
+3. **Add archive metadata**: Timestamp archival date in batch file
+4. **Update overview roadmap**: Remove batch from "Other Batches" summary
+5. **Activate next batch**: Load next unarchived batch as active (if available)
+6. **Create archived batches directory**: Ensure `.haunt/completed/batches/` exists
+
+### Implementation Steps
+
+1. **Validate completion**
+   - Read batch file from `.haunt/plans/batches/batch-N-[slug].md`
+   - Parse all requirements in batch
+   - Count status icons (🟢 🟡 ⚪ 🔴)
+   - If ANY requirement is not 🟢, error and list incomplete items
+   - Completion check is STRICT - all tasks must be checked, all criteria met
+
+2. **Prepare archive**
+   - Create `.haunt/completed/batches/` directory if missing
+   - Add archival timestamp to batch file metadata
+   - Add "Archived: YYYY-MM-DD" field to batch header
+   - Update "Status:" field from "Active" or "In Progress" to "Archived"
+
+3. **Archive batch file**
+   - Move `batches/batch-N-[slug].md` to `completed/batches/batch-N-[slug]-archived.md`
+   - Keep original batch number for ordering reference
+   - Add "-archived" suffix to filename for clarity
+
+4. **Update overview roadmap**
+   - Remove archived batch from "## Other Batches" section
+   - Update "Total Batches:" count in "Sharding Info"
+   - Add entry to "Recently Completed:" section if applicable
+
+5. **Determine next batch**
+   - List remaining batches in `.haunt/plans/batches/`
+   - Find first batch with ⚪ Not Started or 🟡 In Progress items
+   - If all remaining batches are 🟢 Complete, offer to archive them too
+   - If no batches remain, mark roadmap as "All batches complete"
+
+6. **Activate next batch**
+   - If next batch exists, run activate logic (see "Activate Command")
+   - Load next batch content into main roadmap
+   - Update "Active Batch:" field in "Sharding Info"
+   - Report batch transition (archived → activated)
+
+### Archived Batch File Format
+
+Batch files in `.haunt/completed/batches/` should have archival metadata:
+
+```markdown
+# Batch: [Batch Name]
+
+> Sharded from roadmap on YYYY-MM-DD
+> **Archived:** YYYY-MM-DD
+> Contains requirements from original Batch [N]
+
+**Status:** Archived
+**Requirements:** X total (all 🟢 Complete)
+**Estimated Effort:** 0 hours remaining (XX hours total)
+**Completion Date:** YYYY-MM-DD
+
+**Goal:** [Batch goal from original roadmap]
+
+---
+
+## Requirements
+
+### 🟢 REQ-001: [Requirement Title]
+
+**Completed:** YYYY-MM-DD
+
+[Full requirement content with all tasks checked...]
+
+---
+
+### 🟢 REQ-002: [Requirement Title]
+
+**Completed:** YYYY-MM-DD
+
+[Full requirement content with all tasks checked...]
+```
+
+### Success Output
+
+```
+The spirits lay the completed work to rest...
+
+✅ Batch Verification:
+   Batch: "Command Improvements"
+   Requirements: 5/5 Complete (100%)
+   All tasks checked: ✓
+   All criteria met: ✓
+
+📦 Archiving Batch:
+   Source: batches/batch-1-command-improvements.md
+   Destination: completed/batches/batch-1-command-improvements-archived.md
+   ✅ Batch archived with completion timestamp
+
+🔄 Activating Next Batch:
+   Previous: "Command Improvements" (archived)
+   Next: "Setup Improvements"
+
+📂 Loading Batch File:
+   ✅ batches/batch-2-setup-improvements.md (3 requirements)
+
+📋 Roadmap Updated:
+   ✅ Archived batch removed from overview
+   🎯 Active batch: "Setup Improvements"
+   ⚪ 3 requirements now visible in main roadmap
+
+The batch is archived. The realm moves forward.
+```
+
+### Auto-Archive Detection (Optional Enhancement)
+
+When PM runs `/roadmap shard` or `/roadmap activate`, the command can detect completed batches and suggest archiving:
+
+```
+⚠️  Batch "Command Improvements" is 100% complete. Archive it?
+
+Options:
+  1. Archive now (recommended)
+  2. Keep active (defer archival)
+  3. Archive all complete batches
+
+Enter choice [1-3]:
+```
+
+This reduces manual archival overhead and keeps roadmap clean automatically.
+
+### Batch Lifecycle Workflow
+
+```
+1. Create batch (via roadmap planning)
+2. Shard roadmap (creates batch file)
+3. Activate batch (becomes active, visible in roadmap.md)
+4. Work on requirements (status: ⚪ → 🟡 → 🟢)
+5. Complete batch (all requirements 🟢)
+6. Archive batch (move to completed/, activate next)
+7. Repeat for next batch
+```
+
+### Error Handling
+
+- **Incomplete batch**: "Batch '[Name]' has incomplete requirements. Cannot archive. Incomplete items: REQ-XXX (🟡), REQ-YYY (⚪)"
+- **Batch not found**: "Batch '[Name]' not found in .haunt/plans/batches/. Available batches: [list]"
+- **Not sharded**: "Roadmap is not sharded. Cannot archive batches. Use `/roadmap shard` first."
+- **Already archived**: "Batch '[Name]' is already archived in .haunt/completed/batches/"
+- **No next batch**: "Batch '[Name]' archived successfully. No more batches remaining. All work complete!"
+- **Permission error**: "Cannot create .haunt/completed/batches/ directory. Check permissions."
+
+### Manual Archival (PM Workflow)
+
+PM can manually archive batches as part of completion workflow:
+
+1. **Verify completion**: Check all requirements in batch are 🟢
+2. **Run archive command**: `/roadmap archive "Batch Name"`
+3. **Review output**: Confirm archival and next batch activation
+4. **Update CLAUDE.md**: Remove archived batch from Active Work if needed
+5. **Communicate to team**: Notify team of batch completion and new focus
+
+### Integration with Existing Workflow
+
+- **REQ-220 (Sharding)**: Archive command assumes roadmap is sharded
+- **REQ-221 (Session Startup)**: Archived batches are NOT loaded during assignment lookup
+- **PM Agent**: PM can trigger archival as part of batch completion workflow
+- **Backward Compatibility**: If roadmap is not sharded, command errors gracefully
+
+---
+
 ## Ghost County Theming
 
 **Opening phrases:**
 - "The spirits prepare to shard the roadmap..."
 - "Merging the ethereal fragments..."
 - "Shifting focus across the batches..."
+- "The spirits lay the completed work to rest..."
 
 **Success messages:**
 - "The roadmap is sharded. Token efficiency achieved."
 - "The realm is whole once more. All batches reunited."
 - "The active batch shifts. New hauntings come into view."
+- "The batch is archived. The realm moves forward."
 
 **Error messages:**
 - "The roadmap resists sharding - no batches detected."
 - "The fragments cannot be found. Batches missing from the ethereal realm."
 - "The requested batch eludes us. Check the available hauntings."
+- "The batch clings to unfinished work. Complete all requirements before archiving."
 
 ---
 
@@ -416,6 +595,13 @@ The realm refocuses. New batch activated.
 - Reviewing historical batches for context
 - Debugging requirements in inactive batches
 
+**Archive batch when:**
+- All requirements in batch are 🟢 Complete
+- All tasks checked off (no `- [ ]` remaining)
+- Batch goal achieved and verified
+- Moving to next phase of work
+- Need to reduce roadmap clutter
+
 ---
 
 ## Implementation Notes
@@ -423,8 +609,9 @@ The realm refocuses. New batch activated.
 This command integrates with existing Haunt workflow:
 
 - **Session startup** (REQ-221): Assignment lookup loads only active batch when sharded
-- **Batch archival** (REQ-222): Completed batches auto-archived, next batch activated
-- **PM coordination**: PM can shard/unshard at project milestones
+- **Batch archival** (REQ-222): Archive command moves completed batches to `.haunt/completed/batches/` and activates next batch
+- **PM coordination**: PM can shard/unshard/archive at project milestones
 - **Backward compatibility**: Unshard restores monolithic format for tools expecting it
+- **Archive lifecycle**: Completed batches preserve full history in `.haunt/completed/batches/` for reference
 
-Sharding is **optional** and **reversible**. The roadmap remains functional in both sharded and monolithic forms.
+Sharding is **optional** and **reversible**. The roadmap remains functional in both sharded and monolithic forms. Archival is a lifecycle management tool - archived batches remain accessible for historical reference but are excluded from active context loading.

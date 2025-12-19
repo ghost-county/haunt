@@ -120,6 +120,43 @@ When organizing a phase with dependencies:
 
 **When all batch requirements are 🟢:**
 1. Verify all completion criteria met, tests passing
-2. Archive entire batch with summary to `.haunt/completed/roadmap-archive.md`
-3. Unblock next batch: Update `Blocked by: None` for dependent work
-4. Assign agents to next batch, update CLAUDE.md Active Work
+2. **If roadmap is sharded:** Use `/roadmap archive "Batch Name"` to:
+   - Verify batch is 100% complete (all requirements 🟢)
+   - Move batch file from `.haunt/plans/batches/` to `.haunt/completed/batches/`
+   - Add archival timestamp to batch metadata
+   - Update overview roadmap (remove archived batch)
+   - Automatically activate next batch (if available)
+3. **If roadmap is monolithic:** Archive entire batch with summary to `.haunt/completed/roadmap-archive.md`
+4. Unblock next batch: Update `Blocked by: None` for dependent work (if not auto-updated by archive command)
+5. Assign agents to next batch, update CLAUDE.md Active Work
+
+### Archive Command (Sharded Roadmaps Only)
+
+**Usage:**
+```bash
+/roadmap archive "Batch Name"
+```
+
+**When to use:**
+- Roadmap is sharded (via `/roadmap shard`)
+- All requirements in batch are 🟢 Complete
+- All tasks checked off (no `- [ ]` remaining)
+- Ready to move to next phase of work
+
+**What it does:**
+1. Validates batch is 100% complete (strict check)
+2. Moves batch file to `.haunt/completed/batches/batch-N-[slug]-archived.md`
+3. Adds archival timestamp and completion metadata
+4. Removes batch from overview roadmap
+5. Activates next batch automatically (if available)
+6. Reports batch transition (archived → activated)
+
+**Auto-archive detection (optional enhancement):**
+- When running `/roadmap shard` or `/roadmap activate`, command can detect completed batches
+- Suggests archiving: "Batch X is 100% complete. Archive it? [yes/no]"
+- Reduces manual archival overhead
+
+**Error handling:**
+- Incomplete batch: Lists incomplete requirements (🟡, ⚪, 🔴)
+- Not sharded: Errors gracefully, suggests using standard archival workflow
+- No next batch: Reports successful archival with "All work complete!" message

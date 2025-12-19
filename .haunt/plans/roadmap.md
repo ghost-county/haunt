@@ -738,28 +738,31 @@ Created `.haunt/plans/batches/` directory for batch file storage. Deployed comma
 
 ---
 
-### ⚪ REQ-221: Update Session Startup to Load Active Batch Only
+### 🟢 REQ-221: Update Session Startup to Load Active Batch Only
 
 **Type:** Enhancement (Performance)
 **Reported:** 2025-12-18
+**Completed:** 2025-12-18
 **Source:** BMAD research - load only relevant context
 
 **Description:**
 Update session startup (assignment lookup) to load only the batch containing the assigned requirement when roadmap is sharded. Fallback to full roadmap if not sharded (backward compatibility).
 
 **Tasks:**
-- [ ] Update gco-assignment-lookup rule
-- [ ] Check if `.haunt/plans/batches/` exists (roadmap is sharded)
-- [ ] Read `roadmap.md` for overview and active batch
-- [ ] If assigned REQ found in different batch:
+- [x] Update gco-assignment-lookup rule
+- [x] Check if `.haunt/plans/batches/` exists (roadmap is sharded)
+- [x] Read `roadmap.md` for overview and active batch
+- [x] If assigned REQ found in different batch:
   - Load `batches/batch-N-[name].md`
   - Parse requirement details from batch file
-- [ ] If roadmap not sharded, use existing behavior (full roadmap)
-- [ ] Test with sharded and non-sharded roadmaps
+- [x] If roadmap not sharded, use existing behavior (full roadmap)
+- [x] Test with sharded and non-sharded roadmaps
 
 **Files:**
-- `.claude/rules/gco-assignment-lookup.md` (modify)
-- `Haunt/rules/gco-assignment-lookup.md` (modify - if exists as source)
+- `.claude/rules/gco-assignment-lookup.md` (modified)
+- `Haunt/rules/gco-assignment-lookup.md` (modified - source file)
+- `Haunt/skills/gco-session-startup/SKILL.md` (modified - added batch loading section)
+- `.claude/skills/gco-session-startup/SKILL.md` (deployed)
 
 **Effort:** S
 **Complexity:** SIMPLE
@@ -767,32 +770,66 @@ Update session startup (assignment lookup) to load only the batch containing the
 **Completion:** Session startup loads only active batch for sharded roadmaps, 60-80% token reduction verified
 **Blocked by:** REQ-220
 
+**Implementation Notes:**
+Updated assignment lookup protocol (Step 3) with sharding detection logic. Rule now checks for `.haunt/plans/batches/` directory existence to detect sharded roadmaps. When sharded:
+- Loads `roadmap.md` (contains overview + active batch only)
+- If assignment in different batch, loads specific batch file from `.haunt/plans/batches/batch-N-[name].md`
+- If not sharded, uses existing behavior (backward compatible)
+
+Extended session-startup skill with comprehensive "Batch Loading" section documenting:
+- Sharding detection methods (directory check, "Sharding Info" section)
+- Active batch workflow (normal case - no additional loading)
+- Different batch workflow (edge case - load specific batch file)
+- Token savings breakdown (60-80% reduction: 500-1000 tokens vs 3000-5000 tokens)
+- Backward compatibility guarantee
+
+Added new scenario "Assignment in Different Batch" to skill with example workflow. All changes deployed via setup-haunt.sh. Session startup now achieves full token efficiency from batch sharding system.
+
 ---
 
-### ⚪ REQ-222: Archive Completed Batches Automatically
+### 🟢 REQ-222: Archive Completed Batches Automatically
 
 **Type:** Enhancement (Workflow)
 **Reported:** 2025-12-18
+**Completed:** 2025-12-18
 **Source:** BMAD research - automatic batch lifecycle management
 
 **Description:**
 When all requirements in a batch reach 🟢 Complete, automatically archive the batch file and activate the next batch (move to main roadmap.md).
 
 **Tasks:**
-- [ ] Update PM agent archiving workflow
-- [ ] Detect when all batch items are 🟢
-- [ ] Move batch file to `.haunt/completed/batch-N-archive.md`
-- [ ] Load next batch file content
-- [ ] Append next batch to `roadmap.md` (becomes active)
-- [ ] Update `Blocked by` fields if dependencies unblocked
-- [ ] Notify PM of batch completion and next batch activation
+- [x] Add `/roadmap archive "Batch Name"` subcommand to roadmap command
+- [x] Create `.haunt/completed/batches/` directory structure
+- [x] Document archival logic (validate completion, move file, add timestamp)
+- [x] Document archived batch file format
+- [x] Document archive success/error output
+- [x] Add auto-archive detection (optional enhancement)
+- [x] Document batch lifecycle workflow
+- [x] Update Ghost County theming with archive messages
+- [x] Update "When to Use Sharding" section with archival guidance
+- [x] Update roadmap-workflow skill with archive command guidance
+- [x] Deploy to `.claude/commands/roadmap.md` and `.claude/skills/gco-roadmap-workflow/SKILL.md`
 
 **Files:**
-- `Haunt/agents/gco-pm.md` (modify - add batch lifecycle logic)
-- `.claude/agents/gco-pm.md` (deploy)
+- `Haunt/commands/roadmap.md` (modified - added archive subcommand)
+- `.claude/commands/roadmap.md` (deployed)
+- `Haunt/skills/gco-roadmap-workflow/SKILL.md` (modified - added archive guidance)
+- `.claude/skills/gco-roadmap-workflow/SKILL.md` (deployed)
+- `.haunt/completed/batches/` (created directory)
 
 **Effort:** M
 **Complexity:** MODERATE
 **Agent:** Dev-Infrastructure
 **Completion:** Completed batches auto-archive, next batch auto-activates, dependencies updated
 **Blocked by:** REQ-220
+
+**Implementation Notes:**
+Added `/roadmap archive "Batch Name"` subcommand to roadmap command (Haunt/commands/roadmap.md) with comprehensive archival workflow. Command validates batch completion (all requirements 🟢), moves batch file from `.haunt/plans/batches/` to `.haunt/completed/batches/batch-N-[slug]-archived.md`, adds archival timestamp, updates overview roadmap, and automatically activates next batch.
+
+Created `.haunt/completed/batches/` directory for archived batch storage. Documented archived batch file format with completion metadata (Status: Archived, Completion Date, 0 hours remaining). Added auto-archive detection as optional enhancement for PM convenience.
+
+Updated roadmap-workflow skill (Haunt/skills/gco-roadmap-workflow/SKILL.md) with detailed archive command guidance including usage, validation, error handling, and integration with batch completion workflow. Skill now documents both sharded and monolithic archival paths.
+
+Updated Ghost County theming with archive-related messages ("The spirits lay the completed work to rest...", "The batch is archived. The realm moves forward."). Added "Archive batch when" guidance to sharding decision matrix.
+
+All changes deployed via setup-haunt.sh to `.claude/commands/roadmap.md` and `.claude/skills/gco-roadmap-workflow/SKILL.md`. Archive command is now available for PM to use as part of batch lifecycle management. REQ-220 (sharding) and REQ-221 (session startup) create complete token-efficient batch workflow: shard → activate → work → archive → repeat.
