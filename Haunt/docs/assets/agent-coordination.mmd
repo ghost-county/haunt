@@ -1,0 +1,60 @@
+graph TB
+    subgraph "Roadmap (Communication Layer)"
+        roadmap["📋 .haunt/plans/roadmap.md<br/><br/>REQ-042: JWT Auth<br/>Status: 🟡 In Progress<br/>Agent: Dev-Backend<br/>Blocked by: None"]
+    end
+
+    subgraph "Agent Roles"
+        pm["👔 Project Manager<br/><br/>• Strategic analysis<br/>• Roadmap planning<br/>• Batch coordination<br/>• Unblocking"]
+        dev["💻 Dev Agent<br/><br/>• Implementation<br/>• TDD workflow<br/>• Auto-commit<br/>• Status updates"]
+        reviewer["🔍 Code Reviewer<br/><br/>• Pattern detection<br/>• Quality gates<br/>• PR review<br/>• Merge coordination"]
+        release["🚀 Release Manager<br/><br/>• Deployment<br/>• Changelog<br/>• Risk assessment<br/>• Coordination"]
+        research["🔬 Research<br/><br/>• Investigation<br/>• Architecture<br/>• Library eval<br/>• Documentation"]
+    end
+
+    subgraph "Status Lifecycle"
+        status1["⚪ Not Started"]
+        status2["🟡 In Progress"]
+        status3["🟢 Complete"]
+        status4["🔴 Blocked"]
+
+        status1 -->|"Dev starts work"| status2
+        status2 -->|"All criteria met"| status3
+        status2 -->|"Dependency issue"| status4
+        status4 -->|"PM unblocks"| status2
+    end
+
+    %% PM interactions
+    pm -->|"1. Creates REQs"| roadmap
+    pm -->|"2. Assigns agents"| roadmap
+    pm -->|"7. Archives 🟢"| roadmap
+
+    %% Research interactions
+    research -->|"3. Investigates"| roadmap
+    research -->|"Documents findings"| roadmap
+
+    %% Dev interactions
+    dev -->|"4. Reads assignment"| roadmap
+    dev -->|"5. Updates status ⚪→🟡"| roadmap
+    dev -->|"6. Marks complete 🟡→🟢"| roadmap
+
+    %% Reviewer interactions
+    reviewer -->|"Validates 🟢"| roadmap
+    reviewer -->|"Flags issues 🟢→🟡"| roadmap
+
+    %% Release interactions
+    release -->|"Reads 🟢 batch"| roadmap
+    release -->|"Confirms deployment"| roadmap
+
+    %% Coordination notes
+    roadmap -.->|"Status visible to all"| pm
+    roadmap -.->|"No direct agent communication"| dev
+    roadmap -.->|"Async coordination"| reviewer
+    roadmap -.->|"Single source of truth"| release
+
+    classDef agentClass fill:#e1f5ff,stroke:#0066cc,stroke-width:2px
+    classDef roadmapClass fill:#fff3cd,stroke:#ffc107,stroke-width:3px
+    classDef statusClass fill:#f8d7da,stroke:#dc3545,stroke-width:2px
+
+    class pm,dev,reviewer,release,research agentClass
+    class roadmap roadmapClass
+    class status1,status2,status3,status4 statusClass

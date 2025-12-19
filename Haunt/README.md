@@ -64,6 +64,19 @@ Instead of one "do everything" assistant, Haunt provides **5 specialized agents*
 
 **Coordination:** Agents communicate through the **roadmap** (status updates, blockers, dependencies)—no direct agent-to-agent communication needed.
 
+#### Agent Coordination Flow
+
+The diagram below illustrates how agents coordinate asynchronously through the roadmap:
+
+![Agent Coordination Diagram](docs/assets/agent-coordination.svg)
+
+**Key Coordination Principles:**
+1. **Roadmap as Single Source of Truth** - All agents read/write to `.haunt/plans/roadmap.md`
+2. **Status-Based Communication** - Agents update status icons (⚪ → 🟡 → 🟢 → 🔴) to signal progress
+3. **No Direct Agent Communication** - Agents never talk to each other; roadmap mediates all coordination
+4. **Asynchronous Execution** - Agents work independently, PM unblocks when needed
+5. **Visible Progress** - All status changes immediately visible to entire team
+
 ### 📋 Roadmap-Driven Development
 
 **Single source of truth:** `.haunt/plans/roadmap.md`
