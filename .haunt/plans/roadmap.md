@@ -629,6 +629,11 @@ Create command for PM to generate detailed story files containing full implement
 **Completion:** `/story create REQ-042` generates story file with implementation context
 **Blocked by:** None
 
+
+**Completed:** 2025-12-18
+
+**Implementation Notes:**
+Created `/story create REQ-XXX` command following Ghost County command patterns. Command generates story file template in `.haunt/plans/stories/REQ-XXX-story.md` with structured sections: Context & Background, Implementation Approach, Code Examples, Edge Cases, Testing Strategy, and Session Notes. Template designed for PM to fill with rich implementation context that Dev agents load during session startup. Created `.haunt/plans/stories/` directory and generated sample story file for REQ-223 as proof of concept (182 lines). Command deployed to both source (`Haunt/commands/story.md`) and runtime (`.claude/commands/story.md`) locations.
 ---
 
 ### ⚪ REQ-224: Update Dev Agent Startup to Load Story Files
