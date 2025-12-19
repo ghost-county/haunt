@@ -45,9 +45,32 @@ Before marking any requirement as 🟢 Complete, verify ALL of the following:
 - Fix any security issues found
 - If no security-relevant changes, note "Security review: N/A"
 
+### 7. Self-Validation
+- **Re-read the original requirement** and verify all completion criteria are met
+- **Review your own code changes** for obvious issues before handoff:
+  - No debugging code left (console.log, print statements, commented-out code)
+  - No TODO/FIXME comments without tracking (create REQ instead)
+  - Variable names are descriptive
+  - Functions are focused and under 50 lines
+  - No magic numbers (use named constants)
+- **Confirm tests actually test the feature** (not just exist):
+  - Tests fail when feature is broken (not false positives)
+  - Edge cases are covered (empty input, boundary values, error conditions)
+  - Tests are independent (don't rely on order or shared state)
+- **Run the code yourself** (if applicable):
+  - Execute feature manually to verify behavior
+  - Check error messages are user-friendly
+  - Verify performance is acceptable
+- **Double-check against anti-patterns** from `.haunt/docs/lessons-learned.md`:
+  - No silent fallbacks on required data
+  - Explicit error handling (no catch-all exceptions)
+  - No hardcoded secrets or credentials
+
+**Why this matters:** Catching your own mistakes before Code Reviewer saves time and reduces rework. Self-validation is the difference between "I'm done" and "This is ready for review."
+
 ## Completion Sequence
 
-1. Verify all 6 items above
+1. Verify all 7 items above
 2. Update requirement status: 🟡 → 🟢
 3. Update "Completion:" field with verification note
 4. Notify PM (if present) for archival
@@ -58,3 +81,4 @@ Before marking any requirement as 🟢 Complete, verify ALL of the following:
 - NEVER mark 🟢 with failing tests
 - NEVER mark 🟢 without verifying completion criteria
 - NEVER skip the checklist "because it's a small change"
+- NEVER skip self-validation before requesting code review

@@ -959,39 +959,49 @@ Updated completion checklist rule to add step 6 (Security Review) with criteria 
 
 ---
 
-### ⚪ REQ-235: Add Self-Validation Protocol to Completion Checklist
+### 🟢 REQ-235: Add Self-Validation Protocol to Completion Checklist
 
 **Type:** Enhancement (Quality)
 **Reported:** 2025-12-18
+**Completed:** 2025-12-18
 **Source:** BMAD research - agents run validations before handoff to next agent
 
 **Description:**
 Formalize "check your own work" as explicit protocol step in completion checklist. Dev agents must self-validate against requirements, test coverage, and edge cases before marking 🟢 Complete and handing to Code Reviewer.
 
 **Tasks:**
-- [ ] Read current `gco-completion-checklist` rule/skill
-- [ ] Add "Self-Validation" as step 6 in checklist (before marking complete):
-  - [ ] Re-read original requirement and verify all completion criteria met
-  - [ ] Review own code changes for obvious issues
-  - [ ] Confirm tests actually test the feature (not just exist)
-  - [ ] Check edge cases are covered
-  - [ ] Run security checklist on own code (REQ-234)
-  - [ ] Verify no debugging code left (console.log, print statements)
-- [ ] Update examples in checklist showing self-validation in action
-- [ ] Add "Self-Validation" section to gco-dev agent character sheet
-- [ ] Deploy changes
+- [x] Read current `gco-completion-checklist` rule/skill
+- [x] Add "Self-Validation" as step 7 in checklist (after security review):
+  - [x] Re-read original requirement and verify all completion criteria met
+  - [x] Review own code changes for obvious issues
+  - [x] Confirm tests actually test the feature (not just exist)
+  - [x] Check edge cases are covered
+  - [x] Run security checklist on own code (REQ-234)
+  - [x] Verify no debugging code left (console.log, print statements)
+- [x] Update examples in checklist showing self-validation in action
+- [x] Add "Self-Validation" section to gco-dev agent character sheet
+- [x] Deploy changes via setup-haunt.sh
 
 **Files:**
-- `Haunt/rules/gco-completion-checklist.md` (modify) OR `Haunt/skills/gco-completion-checklist/SKILL.md` (if converted to skill)
-- `Haunt/agents/gco-dev.md` (modify - add self-validation step)
-- `.claude/rules/gco-completion-checklist.md` (deploy)
-- `.claude/agents/gco-dev.md` (deploy)
+- `Haunt/rules/gco-completion-checklist.md` (modified - added step 7 Self-Validation with 4 sub-sections)
+- `Haunt/agents/gco-dev.md` (modified - added self-validation to completion protocol)
+- `.claude/rules/gco-completion-checklist.md` (deployed)
+- `.claude/agents/gco-dev.md` (deployed)
 
 **Effort:** XS
 **Complexity:** SIMPLE
 **Agent:** Dev-Infrastructure
 **Completion:** Completion checklist includes self-validation step, Dev agent references it, examples demonstrate usage
 **Blocked by:** REQ-234 (security checklist reference in self-validation)
+
+**Implementation Notes:**
+Added comprehensive self-validation as step 7 in completion checklist with 4 key areas:
+1. Re-read requirement and verify all criteria met
+2. Review own code changes (no debugging code, descriptive names, focused functions)
+3. Confirm tests actually test the feature (not just exist, cover edge cases, independent)
+4. Double-check against anti-patterns from lessons-learned.md
+
+Updated Dev agent Work Completion Protocol (step 1) with self-validation checklist reference. Added prohibition "NEVER skip self-validation before requesting code review" to checklist. All changes deployed via setup-haunt.sh. This formalizes "check your own work" as explicit protocol step, reducing Code Reviewer rework and improving handoff quality.
 
 ---
 
