@@ -8,6 +8,24 @@
 
 ---
 
+## Document Navigation
+
+**If you want to:**
+- **Understand the problem Haunt solves** → Read "The Problem" and "Why Existing Approaches Fall Short"
+- **Get a high-level overview** → Read "Introduction: Haunt's Solution" and "Core Concepts"
+- **Learn the architecture** → Read "Architecture" section (four-layer system)
+- **Start using Haunt immediately** → Jump to "Getting Started" and "Your First Project"
+- **Understand key workflows** → Read "Key Workflows" (Session Startup, Séance, Daily Rituals)
+- **See implementation specifics** → Read "Implementation Details" (Roadmap, Commits, Testing)
+- **Quick reference** → Jump to "Appendix: Quick Reference" at the end
+
+**Recommended reading paths:**
+- **New users**: Executive Summary → Getting Started → Your First Project → Core Concepts
+- **Architects/Leads**: The Problem → Architecture → Key Workflows → Implementation Details
+- **Existing users**: Jump to specific sections as needed, use Appendix for quick reference
+
+---
+
 ## The Problem
 
 ### The Coordination Challenge
@@ -112,6 +130,7 @@ with JWT-based authentication.
 - `tests/test_auth.py` (create)
 
 **Effort:** M
+**Complexity:** MODERATE
 **Agent:** Dev-Backend
 **Completion:** All endpoints return correct status codes, tests pass, rate limiting verified
 **Blocked by:** None
@@ -130,6 +149,31 @@ Status updates flow automatically:
 - **Worker agents** update roadmap status as they work
 - **Project Manager** archives completed work and unblocks dependencies
 - **Everyone** sees current state without asking
+
+#### Effort and Complexity Indicators
+
+Requirements are sized using **two independent dimensions**:
+
+**Effort (Time/Scope):**
+| Size | Time | Files | Lines Changed | When to Use |
+|------|------|-------|---------------|-------------|
+| **XS** | 30min-1hr | 1-2 files | <50 lines | Quick fixes, config changes |
+| **S** | 1-2 hours | 2-4 files | 50-150 lines | Single component features, isolated bugs |
+| **M** | 2-4 hours | 4-8 files | 150-300 lines | Multi-component features, moderate refactoring |
+| **SPLIT** | >4 hours | >8 files | >300 lines | Must decompose into smaller requirements |
+
+**Complexity (Cognitive Difficulty):**
+| Level | Definition | Characteristics |
+|-------|------------|-----------------|
+| **SIMPLE** | Clear requirements, single pattern | Obvious implementation, no unknowns |
+| **MODERATE** | Some investigation needed | 2-3 patterns, bounded unknowns |
+| **COMPLEX** | Significant unknowns | Cross-cutting concerns, architectural decisions |
+| **UNKNOWN** | Cannot estimate | Needs research spike first |
+
+**Why separate dimensions?**
+- A quick fix can be **XS effort** but **COMPLEX** (hard-to-diagnose race condition)
+- A large feature can be **M effort** but **SIMPLE** (straightforward CRUD endpoint)
+- Helps agents estimate both time commitment and cognitive load
 
 #### Batch Organization for Parallelization
 
@@ -166,11 +210,49 @@ Related requirements are organized into batches:
 Before marking any requirement 🟢, agents verify:
 1. ✅ All task checkboxes marked `[x]`
 2. ✅ Completion criteria met
-3. ✅ Tests passing
+3. ✅ Tests passing (appropriate test command for work type)
 4. ✅ Files modified as specified
 5. ✅ Documentation updated (if applicable)
+6. ✅ Security review completed (if code involves user input, auth, database queries, external APIs, file operations, or dependencies)
+7. ✅ Self-validation performed (re-read requirement, review own code, confirm tests actually test the feature, check against known anti-patterns)
 
-No shortcuts. No "I'll test it later." Quality is enforced.
+No shortcuts. No "I'll test it later." Quality is enforced through systematic verification at every stage.
+
+#### Roadmap Sharding for Large Projects
+
+For projects with many requirements, roadmaps can be **sharded into batch files** to reduce context size and improve agent performance:
+
+**Monolithic roadmap** (default):
+```
+.haunt/plans/roadmap.md  ← All requirements in one file
+```
+
+**Sharded roadmap** (optimization):
+```
+.haunt/plans/roadmap.md           ← Overview + active batch only
+.haunt/plans/batches/
+  ├── batch-1-foundation.md       ← Batch 1 requirements
+  ├── batch-2-features.md         ← Batch 2 requirements
+  └── batch-3-polish.md           ← Batch 3 requirements
+```
+
+**How it works:**
+- `roadmap.md` contains project overview and the currently active batch
+- Completed batches move to `.haunt/plans/batches/` for archival reference
+- Agents only load the active batch context, reducing token usage
+- Assignment lookup checks for sharded structure and loads appropriate batch file
+
+**When to shard:**
+- Roadmap exceeds 500 lines (readability limit)
+- More than 20-30 active requirements
+- Multi-phase projects with clear batch boundaries
+- Performance optimization needed
+
+**Benefits:**
+- Faster agent startup (less context to load)
+- Better focus (agents see only relevant work)
+- Easier navigation (batches are self-contained)
+- Preserves history (completed batches archived, not deleted)
 
 ---
 
@@ -485,61 +567,48 @@ pytest tests/ -x -q  # (or npm test, depending on mode)
 
 ---
 
-### 2. The "Séance" (Parallel Agent Swarm)
+### 2. The "Séance" (Complete Development Ritual)
 
-Haunt's signature workflow for coordinating multiple agents:
+The Séance is Haunt's complete idea-to-shipped workflow - a guided ritual that handles planning, execution, and archival with zero manual coordination.
 
-**User initiates:**
+**The Three-Part Ritual:**
 ```
-User: "Build a task management API with React frontend"
-```
-
-**Project Manager responds:**
-1. **Confirms understanding** - Summarizes requirements, asks clarifying questions
-2. **Generates requirements** - Creates formal requirements doc (`.haunt/plans/requirements-document.md`)
-3. **Performs strategic analysis** - JTBD, Kano Model, RICE scoring (`.haunt/plans/requirements-analysis.md`)
-4. **Creates roadmap** - Breaks into S/M-sized requirements, assigns agents, maps dependencies
-
-**Roadmap structure:**
-```markdown
-## Batch 1: Foundation
-
-### ⚪ REQ-001: Database schema for tasks
-**Agent:** Dev-Backend | **Effort:** S | **Blocked by:** None
-
-### ⚪ REQ-002: React app with routing
-**Agent:** Dev-Frontend | **Effort:** S | **Blocked by:** None
-
-## Batch 2: API Implementation
-
-### ⚪ REQ-003: Task CRUD endpoints
-**Agent:** Dev-Backend | **Effort:** M | **Blocked by:** REQ-001
-
-### ⚪ REQ-004: Authentication endpoints
-**Agent:** Dev-Backend | **Effort:** M | **Blocked by:** REQ-001
-
-## Batch 3: UI Features
-
-### ⚪ REQ-005: Task list component
-**Agent:** Dev-Frontend | **Effort:** M | **Blocked by:** REQ-002, REQ-003
+🔮 Scrying   (Planning)   → /seance --scry    or --plan
+👻 Summoning (Execution)  → /seance --summon  or --execute
+🌾 Reaping   (Archival)   → /seance --reap    or --archive
 ```
 
-**Agents execute in parallel:**
+**Quick Example:**
 ```bash
-# Terminal 1: Backend developer
-claude -a Dev-Backend
-# Picks up REQ-001, then REQ-003, then REQ-004
+# One command: idea → shipped feature
+$ /seance "Add OAuth login support"
 
-# Terminal 2: Frontend developer
-claude -a Dev-Frontend
-# Picks up REQ-002, then REQ-005 (after REQ-003 completes)
+🔮 Scrying... (creates formal requirements, strategic analysis, roadmap)
+👻 Summoning... (spawns agents, implements features, runs tests)
+🌾 Reaping... (archives completed work, cleans roadmap)
+
+✅ OAuth login shipped, tested, committed, documented, archived
 ```
 
-**Coordination happens via roadmap:**
-- Agents update status (⚪ → 🟡 → 🟢)
-- PM monitors batch completion
-- Dependencies prevent premature work
-- No direct agent-to-agent communication needed
+**Key Features:**
+- **Planning depth modes**: `--quick` (basic), default (standard), `--deep` (comprehensive JTBD/Kano/RICE analysis)
+- **Parallel execution**: Agents work on independent requirements simultaneously
+- **Automatic archival**: Completed work moves to `.haunt/completed/` automatically
+- **Roadmap sharding**: Large projects split into batch files for performance
+
+**Why it matters:**
+- Say what you want (one line) → come back to shipped features
+- Zero coordination overhead (roadmap is the communication layer)
+- Full SDLC automation from idea to production
+
+**📖 For complete Séance documentation**, including:
+- All 6 operating modes (interactive, direct, explicit phases)
+- Planning depth levels (quick/medium/deep)
+- Complete workflow examples (OAuth login walkthrough)
+- Advanced usage (batch execution, roadmap sharding)
+- Troubleshooting and best practices
+
+**See:** `Haunt/docs/SEANCE-EXPLAINED.md` - The definitive Séance guide
 
 ---
 
@@ -642,7 +711,7 @@ bash Haunt/scripts/setup-haunt.sh --verify
 #### Step 1: Start with Project Manager
 
 ```bash
-claude -a Project-Manager
+claude -a project-manager
 ```
 
 ```
@@ -662,7 +731,7 @@ You: "I want to build a REST API for managing book reviews.
 #### Step 2: Implement Features with Dev Agent
 
 ```bash
-claude -a Dev-Backend
+claude -a dev
 ```
 
 Agent automatically:
@@ -677,7 +746,7 @@ Agent automatically:
 #### Step 3: Review with Code Reviewer
 
 ```bash
-claude -a Code-Reviewer
+claude -a code-reviewer
 ```
 
 Reviewer checks:
@@ -711,7 +780,7 @@ PM archives completed work automatically, unblocking dependent requirements.
 
 You know setup succeeded when:
 - ✅ `claude --list-agents` shows `gco-dev`, `gco-project-manager`, etc.
-- ✅ Starting `claude -a Dev-Backend` runs session startup automatically
+- ✅ Starting `claude -a dev` runs session startup automatically
 - ✅ Agent creates commits in format: `[REQ-XXX] Action: Description`
 - ✅ `.haunt/plans/roadmap.md` exists with requirement structure
 - ✅ Tests pass before agent starts new work
@@ -758,7 +827,8 @@ You know setup succeeded when:
 **Files:**
 - `path/to/file.py` (create | modify)
 
-**Effort:** S | M
+**Effort:** XS | S | M | SPLIT
+**Complexity:** SIMPLE | MODERATE | COMPLEX | UNKNOWN
 **Agent:** Dev-Backend | Dev-Frontend | Dev-Infrastructure
 **Completion:** [Testable criteria]
 **Blocked by:** REQ-XXX | None
@@ -919,10 +989,10 @@ Haunt provides the **scaffolding for AI teams to work autonomously while maintai
 
 **Start Your First Project:**
 1. Run setup: `bash Haunt/scripts/setup-haunt.sh`
-2. Spawn PM: `claude -a Project-Manager`
+2. Spawn PM: `claude -a project-manager`
 3. Describe what you want to build
 4. Watch as PM creates roadmap with sized requirements
-5. Spawn Dev agent to implement first requirement
+5. Spawn Dev agent: `claude -a dev` to implement first requirement
 
 **Join the Community:**
 - Share your roadmap patterns
@@ -931,6 +1001,33 @@ Haunt provides the **scaffolding for AI teams to work autonomously while maintai
 - Help improve the methodology
 
 **Haunt is not just a tool—it's a methodology for building software with AI teammates who remember, coordinate, and deliver quality work session after session.**
+
+### Key Takeaways
+
+**What Haunt Is:**
+- 🧠 External memory framework (rules, skills, agents) that gives stateless LLMs persistent knowledge
+- 📋 Roadmap-driven project management with dependency tracking and batch parallelization
+- 🔧 Specialized agent roles (Dev, PM, Research, Code Reviewer) with clear boundaries
+- ✅ Quality enforcement through automated checklists, pattern detection, and verification gates
+
+**What Haunt Provides:**
+- **For developers**: AI agents that remember your conventions across sessions
+- **For teams**: Parallel agent execution with consistent behavior
+- **For projects**: Quality gates that prevent technical debt accumulation
+- **For decisions**: Strategic analysis (JTBD, Kano, RICE) ensures high-impact work
+
+**Core Philosophy:**
+- Agents reference methodology, don't duplicate it (DRY for AI)
+- Rules enforce invariants, skills provide workflows
+- Roadmap is the communication layer between agents
+- Human stays in control of what/when/how decisions
+
+**Start in 3 commands:**
+```bash
+bash Haunt/scripts/setup-haunt.sh
+claude -a project-manager  # Describe what you want to build
+claude -a dev              # Implement first requirement
+```
 
 ---
 
@@ -945,11 +1042,11 @@ bash Haunt/scripts/setup-haunt.sh --verify     # Verify installation
 bash Haunt/scripts/setup-haunt.sh --agents-only # Update agents only
 
 # Spawn agents
-claude -a Project-Manager    # Roadmap coordination
-claude -a Dev-Backend        # Backend implementation
-claude -a Dev-Frontend       # Frontend implementation
-claude -a Research-Analyst   # Technical investigation
-claude -a Code-Reviewer      # PR review
+claude -a project-manager    # Roadmap coordination
+claude -a dev                # Development (backend/frontend/infrastructure)
+claude -a research           # Technical investigation
+claude -a code-reviewer      # PR review
+claude -a release-manager    # Release coordination
 
 # Check status
 cat .haunt/plans/roadmap.md  # View roadmap
@@ -990,6 +1087,6 @@ ghost-county/
 ---
 
 **Version:** Haunt v2.0
-**Last Updated:** 2025-01-15
+**Last Updated:** 2025-12-19
 **License:** MIT
 **Documentation:** `Haunt/README.md`, `Haunt/SETUP-GUIDE.md`

@@ -51,6 +51,23 @@ Immediately starts scrying with your idea, then offers to summon.
 
 **Purpose:** Transform raw ideas into formal, actionable roadmaps.
 
+### Planning Depth Modes
+
+Scrying supports three depth levels that control how thoroughly requirements are analyzed:
+
+| Mode | Flags | When to Use | Output |
+|------|-------|-------------|--------|
+| **Quick** | `--quick` | Simple features, bug fixes, well-understood work | Basic requirements + roadmap (skip strategic analysis) |
+| **Medium** | (default) | Standard features requiring planning | Requirements + light analysis + roadmap |
+| **Deep** | `--deep` | Complex features, new products, strategic initiatives | Full requirements + comprehensive analysis (JTBD, Kano, RICE) + detailed roadmap |
+
+**Examples:**
+\`\`\`bash
+/seance --quick "Fix login button styling"        # Quick mode
+/seance "Add user profile page"                   # Medium mode (default)
+/seance --deep "Build OAuth integration system"   # Deep mode
+\`\`\`
+
 ### What Happens
 
 The Project Manager agent takes your raw idea and runs it through the Ghost County planning gauntlet:
@@ -77,6 +94,7 @@ A formal, actionable roadmap with REQ-XXX items:
 \`\`\`markdown
 ### ⚪ REQ-087: Implement OAuth provider integration
 **Effort:** S (2 hours)
+**Complexity:** MODERATE
 **Agent:** Dev-Backend
 **Completion:** OAuth tokens generated and validated
 **Blocked by:** None
@@ -143,11 +161,16 @@ The séance reads your roadmap and orchestrates an agent swarm:
 
 After agents complete their work, the séance automatically reaps the harvest:
 
-1. **Verification**
-   - Checks all 🟢 Complete items have tasks checked off
-   - Validates completion criteria met
-   - Ensures tests passing
-   - Verifies commits created
+1. **Verification** (7-Point Checklist)
+
+   Before archiving any 🟢 Complete requirement, verification ensures:
+   - ✅ All task checkboxes marked `[x]` (not `[ ]`)
+   - ✅ Completion criteria met (from requirement's "Completion:" field)
+   - ✅ Tests passing (appropriate test command for work type)
+   - ✅ Files modified as specified (from requirement's "Files:" field)
+   - ✅ Documentation updated (if applicable)
+   - ✅ Security review completed (if code involves user input, auth, databases, external APIs, file operations, or dependencies)
+   - ✅ Self-validation performed (agent re-read requirement, reviewed own code, confirmed tests actually test the feature, checked against known anti-patterns)
 
 2. **Archival**
    - Moves completed requirements to \`.haunt/completed/roadmap-archive.md\`
@@ -347,6 +370,40 @@ OAuth login feature complete ✓
 # Clean up when done
 /seance --reap
 \`\`\`
+
+### Roadmap Sharding (Large Projects)
+
+For projects with many requirements, roadmaps can be **sharded into batch files** to reduce context size and improve performance:
+
+**Monolithic roadmap** (default for most projects):
+\`\`\`
+.haunt/plans/roadmap.md  ← All requirements in one file
+\`\`\`
+
+**Sharded roadmap** (optimization for 20+ requirements):
+\`\`\`
+.haunt/plans/roadmap.md           ← Overview + active batch only
+.haunt/plans/batches/
+  ├── batch-1-foundation.md       ← Completed Batch 1
+  ├── batch-2-features.md         ← Completed Batch 2
+  └── batch-3-polish.md           ← Active Batch 3 (current work)
+\`\`\`
+
+**How sharding works with séance:**
+- `roadmap.md` contains the currently active batch plus project overview
+- Completed batches move to `.haunt/plans/batches/` for archival
+- Agents load only active batch context (faster startup, less token usage)
+- Séance automatically detects sharded structure during scrying/summoning
+
+**When to shard:**
+- Roadmap exceeds 500 lines (performance optimization)
+- More than 20-30 active requirements
+- Multi-phase projects with clear batch boundaries
+
+**Benefits:**
+- Faster agent startup (40-60% less context to load)
+- Better focus (agents see only relevant work)
+- Preserves history (completed batches archived, not deleted)
 
 ---
 

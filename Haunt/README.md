@@ -85,19 +85,21 @@ The diagram below illustrates how agents coordinate asynchronously through the r
 ## Batch 1: Foundation (parallel execution)
 
 ### 🟡 REQ-001: Database schema for tasks
-**Agent:** Dev-Backend | **Effort:** S (1-2hr) | **Status:** In Progress
+**Agent:** Dev-Backend | **Effort:** S (1-2hr) | **Complexity:** SIMPLE
+**Status:** In Progress
 - [x] Create User model
 - [x] Create Task model
 - [ ] Write migration
 
 ### ⚪ REQ-002: React app structure
-**Agent:** Dev-Frontend | **Effort:** S (1-2hr) | **Status:** Not Started
+**Agent:** Dev-Frontend | **Effort:** S (1-2hr) | **Complexity:** SIMPLE
+**Status:** Not Started
 **Blocked by:** None
 
 ## Batch 2: Features (sequential, after Batch 1)
 
 ### ⚪ REQ-003: Task CRUD API
-**Agent:** Dev-Backend | **Effort:** M (2-4hr)
+**Agent:** Dev-Backend | **Effort:** M (2-4hr) | **Complexity:** MODERATE
 **Blocked by:** REQ-001
 ```
 
@@ -105,7 +107,8 @@ The diagram below illustrates how agents coordinate asynchronously through the r
 - Visual status tracking (⚪ Not Started, 🟡 In Progress, 🟢 Complete, 🔴 Blocked)
 - Dependency chains prevent premature work
 - Batch organization enables parallel execution
-- Effort sizing (XS: <1hr, S: 1-2hr, M: 2-4hr, SPLIT: decompose immediately)
+- **Effort sizing** (time/scope): XS: <1hr, S: 1-2hr, M: 2-4hr, SPLIT: decompose immediately
+- **Complexity indicators** (cognitive difficulty): SIMPLE (obvious), MODERATE (some investigation), COMPLEX (significant unknowns), UNKNOWN (needs research spike)
 - Automatic archival when complete
 
 ### ⚡ Quality Enforcement
@@ -116,7 +119,9 @@ The diagram below illustrates how agents coordinate asynchronously through the r
 2. ✅ Completion criteria met
 3. ✅ **Tests passing** (pytest/npm test)
 4. ✅ Files modified as specified
-5. ✅ Documentation updated
+5. ✅ Documentation updated (if applicable)
+6. ✅ Security review completed (if code involves user input, auth, databases, external APIs, file operations, or dependencies)
+7. ✅ Self-validation performed (agent re-read requirement, reviewed own code, confirmed tests actually test the feature)
 
 **Standardized commits:**
 ```
@@ -196,7 +201,7 @@ bash Haunt/scripts/setup-haunt.sh --verify
 
 **Step 1: Start with Project Manager**
 ```bash
-claude -a gco-project-manager
+claude -a project-manager
 ```
 
 ```
@@ -213,7 +218,7 @@ PM will:
 
 **Step 2: Implement with Dev Agent**
 ```bash
-claude -a gco-dev
+claude -a dev
 ```
 
 Agent automatically:
@@ -224,7 +229,7 @@ Agent automatically:
 
 **Step 3: Review with Code Reviewer**
 ```bash
-claude -a gco-code-reviewer
+claude -a code-reviewer
 ```
 
 Reviewer verifies:
@@ -362,7 +367,7 @@ All agents work simultaneously, PM tracks completion
 
 ### Weekly Refactor Ritual
 ```bash
-claude -a gco-project-manager
+claude -a project-manager
 > /ritual weekly-refactor
 
 Agent runs:
@@ -375,7 +380,7 @@ Agent runs:
 
 ### Intensive Debugging (Witching Hour)
 ```bash
-claude -a gco-dev
+claude -a dev
 > /witching-hour
 
 Agent workflow:
@@ -445,6 +450,7 @@ Haunt/
 | **[SETUP-GUIDE.md](SETUP-GUIDE.md)** | Complete installation instructions |
 | **[QUICK-REFERENCE.md](QUICK-REFERENCE.md)** | Cheat sheet for commands, agents, skills |
 | **[docs/WHITE-PAPER.md](docs/WHITE-PAPER.md)** | Framework design philosophy |
+| **[docs/SEANCE-EXPLAINED.md](docs/SEANCE-EXPLAINED.md)** | Complete Séance workflow guide (idea → shipped features) |
 | **[docs/SDK-INTEGRATION.md](docs/SDK-INTEGRATION.md)** | How SDK features integrate |
 | **[docs/TOOL-PERMISSIONS.md](docs/TOOL-PERMISSIONS.md)** | Agent tool access reference |
 | **[docs/SKILLS-REFERENCE.md](docs/SKILLS-REFERENCE.md)** | Complete skills catalog |
@@ -556,7 +562,7 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ```bash
 bash Haunt/scripts/setup-haunt.sh
-claude -a gco-project-manager
+claude -a project-manager
 ```
 
 Let's haunt some code. 👻
