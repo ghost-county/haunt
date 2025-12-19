@@ -234,7 +234,7 @@ WITH_RITUALS=true  # Enabled by default
 NO_RITUALS=false
 WITH_PATTERN_DETECTION=true  # Enabled by default
 NO_PATTERN_DETECTION=false
-CLEANUP_AFTER=false  # For remote execution: delete cloned repo after setup
+CLEANUP_AFTER=true  # For remote execution: delete cloned repo after setup
 
 # Remote execution support
 REMOTE_CLONE_DIR=""  # Will be set if we clone the repo
@@ -3295,28 +3295,11 @@ main() {
             echo "     - Project: ${PROJECT_SKILLS_INSTALL_DIR}"
         fi
 
-        echo "  3. Start using agents with: claude -a Agent-Name"
+        echo "  3. Restart Claude Code to load the new configuration"
+        echo "  4. Start a new session and run: /seance"
         echo ""
 
-        # Show ritual scripts info if they were installed
-        if [[ "$WITH_RITUALS" == true && "$AGENTS_ONLY" == false ]]; then
-            info "Daily rituals (recommended):"
-            echo "  • Start your day:  bash .haunt/scripts/morning-review.sh"
-            echo "  • End your day:    bash .haunt/scripts/evening-handoff.sh"
-            echo "  • Weekly cleanup:  bash .haunt/scripts/weekly-refactor.sh (Fridays)"
-            echo ""
-        fi
-
-        # Show pattern detection info if it was installed
-        if [[ "$WITH_PATTERN_DETECTION" == true && "$AGENTS_ONLY" == false ]]; then
-            info "Pattern detection tools (recommended):"
-            echo "  • Hunt patterns:     bash .haunt/scripts/hunt-patterns hunt"
-            echo "  • Run with --auto:   bash .haunt/scripts/hunt-patterns hunt --auto"
-            echo "  • Weekly refactor:   bash .haunt/scripts/weekly-refactor.sh"
-            echo ""
-        fi
-
-        info "For more information, see README.md"
+        info "The /seance command will guide you through getting started with Haunt"
     fi
 
     # Cleanup cloned repository if running remotely
