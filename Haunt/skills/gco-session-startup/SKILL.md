@@ -81,11 +81,56 @@ Claude Code's Agent SDK provides automatic context management. Understanding the
 1. Find feature in roadmap (should be 🟡 In Progress)
 2. Review unchecked tasks in task list
 3. Check `git diff` for uncommitted WIP
-4. Use `recall_context("[agent-id]-[req-id]")` if feature is complex
-5. Read implementation notes in roadmap entry
-6. Continue from first unchecked task
+4. **Check for story file** (see Story File Loading below)
+5. Use `recall_context("[agent-id]-[req-id]")` if feature is complex
+6. Read implementation notes in roadmap entry
+7. Continue from first unchecked task
 
 **Never start new features with WIP in progress.**
+
+## Story File Loading
+
+**When to check:** After assignment identification, before starting work.
+
+**Workflow:**
+1. Extract REQ-XXX from assignment (e.g., "Implement REQ-224" → REQ-224)
+2. Check if `.haunt/plans/stories/REQ-XXX-story.md` exists
+3. If story file exists:
+   - Read entire story file for implementation context
+   - Pay special attention to:
+     - **Implementation Approach**: Technical strategy and component breakdown
+     - **Code Examples & References**: Similar patterns in codebase
+     - **Known Edge Cases**: Scenarios to handle and error conditions
+     - **Session Notes**: Progress from previous sessions, gotchas discovered
+4. If no story file:
+   - Normal for XS-S sized work
+   - Proceed with roadmap completion criteria and task list
+
+**Story files supplement (not replace) roadmap:**
+- Roadmap has: title, tasks, completion criteria, file list
+- Story file adds: technical context, approach details, code examples, edge cases
+- Both are needed for complete understanding
+
+**When story files are most helpful:**
+- M-sized requirements spanning multiple sessions
+- Complex features with architectural decisions
+- Multi-component changes requiring coordination
+- Work resumed after context compaction or long gap
+- Features with known gotchas from previous attempts
+
+**Example workflow:**
+```bash
+# Assignment: Implement REQ-224
+# 1. Check for story file
+ls .haunt/plans/stories/REQ-224-story.md
+
+# 2. If exists, read it
+cat .haunt/plans/stories/REQ-224-story.md
+
+# 3. Use story context + roadmap to start work
+# Story tells you HOW to implement
+# Roadmap tells you WHAT to implement
+```
 
 ## Agent Memory Best Practices
 

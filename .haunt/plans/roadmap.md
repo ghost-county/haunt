@@ -636,39 +636,42 @@ Create command for PM to generate detailed story files containing full implement
 Created `/story create REQ-XXX` command following Ghost County command patterns. Command generates story file template in `.haunt/plans/stories/REQ-XXX-story.md` with structured sections: Context & Background, Implementation Approach, Code Examples, Edge Cases, Testing Strategy, and Session Notes. Template designed for PM to fill with rich implementation context that Dev agents load during session startup. Created `.haunt/plans/stories/` directory and generated sample story file for REQ-223 as proof of concept (182 lines). Command deployed to both source (`Haunt/commands/story.md`) and runtime (`.claude/commands/story.md`) locations.
 ---
 
-### ⚪ REQ-224: Update Dev Agent Startup to Load Story Files
+### 🟢 REQ-224: Update Dev Agent Startup to Load Story Files
 
 **Type:** Enhancement (Context Management)
 **Reported:** 2025-12-18
+**Completed:** 2025-12-18
 **Source:** BMAD research - auto-load context for complex features
 
 **Description:**
 Update Dev agent session startup to check for story files and load them if present. Story file content appended to assignment context (not replacement for roadmap).
 
 **Tasks:**
-- [ ] Update Dev-Backend agent character sheet
-- [ ] Update Dev-Frontend agent character sheet
-- [ ] Update Dev-Infrastructure agent character sheet
-- [ ] Add story file check to agent startup protocol:
+- [x] Update Dev agent character sheet with story file loading protocol
+- [x] Add story file check section to gco-dev.md:
+  - Extract REQ-XXX from assignment
   - Check `.haunt/plans/stories/REQ-XXX-story.md`
-  - If exists, load content into context
-  - If missing, use roadmap completion criteria
-- [ ] Story file content appends to assignment (not replaces)
-- [ ] Test with and without story file present
+  - If exists, load content for implementation context
+  - If missing, use roadmap completion criteria (normal for XS-S work)
+- [x] Update gco-session-startup skill with story file loading step
+- [x] Add "Story File Loading" section to skill
+- [x] Document when story files help (M-sized, multi-session, complex features)
+- [x] Deploy changes via setup-haunt.sh
 
 **Files:**
-- `Haunt/agents/gco-dev-backend.md` (modify)
-- `Haunt/agents/gco-dev-frontend.md` (modify)
-- `Haunt/agents/gco-dev-infrastructure.md` (modify)
-- `.claude/agents/gco-dev-backend.md` (deploy)
-- `.claude/agents/gco-dev-frontend.md` (deploy)
-- `.claude/agents/gco-dev-infrastructure.md` (deploy)
+- `Haunt/agents/gco-dev.md` (modified - added Session Startup Enhancement section)
+- `Haunt/skills/gco-session-startup/SKILL.md` (modified - added Story File Loading section)
+- `.claude/agents/gco-dev.md` (deployed)
+- `.claude/skills/gco-session-startup/SKILL.md` (deployed)
 
 **Effort:** S
 **Complexity:** SIMPLE
 **Agent:** Dev-Infrastructure
 **Completion:** Dev agents auto-load story files when present, resume multi-session work with full context
 **Blocked by:** REQ-223
+
+**Implementation Notes:**
+Updated unified Dev agent character sheet (gco-dev.md) with Session Startup Enhancement section. Added 4-step protocol: extract REQ-XXX → check for story file → if exists, read for context → if not, use roadmap. Updated gco-session-startup skill with comprehensive Story File Loading section including workflow, when to check, what story files contain, and when they're most helpful. Changes deployed via setup-haunt.sh. Story file loading is backward-compatible (no story file = normal operation).
 
 ---
 

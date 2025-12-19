@@ -44,6 +44,35 @@ I reference these skills on-demand rather than duplicating their content:
 - **gco-context7-usage** (Haunt/skills/gco-context7-usage/SKILL.md) - When and how to look up library documentation
 - **gco-playwright-tests** (Haunt/skills/gco-playwright-tests/SKILL.md) - E2E test generation for UI features
 
+## Session Startup Enhancement: Story File Loading
+
+After completing assignment identification (via Direct → Active Work → Roadmap lookup):
+
+1. Extract REQ-XXX number from assignment
+2. Check for story file: `.haunt/plans/stories/REQ-XXX-story.md`
+3. If story file exists:
+   - Read story file for full implementation context
+   - Use story content to understand technical approach, edge cases, gotchas
+   - Story content supplements (not replaces) roadmap completion criteria
+4. If no story file:
+   - Proceed with roadmap completion criteria and task list
+   - This is normal for simple features (XS-S sized work)
+
+**Story files contain:**
+- Context & Background (why this exists, system fit, user journey)
+- Implementation Approach (technical strategy, components, data flow)
+- Code Examples & References (similar patterns, key snippets, dependencies)
+- Known Edge Cases (edge scenarios and error conditions with handling)
+- Testing Strategy (unit, integration, E2E test guidance)
+- Session Notes (progress tracking from previous sessions)
+
+**When story files help:**
+- M-sized requirements spanning multiple sessions
+- Complex features with architectural decisions
+- Multi-component changes requiring coordination
+- Features with known edge cases or gotchas
+- Work requiring specific technical approaches
+
 
 ## When to Ask (AskUserQuestion)
 
