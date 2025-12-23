@@ -1231,7 +1231,7 @@ Create a new `gco-research-critic` agent specialized for adversarial review of r
 
 ---
 
-### ⚪ REQ-240: Add Phase 2.5 Critic Review to Orchestrator Workflow
+### 🟢 REQ-240: Add Phase 2.5 Critic Review to Orchestrator Workflow
 
 **Type:** Enhancement
 **Reported:** 2025-12-23
@@ -1257,22 +1257,22 @@ Phase 3: Roadmap Creation
 - **Quick depth:** Skip critic review (fast-track for XS-S tasks)
 
 **Tasks:**
-- [ ] Update `Haunt/skills/gco-orchestrator/SKILL.md`:
-  - [ ] Add Phase 2.5: Critical Review section to workflow
-  - [ ] Update Standard Planning Depth to include critic step
-  - [ ] Update Deep Planning Depth to include strategic analysis review
-  - [ ] Quick Planning Depth explicitly skips critic (stays fast)
-  - [ ] Document critic review output format and integration
-- [ ] Update planning depth flow diagrams in skill documentation
-- [ ] Add critic spawn logic:
-  - [ ] After Phase 2 completes, spawn gco-research-critic
-  - [ ] Pass requirements doc + analysis as context
-  - [ ] Collect critical review findings
-  - [ ] Include findings in Phase 3 roadmap creation context
-- [ ] Update `Haunt/docs/SEANCE-EXPLAINED.md` with Phase 2.5
-- [ ] Update `Haunt/commands/seance.md` to mention critic review
-- [ ] Deploy via `bash Haunt/scripts/setup-haunt.sh`
-- [ ] Test end-to-end: `/seance "test feature"` includes critic review
+- [x] Update `Haunt/skills/gco-orchestrator/SKILL.md`:
+  - [x] Add Phase 2.5: Critical Review section to workflow
+  - [x] Update Standard Planning Depth to include critic step
+  - [x] Update Deep Planning Depth to include strategic analysis review
+  - [x] Quick Planning Depth explicitly skips critic (stays fast)
+  - [x] Document critic review output format and integration
+- [x] Update planning depth flow diagrams in skill documentation
+- [x] Add critic spawn logic:
+  - [x] After Phase 2 completes, spawn gco-research-critic
+  - [x] Pass requirements doc + analysis as context
+  - [x] Collect critical review findings
+  - [x] Include findings in Phase 3 roadmap creation context
+- [x] Update `Haunt/docs/SEANCE-EXPLAINED.md` with Phase 2.5
+- [x] Update `Haunt/commands/seance.md` to mention critic review
+- [x] Deploy via `bash Haunt/scripts/setup-haunt.sh`
+- [x] Test end-to-end: `/seance "test feature"` includes critic review
 
 **Files:**
 - `Haunt/skills/gco-orchestrator/SKILL.md` (modify - add Phase 2.5)

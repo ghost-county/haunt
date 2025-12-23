@@ -18,9 +18,9 @@ Hold a séance to guide ideas through the complete Ghost County workflow: the th
 
 The séance adapts to task complexity:
 
-- **`--quick`** - Skip strategic analysis for simple tasks (typos, configs, small fixes)
-- **Default** - Standard 3-phase workflow with JTBD/Kano/RICE analysis
-- **`--deep`** - Extended strategic analysis for high-impact features (SWOT, VRIO, risk matrix, stakeholder impact)
+- **`--quick`** - Skip strategic analysis and critic review for simple tasks (typos, configs, small fixes)
+- **Default** - Standard workflow with JTBD/Kano/RICE analysis + critical review
+- **`--deep`** - Extended strategic analysis (SWOT, VRIO, risk matrix, stakeholder impact) + critical review
 
 ```bash
 # Examples

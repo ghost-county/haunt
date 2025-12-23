@@ -82,7 +82,14 @@ The Project Manager agent takes your raw idea and runs it through the Ghost Coun
    - **Kano Analysis:** Is this a delight, performance need, or table stakes?
    - **RICE Scoring:** What's the impact? (Reach × Impact × Confidence / Effort)
 
-3. **Roadmap Creation**
+3. **Critical Review** (Medium & Deep modes only)
+   - Spawns Research Critic agent for adversarial review
+   - Challenges assumptions, identifies gaps and risks
+   - Provides findings to strengthen roadmap
+   - Quick mode skips this step
+
+4. **Roadmap Creation**
+   - Incorporates critic findings into requirements
    - Breaks work into S/M sized chunks (completable in one session)
    - Assigns to appropriate agents (Dev-Backend, Dev-Frontend, Dev-Infrastructure, etc.)
    - Organizes into batches with dependency mapping
