@@ -74,7 +74,7 @@ Changes detected since last deployment:
 
 Modified (3):
   - agents/gco-dev.md
-  - skills/gco-seance/SKILL.md
+  - skills/gco-orchestrator/SKILL.md
   - rules/gco-commit-conventions.md
 
 Added (1):

@@ -381,7 +381,7 @@ Before completing haunt coordination:
 
 This skill works alongside:
 
-- **gco-seance** - For sequential workflow orchestration (planning then execution)
+- **gco-orchestrator** - For sequential workflow orchestration (planning then execution)
 - **gco-roadmap-workflow** - For understanding requirement structure
 - **gco-tdd-workflow** - For ensuring each haunt member writes tests
 

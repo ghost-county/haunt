@@ -703,7 +703,7 @@ Seance Workflow:
   └─ Optional: Summon worker spirits (gco-dev, gco-research)
 ```
 
-**See:** `Haunt/skills/gco-seance/SKILL.md` for details.
+**See:** `Haunt/skills/gco-orchestrator/SKILL.md` for details.
 
 ---
 
@@ -782,5 +782,5 @@ Hybrid workflows combining built-in and Haunt agents provide:
 **See Also:**
 - `Haunt/docs/TOOL-PERMISSIONS.md` - Agent tool access reference
 - `.haunt/docs/research/claude-builtin-agents-analysis.md` - Built-in agent research
-- `Haunt/skills/gco-seance/SKILL.md` - Seance orchestration workflow
+- `Haunt/skills/gco-orchestrator/SKILL.md` - Seance orchestration workflow
 - `Haunt/skills/gco-haunt-mode/SKILL.md` - Multi-agent coordination

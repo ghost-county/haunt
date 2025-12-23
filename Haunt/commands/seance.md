@@ -152,7 +152,7 @@ else:
 
 **Step 2: Execute Mode-Specific Flow**
 
-Invoke the `gco-seance` skill with detected mode, arguments, and planning depth:
+Invoke the `gco-orchestrator` skill with detected mode, arguments, and planning depth:
 
 ```
 MODE: {mode}

@@ -1130,3 +1130,160 @@ Created demonstration pattern test (test_prevent_example_captured_pattern.py):
 
 All changes deployed via setup-haunt.sh. Pattern capture creates feedback loop: Code Review → Pattern Identified → Skeleton Test Generated → Dev Refines → CI/CD Enforcement → Pattern Defeated. Complements existing weekly pattern hunt with immediate reactive capture at point of discovery.
 
+---
+
+## Batch: Orchestrator Improvements
+
+**Goal:** Fix gco-seance naming confusion + add critical review step to requirements workflow
+**Source:** User feedback - seeing "/gco-seance" in command autocomplete is confusing
+**Estimated Effort:** 1 S + 1 M + 1 M = ~8 hours total
+
+### 🟢 REQ-238: Rename gco-seance Skill to gco-orchestrator
+
+**Type:** Enhancement
+**Reported:** 2025-12-23
+**Source:** User feedback - "gco-seance" appearing in slash command autocomplete alongside "/seance" is confusing
+
+**Description:**
+Rename the `gco-seance` skill to `gco-orchestrator` to prevent confusion in the Claude Code UI. Currently when users type "/", they see both "/seance" (the intended command) and "/gco-seance" (the underlying skill), which is confusing. Renaming to "orchestrator" accurately describes the skill's purpose (workflow orchestration) while avoiding naming conflicts.
+
+**Tasks:**
+- [x] Rename skill directory: `Haunt/skills/gco-seance/` → `Haunt/skills/gco-orchestrator/`
+- [x] Update skill frontmatter: `name: gco-seance` → `name: gco-orchestrator` in SKILL.md
+- [x] Update `/seance` command reference: change `gco-seance` → `gco-orchestrator` in `Haunt/commands/seance.md`
+- [x] Update documentation references in:
+  - [x] `Haunt/docs/SEANCE-EXPLAINED.md`
+  - [x] `Haunt/docs/SEANCE-EXPLAINED.html`
+  - [x] `Haunt/docs/INTEGRATION-PATTERNS.md`
+  - [x] `Haunt/docs/SKILLS-REFERENCE.md`
+  - [x] `Haunt/skills/gco-haunt-mode/SKILL.md`
+  - [x] `Haunt/skills/gco-task-decomposition/SKILL.md`
+  - [x] `Haunt/commands/haunt-update.md`
+- [x] Remove backup file: `Haunt/skills/gco-seance/SKILL.md.backup`
+- [x] Deploy changes: run `bash Haunt/scripts/setup-haunt.sh`
+- [x] Verify "/gco-seance" no longer appears in slash command autocomplete
+
+**Files:**
+- `Haunt/skills/gco-seance/` → `Haunt/skills/gco-orchestrator/` (rename directory)
+- `Haunt/skills/gco-orchestrator/SKILL.md` (modify frontmatter)
+- `Haunt/commands/seance.md` (modify - update skill reference)
+- `Haunt/docs/SEANCE-EXPLAINED.md` (modify - update skill name)
+- `Haunt/docs/SEANCE-EXPLAINED.html` (modify - update skill name)
+- `Haunt/docs/INTEGRATION-PATTERNS.md` (modify - update skill name)
+- `Haunt/docs/SKILLS-REFERENCE.md` (modify - update skill name)
+- `Haunt/skills/gco-haunt-mode/SKILL.md` (modify - update reference)
+- `Haunt/skills/gco-task-decomposition/SKILL.md` (modify - update reference)
+- `Haunt/commands/haunt-update.md` (modify - update reference)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Skill renamed to gco-orchestrator, all references updated, deployed, "/gco-seance" no longer appears in UI
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-239: Create gco-research-critic Agent
+
+**Type:** Enhancement
+**Reported:** 2025-12-23
+**Source:** User request - add critical review step during requirements development
+
+**Description:**
+Create a new `gco-research-critic` agent specialized for adversarial review of requirements and analysis. This agent acts as a "devil's advocate" to identify gaps, unstated assumptions, edge cases, and risks before requirements become roadmap items. Complements Research-Analyst's investigative role with a critical validation perspective.
+
+**Agent Characteristics:**
+- **Role:** Adversarial reviewer, devil's advocate, gap identifier
+- **Focus:** Challenge assumptions, find edge cases, identify risks
+- **Tools:** Read-only (Glob, Grep, Read, mcp__agent_memory__)
+- **Model:** Sonnet (critical analysis requires deep reasoning)
+- **Tone:** Constructively skeptical, thorough, brief (2-3 min reviews)
+
+**Tasks:**
+- [ ] Create `Haunt/agents/gco-research-critic.md` with:
+  - [ ] Role definition: adversarial reviewer for requirements validation
+  - [ ] Mandate: Challenge assumptions, find gaps, identify risks
+  - [ ] Review focus areas:
+    - [ ] Unstated assumptions in requirements
+    - [ ] Edge cases not considered
+    - [ ] Scope creep or optimistic estimates
+    - [ ] Missing error handling or failure modes
+    - [ ] Risks not captured in analysis
+    - [ ] Validate requirements solve stated problem
+  - [ ] Output format: Brief critical review (bulleted findings)
+  - [ ] Tool permissions: Read-only access (Glob, Grep, Read, memory)
+  - [ ] Model: Sonnet
+  - [ ] Skills: None required (agent-specific critical thinking)
+- [ ] Add agent to CLAUDE.md agent architecture table
+- [ ] Deploy via `bash Haunt/scripts/setup-haunt.sh`
+- [ ] Test by spawning agent to review existing requirements doc
+
+**Files:**
+- `Haunt/agents/gco-research-critic.md` (create - ~50 lines character sheet)
+- `CLAUDE.md` (modify - add to agent architecture table)
+- `.claude/agents/gco-research-critic.md` (deployed)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** gco-research-critic agent created, deployed, successfully reviews requirements and identifies gaps
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-240: Add Phase 2.5 Critic Review to Orchestrator Workflow
+
+**Type:** Enhancement
+**Reported:** 2025-12-23
+**Source:** User request - add critic review between requirements analysis and roadmap creation
+
+**Description:**
+Integrate the new gco-research-critic agent into the orchestrator (formerly seance) workflow as "Phase 2.5" - a critical review step between requirements analysis (Phase 2) and roadmap creation (Phase 3). The critic reviews both the requirements document and analysis to identify gaps, assumptions, and risks before work is roadmapped.
+
+**New Workflow:**
+```
+Phase 1: Requirements Development
+  ↓
+Phase 2: Requirements Analysis (JTBD, Kano, RICE)
+  ↓
+Phase 2.5: Critical Review ← NEW
+  ↓
+Phase 3: Roadmap Creation
+```
+
+**Integration Points:**
+- **Standard depth:** Run critic after Phase 2, provide findings to Phase 3
+- **Deep depth:** Run critic after extended Phase 2 analysis, review strategic analysis too
+- **Quick depth:** Skip critic review (fast-track for XS-S tasks)
+
+**Tasks:**
+- [ ] Update `Haunt/skills/gco-orchestrator/SKILL.md`:
+  - [ ] Add Phase 2.5: Critical Review section to workflow
+  - [ ] Update Standard Planning Depth to include critic step
+  - [ ] Update Deep Planning Depth to include strategic analysis review
+  - [ ] Quick Planning Depth explicitly skips critic (stays fast)
+  - [ ] Document critic review output format and integration
+- [ ] Update planning depth flow diagrams in skill documentation
+- [ ] Add critic spawn logic:
+  - [ ] After Phase 2 completes, spawn gco-research-critic
+  - [ ] Pass requirements doc + analysis as context
+  - [ ] Collect critical review findings
+  - [ ] Include findings in Phase 3 roadmap creation context
+- [ ] Update `Haunt/docs/SEANCE-EXPLAINED.md` with Phase 2.5
+- [ ] Update `Haunt/commands/seance.md` to mention critic review
+- [ ] Deploy via `bash Haunt/scripts/setup-haunt.sh`
+- [ ] Test end-to-end: `/seance "test feature"` includes critic review
+
+**Files:**
+- `Haunt/skills/gco-orchestrator/SKILL.md` (modify - add Phase 2.5)
+- `Haunt/docs/SEANCE-EXPLAINED.md` (modify - update workflow documentation)
+- `Haunt/commands/seance.md` (modify - mention critic review)
+- `.claude/skills/gco-orchestrator/SKILL.md` (deployed)
+- `.claude/commands/seance.md` (deployed)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Phase 2.5 integrated into orchestrator workflow, critic reviews requirements before roadmap creation, quick mode skips critic
+**Blocked by:** REQ-239 (need gco-research-critic agent to exist first)
+

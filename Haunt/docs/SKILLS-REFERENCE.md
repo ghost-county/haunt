@@ -38,7 +38,7 @@ Haunt/skills/
 ├── gco-tdd-workflow/SKILL.md
 ├── gco-context7-usage/SKILL.md
 ├── gco-pattern-defeat/SKILL.md
-├── gco-seance/SKILL.md
+├── gco-orchestrator/SKILL.md
 ├── gco-witching-hour/SKILL.md
 ├── gco-haunt-mode/SKILL.md
 ├── gco-task-decomposition/SKILL.md
