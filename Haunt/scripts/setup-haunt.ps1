@@ -283,15 +283,31 @@ function Get-ClonedRepo {
         exit 3
     }
 
-    # Clone the repo
-    try {
-        git clone --depth 1 --branch $GitHubRepoBranch $GitHubRepoUrl $cloneDir 2>&1 | Out-Null
-        Write-Success "Repository cloned to $cloneDir"
+    # Clone the repo (capture output to show actual errors)
+    $cloneOutput = & {
+        git clone --depth 1 --branch $GitHubRepoBranch $GitHubRepoUrl $cloneDir 2>&1
     }
-    catch {
+
+    if ($LASTEXITCODE -ne 0) {
         Write-Err "Failed to clone repository from $GitHubRepoUrl"
+        Write-Host ""
+        Write-Host "Git error:" -ForegroundColor Red
+        $cloneOutput | ForEach-Object { Write-Host $_ }
+        Write-Host ""
+        Write-Err "Possible causes:"
+        Write-Err "  1. Git not in PATH (verify: where.exe git)"
+        Write-Err "  2. Network/firewall blocking GitHub"
+        Write-Err "  3. GitHub authentication required"
+        Write-Err "  4. Rate limiting (try again later)"
+        Write-Host ""
+        Write-Err "Use manual installation instead:"
+        Write-Err "  git clone https://github.com/ghost-county/ghost-county.git"
+        Write-Err "  cd ghost-county"
+        Write-Err "  .\Haunt\scripts\setup-haunt.ps1"
         exit 3
     }
+
+    Write-Success "Repository cloned to $cloneDir"
 
     return $cloneDir
 }

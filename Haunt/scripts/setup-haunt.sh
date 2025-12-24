@@ -112,16 +112,32 @@ clone_repo_for_setup() {
         exit 3
     fi
 
-    # Clone the repo
-    if [[ "$VERBOSE" == true ]]; then
-        git clone --depth 1 --branch "$GITHUB_REPO_BRANCH" "$GITHUB_REPO_URL" "$clone_dir" >&2
-    else
-        git clone --depth 1 --branch "$GITHUB_REPO_BRANCH" "$GITHUB_REPO_URL" "$clone_dir" 2>/dev/null
+    # Clone the repo (capture stderr to show actual errors)
+    local clone_output
+    clone_output=$(git clone --depth 1 --branch "$GITHUB_REPO_BRANCH" "$GITHUB_REPO_URL" "$clone_dir" 2>&1)
+    local clone_exit_code=$?
+
+    if [[ $clone_exit_code -ne 0 ]]; then
+        error "Failed to clone repository from $GITHUB_REPO_URL"
+        echo "" >&2
+        echo -e "${RED}Git error:${NC}" >&2
+        echo "$clone_output" >&2
+        echo "" >&2
+        error "Possible causes:"
+        error "  1. Git not in PATH (verify: which git)"
+        error "  2. Network/firewall blocking GitHub"
+        error "  3. GitHub authentication required"
+        error "  4. Rate limiting (try again later)"
+        echo "" >&2
+        error "Use manual installation instead:"
+        error "  git clone https://github.com/ghost-county/ghost-county.git"
+        error "  cd ghost-county && bash Haunt/scripts/setup-haunt.sh"
+        exit 3
     fi
 
-    if [[ $? -ne 0 ]]; then
-        error "Failed to clone repository from $GITHUB_REPO_URL"
-        exit 3
+    # Show clone output in verbose mode
+    if [[ "$VERBOSE" == true ]]; then
+        echo "$clone_output" >&2
     fi
 
     # Send success to stderr since stdout is captured for return value
