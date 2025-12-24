@@ -51,13 +51,15 @@ Phase 3 - High Impact (3 requirements, ~14 hours):
 🟢 REQ-244: Frontend-design plugin installation (M) - COMPLETE
 🟡 REQ-245: Interactive dependency prompts - bash complete, PowerShell pending (M)
 
-**Token Efficiency Optimizations (High Priority):**
-🟡 REQ-246: Edit Retry Detection (S, RICE: 450) - IN PROGRESS
-🟡 REQ-247: File Caching Awareness (S, RICE: 315) - IN PROGRESS
+**Token Efficiency Optimizations:**
+🟢 REQ-246: Edit Retry Detection (S) - COMPLETE - saves 100K tokens/task
+🟢 REQ-247: File Caching Awareness (S) - COMPLETE - saves 38K tokens/task
 ⚪ REQ-248: Story Files for M-Sized Features (M, RICE: 63)
-⚪ REQ-249: Roadmap Sharding (M, RICE: 27) - LOW PRIORITY
-⚪ REQ-250: Adaptive Workflow Modes (M, RICE: 18) - LOW PRIORITY
 ⚪ REQ-251: Add Haunt Reinstall Prompt to Seance (M)
+⚪ REQ-249: Roadmap Sharding (M) - LOW PRIORITY
+⚪ REQ-250: Adaptive Workflow Modes (M) - LOW PRIORITY
+
+**Impact:** Phase 1 optimizations deployed! Future agents should use 70% fewer tokens.
 
 See `.haunt/plans/roadmap.md` for full details.
 
