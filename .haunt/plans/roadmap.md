@@ -1336,7 +1336,7 @@ Add automatic dependency installation to setup scripts with user consent. When s
 
 ---
 
-### ⚪ REQ-243: Fix Windows setup not installing slash commands
+### 🟡 REQ-243: Fix Windows setup not installing slash commands
 
 **Type:** Bug Fix
 **Reported:** 2024-12-24
@@ -1352,16 +1352,16 @@ The Windows PowerShell setup script (`setup-haunt.ps1`) is not installing slash 
 - Is the `--scope project` flag being handled correctly?
 
 **Tasks:**
-- [ ] Reproduce the issue on Windows
-- [ ] Debug `setup-haunt.ps1` commands installation logic
-- [ ] Compare with working `setup-haunt.sh` logic
-- [ ] Fix PowerShell script to correctly copy commands
-- [ ] Verify commands are installed to correct location:
-  - [ ] Global scope: `~/.claude/commands/`
-  - [ ] Project scope: `./.claude/commands/`
-- [ ] Test that commands are accessible after setup
-- [ ] Add verification step to confirm commands installed
-- [ ] Update setup completion message to confirm commands location
+- [x] Reproduce the issue on Windows
+- [x] Debug `setup-haunt.ps1` commands installation logic
+- [x] Compare with working `setup-haunt.sh` logic
+- [x] Fix PowerShell script to correctly copy commands
+- [x] Verify commands are installed to correct location:
+  - [x] Global scope: `~/.claude/commands/`
+  - [x] Project scope: `./.claude/commands/`
+- [ ] Test that commands are accessible after setup (pending user testing)
+- [x] Add verification step to confirm commands installed
+- [x] Update setup completion message to confirm commands location
 
 **Files:**
 - `Haunt/scripts/setup-haunt.ps1` (modify - fix commands installation)
@@ -1371,4 +1371,80 @@ The Windows PowerShell setup script (`setup-haunt.ps1`) is not installing slash 
 **Agent:** Dev-Infrastructure
 **Completion:** Windows setup correctly installs slash commands, verified by user testing
 **Blocked by:** None
+
+---
+
+### ⚪ REQ-244: Add interactive frontend-design plugin installation to setup
+
+**Type:** Enhancement
+**Reported:** 2024-12-24
+**Source:** User request - ensure frontend-design plugin is available for UI work
+
+**Description:**
+Add frontend-design plugin installation to setup scripts with interactive prompts. When setting up Haunt, prompt users if they want to install the frontend-design Claude Code plugin, which is useful for UI/frontend development work. Also ensure the gco-dev agent and UI testing skill mention using this plugin for frontend work.
+
+**Tasks:**
+- [ ] Add `setup_frontend_plugin()` function to bash script:
+  - [ ] Check if Claude Code CLI is available
+  - [ ] Prompt: "Install frontend-design plugin for UI development? (Y/n)"
+  - [ ] If yes: `claude plugin marketplace add anthropics/claude-code`
+  - [ ] If yes: `claude plugin install frontend-design@claude-code-plugins`
+  - [ ] Handle errors gracefully (plugin already installed, marketplace already added)
+- [ ] Add equivalent PowerShell function:
+  - [ ] Same interactive prompting
+  - [ ] Same claude plugin commands
+- [ ] Add plugin setup call to main flow (after prerequisites, before agents)
+- [ ] Update gco-dev.md agent to mention frontend-design plugin for Frontend mode
+- [ ] Update gco-ui-testing skill to mention using frontend-design plugin
+- [ ] Test installation flow on both Mac and Windows
+
+**Files:**
+- `Haunt/scripts/setup-haunt.sh` (modify)
+- `Haunt/scripts/setup-haunt.ps1` (modify)
+- `Haunt/agents/gco-dev.md` (modify)
+- `Haunt/skills/gco-ui-testing/SKILL.md` (modify)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Setup scripts prompt for frontend-design plugin installation, plugin is used for UI work
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-245: Implement interactive dependency installation prompts
+
+**Type:** Enhancement
+**Reported:** 2024-12-24
+**Source:** User request - interactive prompts for auto-install instead of silent installation
+
+**Description:**
+Update REQ-242 implementation approach: Instead of a single `--auto-install` flag that installs all dependencies automatically, implement interactive prompts for each missing dependency. Prompt users "Install Python 3.11? (Y/n)" and respect their choice. This gives users control while still being helpful.
+
+**Tasks:**
+- [ ] Update bash script prerequisite checking:
+  - [ ] When Python missing: prompt "Install Python 3.11+ via [package manager]? (Y/n)"
+  - [ ] When Node.js missing: prompt "Install Node.js 18+ via [package manager]? (Y/n)"
+  - [ ] When uv missing: prompt "Install uv package manager? (Y/n)"
+  - [ ] Detect package manager (brew/apt/yum on Linux/Mac)
+  - [ ] Install via detected package manager if user confirms
+- [ ] Update PowerShell script prerequisite checking:
+  - [ ] Same interactive prompting for Windows
+  - [ ] Use winget for installations
+  - [ ] Handle cases where winget not available
+- [ ] Add `--yes` or `-y` flag to skip prompts and auto-install all
+- [ ] Update documentation with new interactive install behavior
+
+**Files:**
+- `Haunt/scripts/setup-haunt.sh` (modify)
+- `Haunt/scripts/setup-haunt.ps1` (modify)
+- `Haunt/SETUP-GUIDE.md` (modify)
+- `Haunt/README.md` (modify)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Setup scripts interactively prompt for each missing dependency, users can choose what to install
+**Blocked by:** None
+**Replaces:** REQ-242 (changed from --auto-install flag to interactive prompts)
 
