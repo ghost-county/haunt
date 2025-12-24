@@ -52,11 +52,12 @@ Phase 3 - High Impact (3 requirements, ~14 hours):
 🟡 REQ-245: Interactive dependency prompts - bash complete, PowerShell pending (M)
 
 **Token Efficiency Optimizations (High Priority):**
-⚪ REQ-246: Edit Retry Detection (S, RICE: 450) - saves 100K tokens/task
-⚪ REQ-247: File Read Caching Awareness (S, RICE: 315) - saves 38K tokens/task
+🟡 REQ-246: Edit Retry Detection (S, RICE: 450) - IN PROGRESS
+🟡 REQ-247: File Caching Awareness (S, RICE: 315) - IN PROGRESS
 ⚪ REQ-248: Story Files for M-Sized Features (M, RICE: 63)
 ⚪ REQ-249: Roadmap Sharding (M, RICE: 27) - LOW PRIORITY
 ⚪ REQ-250: Adaptive Workflow Modes (M, RICE: 18) - LOW PRIORITY
+⚪ REQ-251: Add Haunt Reinstall Prompt to Seance (M)
 
 See `.haunt/plans/roadmap.md` for full details.
 
