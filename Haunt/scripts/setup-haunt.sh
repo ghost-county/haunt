@@ -251,6 +251,7 @@ NO_RITUALS=false
 WITH_PATTERN_DETECTION=true  # Enabled by default
 NO_PATTERN_DETECTION=false
 CLEANUP_AFTER=true  # For remote execution: delete cloned repo after setup
+YES_TO_ALL=false  # Skip prompts and auto-install all dependencies
 
 # Remote execution support
 REMOTE_CLONE_DIR=""  # Will be set if we clone the repo
@@ -297,6 +298,7 @@ ${BOLD}OPTIONS:${NC}
     ${BOLD}--verify${NC}            Only verify existing haunt, don't modify
     ${BOLD}--fix${NC}               Exorcise issues found during verification
 
+    ${BOLD}--yes, -y${NC}           Auto-install all missing dependencies without prompting
     ${BOLD}--skip-prereqs${NC}      Skip prerequisite divination
     ${BOLD}--no-backup${NC}         Skip backup of existing spirits
     ${BOLD}--no-mcp${NC}            Skip MCP server channeling
@@ -429,6 +431,10 @@ parse_arguments() {
                 SKIP_PREREQS=true
                 shift
                 ;;
+            --yes|-y)
+                YES_TO_ALL=true
+                shift
+                ;;
             --no-backup)
                 NO_BACKUP=true
                 shift
@@ -531,6 +537,354 @@ execute() {
 # PHASE 1: PREREQUISITES CHECK
 # ============================================================================
 
+# Detect operating system
+detect_os() {
+    if [[ "$OSTYPE" == "darwin"* ]]; then
+        echo "macos"
+    elif [[ "$OSTYPE" == "linux-gnu"* ]]; then
+        echo "linux"
+    else
+        echo "unknown"
+    fi
+}
+
+# Detect package manager
+detect_package_manager() {
+    local os=$(detect_os)
+
+    if [[ "$os" == "macos" ]]; then
+        if command -v brew &> /dev/null; then
+            echo "brew"
+        else
+            echo "none"
+        fi
+    elif [[ "$os" == "linux" ]]; then
+        if command -v apt-get &> /dev/null; then
+            echo "apt"
+        elif command -v yum &> /dev/null; then
+            echo "yum"
+        elif command -v dnf &> /dev/null; then
+            echo "dnf"
+        else
+            echo "none"
+        fi
+    else
+        echo "none"
+    fi
+}
+
+# Prompt user for installation (returns 0 for yes, 1 for no)
+prompt_install() {
+    local package_name="$1"
+    local install_command="$2"
+
+    # If --yes flag is set, auto-confirm
+    if [[ "$YES_TO_ALL" == true ]]; then
+        info "Auto-installing ${package_name} (--yes flag set)"
+        return 0
+    fi
+
+    # Interactive prompt
+    echo -e "${YELLOW}?${NC} Install ${package_name} via ${install_command}? (Y/n): "
+    read -r response
+
+    # Default to Yes if empty
+    if [[ -z "$response" ]] || [[ "$response" =~ ^[Yy]$ ]]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Add directory to PATH in shell profile
+add_to_path() {
+    local dir_to_add="$1"
+    local shell_profile=""
+
+    # Detect shell profile
+    if [[ -n "$ZSH_VERSION" ]] && [[ -f "$HOME/.zshrc" ]]; then
+        shell_profile="$HOME/.zshrc"
+    elif [[ -n "$BASH_VERSION" ]] && [[ -f "$HOME/.bashrc" ]]; then
+        shell_profile="$HOME/.bashrc"
+    elif [[ -f "$HOME/.bash_profile" ]]; then
+        shell_profile="$HOME/.bash_profile"
+    elif [[ -f "$HOME/.profile" ]]; then
+        shell_profile="$HOME/.profile"
+    fi
+
+    if [[ -z "$shell_profile" ]]; then
+        warning "Could not detect shell profile to update PATH"
+        return 1
+    fi
+
+    # Check if already in PATH
+    if grep -q "export PATH.*${dir_to_add}" "$shell_profile" 2>/dev/null; then
+        info "PATH already includes ${dir_to_add} in ${shell_profile}"
+        return 0
+    fi
+
+    # Add to PATH
+    echo "" >> "$shell_profile"
+    echo "# Added by Haunt setup" >> "$shell_profile"
+    echo "export PATH=\"${dir_to_add}:\$PATH\"" >> "$shell_profile"
+    success "Added ${dir_to_add} to PATH in ${shell_profile}"
+    warning "Please run: source ${shell_profile}"
+    return 0
+}
+
+# Install git
+install_git() {
+    local pkg_manager=$(detect_package_manager)
+
+    if [[ "$pkg_manager" == "brew" ]]; then
+        if prompt_install "git" "brew"; then
+            info "Installing git via Homebrew..."
+            brew install git || {
+                error "Failed to install git"
+                return 1
+            }
+            success "git installed successfully"
+        else
+            warning "Skipping git installation"
+            return 1
+        fi
+    elif [[ "$pkg_manager" == "apt" ]]; then
+        if prompt_install "git" "apt-get"; then
+            info "Installing git via apt-get..."
+            sudo apt-get update && sudo apt-get install -y git || {
+                error "Failed to install git"
+                return 1
+            }
+            success "git installed successfully"
+        else
+            warning "Skipping git installation"
+            return 1
+        fi
+    elif [[ "$pkg_manager" == "yum" ]] || [[ "$pkg_manager" == "dnf" ]]; then
+        if prompt_install "git" "$pkg_manager"; then
+            info "Installing git via ${pkg_manager}..."
+            sudo $pkg_manager install -y git || {
+                error "Failed to install git"
+                return 1
+            }
+            success "git installed successfully"
+        else
+            warning "Skipping git installation"
+            return 1
+        fi
+    else
+        error "No supported package manager found"
+        info "Please install git manually: https://git-scm.com/downloads"
+        return 1
+    fi
+}
+
+# Install Python 3.11+
+install_python() {
+    local pkg_manager=$(detect_package_manager)
+
+    if [[ "$pkg_manager" == "brew" ]]; then
+        if prompt_install "Python 3.11+" "brew"; then
+            info "Installing Python 3.11 via Homebrew..."
+            brew install python@3.11 || {
+                error "Failed to install Python"
+                return 1
+            }
+            success "Python installed successfully"
+
+            # Check if python3 is in PATH
+            if ! command -v python3 &> /dev/null; then
+                warning "python3 not found in PATH after installation"
+                add_to_path "/usr/local/opt/python@3.11/bin"
+            fi
+        else
+            warning "Skipping Python installation"
+            return 1
+        fi
+    elif [[ "$pkg_manager" == "apt" ]]; then
+        if prompt_install "Python 3.11+" "apt-get"; then
+            info "Installing Python 3.11 via apt-get..."
+            sudo apt-get update && sudo apt-get install -y python3.11 python3.11-venv python3-pip || {
+                error "Failed to install Python"
+                return 1
+            }
+            success "Python installed successfully"
+        else
+            warning "Skipping Python installation"
+            return 1
+        fi
+
+# ============================================================================
+# PHASE 1.5: FRONTEND PLUGIN SETUP (OPTIONAL)
+# ============================================================================
+
+setup_frontend_plugin() {
+    section "Phase 1.5: Frontend Design Plugin (Optional)"
+
+    # Check if Claude Code CLI is available
+    if ! command -v claude &> /dev/null; then
+        warning "Claude Code CLI not found - skipping plugin setup"
+        info "Install Claude Code CLI first: https://claude.ai/download"
+        echo ""
+        return 0
+    fi
+
+    # Check if plugin is already installed
+    local plugin_installed=false
+    if claude plugin list 2>/dev/null | grep -q "frontend-design"; then
+        success "frontend-design plugin already installed"
+        plugin_installed=true
+    fi
+
+    # If already installed, skip prompt
+    if [[ "$plugin_installed" == true ]]; then
+        info "Skipping plugin installation prompt"
+        echo ""
+        return 0
+    fi
+
+    # Interactive prompt
+    echo ""
+    info "The frontend-design plugin provides specialized UI/UX development capabilities:"
+    info "  - Component scaffolding"
+    info "  - Responsive design helpers"
+    info "  - Accessibility checks"
+    info "  - Browser preview integration"
+    echo ""
+
+    local response
+    read -p "$(echo -e "${CYAN}?${NC} Install frontend-design plugin for UI development? (Y/n): ")" response
+    response=${response:-Y}  # Default to Y if empty
+
+    if [[ "$response" =~ ^[Yy]$ ]]; then
+        info "Installing frontend-design plugin..."
+
+        # Add marketplace if needed (suppress expected errors)
+        claude plugin marketplace add anthropics/claude-code 2>&1 | grep -v "already" || true
+
+        # Install plugin
+        if claude plugin install frontend-design@claude-code-plugins 2>&1; then
+            success "frontend-design plugin installed successfully!"
+            info "Use plugin features with /frontend-design commands"
+        else
+            local exit_code=$?
+            if [[ $exit_code -eq 1 ]]; then
+                warning "Plugin may already be installed"
+            else
+                error "Failed to install frontend-design plugin (exit code: $exit_code)"
+                info "You can install it manually later:"
+                info "  claude plugin marketplace add anthropics/claude-code"
+                info "  claude plugin install frontend-design@claude-code-plugins"
+            fi
+        fi
+    else
+        info "Skipping frontend-design plugin installation"
+        info "You can install it later with:"
+        info "  claude plugin marketplace add anthropics/claude-code"
+        info "  claude plugin install frontend-design@claude-code-plugins"
+    fi
+
+    echo ""
+}
+
+    elif [[ "$pkg_manager" == "yum" ]] || [[ "$pkg_manager" == "dnf" ]]; then
+        if prompt_install "Python 3.11+" "$pkg_manager"; then
+            info "Installing Python 3.11 via ${pkg_manager}..."
+            sudo $pkg_manager install -y python311 python311-pip || {
+                error "Failed to install Python"
+                return 1
+            }
+            success "Python installed successfully"
+        else
+            warning "Skipping Python installation"
+            return 1
+        fi
+    else
+        error "No supported package manager found"
+        info "Please install Python 3.11+ manually: https://www.python.org/downloads/"
+        return 1
+    fi
+}
+
+# Install Node.js 18+
+install_nodejs() {
+    local pkg_manager=$(detect_package_manager)
+
+    if [[ "$pkg_manager" == "brew" ]]; then
+        if prompt_install "Node.js 18+" "brew"; then
+            info "Installing Node.js via Homebrew..."
+            brew install node || {
+                error "Failed to install Node.js"
+                return 1
+            }
+            success "Node.js installed successfully"
+        else
+            warning "Skipping Node.js installation"
+            return 1
+        fi
+    elif [[ "$pkg_manager" == "apt" ]]; then
+        if prompt_install "Node.js 18+" "apt-get (NodeSource)"; then
+            info "Adding NodeSource repository and installing Node.js..."
+            curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash - || {
+                error "Failed to add NodeSource repository"
+                return 1
+            }
+            sudo apt-get install -y nodejs || {
+                error "Failed to install Node.js"
+                return 1
+            }
+            success "Node.js installed successfully"
+        else
+            warning "Skipping Node.js installation"
+            return 1
+        fi
+    elif [[ "$pkg_manager" == "yum" ]] || [[ "$pkg_manager" == "dnf" ]]; then
+        if prompt_install "Node.js 18+" "$pkg_manager (NodeSource)"; then
+            info "Adding NodeSource repository and installing Node.js..."
+            curl -fsSL https://rpm.nodesource.com/setup_18.x | sudo bash - || {
+                error "Failed to add NodeSource repository"
+                return 1
+            }
+            sudo $pkg_manager install -y nodejs || {
+                error "Failed to install Node.js"
+                return 1
+            }
+            success "Node.js installed successfully"
+        else
+            warning "Skipping Node.js installation"
+            return 1
+        fi
+    else
+        error "No supported package manager found"
+        info "Please install Node.js 18+ manually: https://nodejs.org/"
+        return 1
+    fi
+}
+
+# Install uv package manager
+install_uv() {
+    if prompt_install "uv package manager" "official installer"; then
+        info "Installing uv via official installer..."
+        curl -LsSf https://astral.sh/uv/install.sh | sh || {
+            error "Failed to install uv"
+            return 1
+        }
+        success "uv installed successfully"
+
+        # Check if uv is in PATH
+        if ! command -v uv &> /dev/null; then
+            warning "uv not found in PATH after installation"
+            # Common uv install location
+            if [[ -f "$HOME/.cargo/bin/uv" ]]; then
+                add_to_path "$HOME/.cargo/bin"
+            fi
+        fi
+    else
+        warning "Skipping uv installation"
+        return 1
+    fi
+}
+
 check_prerequisites() {
     section "Phase 1: Divining Prerequisites"
 
@@ -548,11 +902,24 @@ check_prerequisites() {
     # Check: Git
     # -------------------------------------------------------------------------
     if ! command -v git &> /dev/null; then
-        critical_missing+=("git")
         error "git: NOT FOUND"
-        info "  Install: brew install git  (macOS)"
-        info "           apt-get install git  (Ubuntu/Debian)"
-        info "           yum install git  (CentOS/RHEL)"
+
+        # Attempt interactive installation
+        if install_git; then
+            # Verify installation succeeded
+            if command -v git &> /dev/null; then
+                local git_version=$(git --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+                success "git: ${git_version} (newly installed)"
+            else
+                critical_missing+=("git")
+                error "git installation failed - command still not found"
+            fi
+        else
+            critical_missing+=("git")
+            info "  Manual install: brew install git  (macOS)"
+            info "                  apt-get install git  (Ubuntu/Debian)"
+            info "                  yum install git  (CentOS/RHEL)"
+        fi
     else
         local git_version=$(git --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
         success "git: ${git_version}"
@@ -581,20 +948,49 @@ check_prerequisites() {
     # Check: Python 3.11+
     # -------------------------------------------------------------------------
     if ! command -v python3 &> /dev/null; then
-        critical_missing+=("python3")
         error "Python 3: NOT FOUND"
-        info "  Install: brew install python@3.11  (macOS)"
-        info "           apt-get install python3.11  (Ubuntu/Debian)"
-        info "           yum install python311  (CentOS/RHEL)"
+
+        # Attempt interactive installation
+        if install_python; then
+            # Verify installation succeeded
+            if command -v python3 &> /dev/null; then
+                local python_version=$(python3 --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+                success "Python 3: ${python_version} (newly installed)"
+            else
+                critical_missing+=("python3")
+                error "Python installation failed - command still not found"
+            fi
+        else
+            critical_missing+=("python3")
+            info "  Manual install: brew install python@3.11  (macOS)"
+            info "                  apt-get install python3.11  (Ubuntu/Debian)"
+            info "                  yum install python311  (CentOS/RHEL)"
+        fi
     else
         local python_version=$(python3 --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
         local python_major=$(echo "$python_version" | cut -d. -f1)
         local python_minor=$(echo "$python_version" | cut -d. -f2)
 
         if [[ "$python_major" -lt 3 ]] || [[ "$python_major" -eq 3 && "$python_minor" -lt 11 ]]; then
-            critical_missing+=("python3.11+")
             error "Python 3: ${python_version} (requires 3.11+)"
-            info "  Install: brew install python@3.11  (macOS)"
+            # Attempt upgrade
+            if install_python; then
+                # Re-check version
+                if command -v python3 &> /dev/null; then
+                    python_version=$(python3 --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+                    python_major=$(echo "$python_version" | cut -d. -f1)
+                    python_minor=$(echo "$python_version" | cut -d. -f2)
+                    if [[ "$python_major" -ge 3 ]] && [[ "$python_minor" -ge 11 ]]; then
+                        success "Python 3: ${python_version} (upgraded)"
+                    else
+                        critical_missing+=("python3.11+")
+                        error "Python upgrade failed - still ${python_version}"
+                    fi
+                fi
+            else
+                critical_missing+=("python3.11+")
+                info "  Manual install: brew install python@3.11  (macOS)"
+            fi
         else
             success "Python 3: ${python_version}"
         fi
@@ -604,20 +1000,48 @@ check_prerequisites() {
     # Check: Node.js 18+
     # -------------------------------------------------------------------------
     if ! command -v node &> /dev/null; then
-        critical_missing+=("node")
         error "Node.js: NOT FOUND"
-        info "  Install: brew install node  (macOS)"
-        info "           https://nodejs.org/  (all platforms)"
-        info "           nvm install 18  (if using nvm)"
+
+        # Attempt interactive installation
+        if install_nodejs; then
+            # Verify installation succeeded
+            if command -v node &> /dev/null; then
+                local node_version=$(node --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+                success "Node.js: ${node_version} (newly installed)"
+            else
+                critical_missing+=("node")
+                error "Node.js installation failed - command still not found"
+            fi
+        else
+            critical_missing+=("node")
+            info "  Manual install: brew install node  (macOS)"
+            info "                  https://nodejs.org/  (all platforms)"
+            info "                  nvm install 18  (if using nvm)"
+        fi
     else
         local node_version=$(node --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
         local node_major=$(echo "$node_version" | cut -d. -f1)
 
         if [[ "$node_major" -lt 18 ]]; then
-            critical_missing+=("node18+")
             error "Node.js: ${node_version} (requires 18+)"
-            info "  Install: brew install node  (macOS)"
-            info "           nvm install 18  (if using nvm)"
+            # Attempt upgrade
+            if install_nodejs; then
+                # Re-check version
+                if command -v node &> /dev/null; then
+                    node_version=$(node --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+                    node_major=$(echo "$node_version" | cut -d. -f1)
+                    if [[ "$node_major" -ge 18 ]]; then
+                        success "Node.js: ${node_version} (upgraded)"
+                    else
+                        critical_missing+=("node18+")
+                        error "Node.js upgrade failed - still ${node_version}"
+                    fi
+                fi
+            else
+                critical_missing+=("node18+")
+                info "  Manual install: brew install node  (macOS)"
+                info "                  nvm install 18  (if using nvm)"
+            fi
         else
             success "Node.js: ${node_version}"
         fi
@@ -641,10 +1065,24 @@ check_prerequisites() {
     # Check: uv package manager (Optional)
     # -------------------------------------------------------------------------
     if ! command -v uv &> /dev/null; then
-        optional_missing+=("uv")
         warning "uv package manager: NOT FOUND (optional)"
-        info "  Install: curl -LsSf https://astral.sh/uv/install.sh | sh"
-        info "  Note: Required for MCP server management"
+
+        # Attempt interactive installation
+        if install_uv; then
+            # Verify installation succeeded
+            if command -v uv &> /dev/null; then
+                local uv_version=$(uv --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 2>/dev/null || echo "installed")
+                success "uv package manager: ${uv_version} (newly installed)"
+            else
+                optional_missing+=("uv")
+                warning "uv installation may require shell reload"
+                info "  Try: source ~/.bashrc  (or ~/.zshrc)"
+            fi
+        else
+            optional_missing+=("uv")
+            info "  Manual install: curl -LsSf https://astral.sh/uv/install.sh | sh"
+            info "  Note: Required for MCP server management"
+        fi
     else
         local uv_version=$(uv --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1 2>/dev/null || echo "installed")
         success "uv package manager: ${uv_version}"
@@ -3235,6 +3673,11 @@ main() {
 
     # Check prerequisites (always)
     check_prerequisites
+
+    # Phase 1.5: Frontend plugin (optional)
+    if [[ "$AGENTS_ONLY" == false && "$SKILLS_ONLY" == false ]]; then
+        setup_frontend_plugin
+    fi
 
     # Phase 2: Global agents
     if [[ "$SKILLS_ONLY" == false && "$PROJECT_ONLY" == false ]]; then

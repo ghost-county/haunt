@@ -1374,7 +1374,7 @@ The Windows PowerShell setup script (`setup-haunt.ps1`) is not installing slash 
 
 ---
 
-### ⚪ REQ-244: Add interactive frontend-design plugin installation to setup
+### 🟡 REQ-244: Add interactive frontend-design plugin installation to setup
 
 **Type:** Enhancement
 **Reported:** 2024-12-24
@@ -1412,7 +1412,7 @@ Add frontend-design plugin installation to setup scripts with interactive prompt
 
 ---
 
-### ⚪ REQ-245: Implement interactive dependency installation prompts
+### 🟡 REQ-245: Implement interactive dependency installation prompts
 
 **Type:** Enhancement
 **Reported:** 2024-12-24
@@ -1422,16 +1422,22 @@ Add frontend-design plugin installation to setup scripts with interactive prompt
 Update REQ-242 implementation approach: Instead of a single `--auto-install` flag that installs all dependencies automatically, implement interactive prompts for each missing dependency. Prompt users "Install Python 3.11? (Y/n)" and respect their choice. This gives users control while still being helpful.
 
 **Tasks:**
-- [ ] Update bash script prerequisite checking:
-  - [ ] When Python missing: prompt "Install Python 3.11+ via [package manager]? (Y/n)"
-  - [ ] When Node.js missing: prompt "Install Node.js 18+ via [package manager]? (Y/n)"
-  - [ ] When uv missing: prompt "Install uv package manager? (Y/n)"
-  - [ ] Detect package manager (brew/apt/yum on Linux/Mac)
-  - [ ] Install via detected package manager if user confirms
+- [x] Update bash script prerequisite checking:
+  - [x] When git missing: prompt "Install git via [package manager]? (Y/n)"
+  - [x] When Python missing: prompt "Install Python 3.11+ via [package manager]? (Y/n)"
+  - [x] When Node.js missing: prompt "Install Node.js 18+ via [package manager]? (Y/n)"
+  - [x] When uv missing: prompt "Install uv package manager? (Y/n)"
+  - [x] Detect package manager (brew/apt/yum/dnf on Linux/Mac)
+  - [x] Install via detected package manager if user confirms
+  - [x] After install, verify command is in PATH
+  - [x] If not in PATH, add to shell profile (.bashrc/.zshrc) and inform user to reload shell
 - [ ] Update PowerShell script prerequisite checking:
-  - [ ] Same interactive prompting for Windows
+  - [ ] Same interactive prompting for Windows (git, Python, Node.js, uv)
   - [ ] Use winget for installations
   - [ ] Handle cases where winget not available
+  - [ ] After install, verify command is in PATH
+  - [ ] If not in PATH, add to User environment variable permanently
+  - [ ] Inform user to restart PowerShell or reload environment
 - [ ] Add `--yes` or `-y` flag to skip prompts and auto-install all
 - [ ] Update documentation with new interactive install behavior
 
