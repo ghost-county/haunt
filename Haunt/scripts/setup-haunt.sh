@@ -771,8 +771,13 @@ setup_frontend_plugin() {
     echo ""
 
     local response
-    read -p "$(echo -e "${CYAN}?${NC} Install frontend-design plugin for UI development? (Y/n): ")" response
-    response=${response:-Y}  # Default to Y if empty
+    if [[ "${YES_TO_ALL:-false}" == "true" ]]; then
+        info "Auto-installing frontend-design plugin (--yes flag set)"
+        response="Y"
+    else
+        read -p "$(echo -e "${CYAN}?${NC} Install frontend-design plugin for UI development? (Y/n): ")" response
+        response=${response:-Y}  # Default to Y if empty
+    fi
 
     if [[ "$response" =~ ^[Yy]$ ]]; then
         info "Installing frontend-design plugin..."
