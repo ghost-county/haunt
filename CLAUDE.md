@@ -47,6 +47,8 @@ Phase 3 - High Impact (3 requirements, ~14 hours):
 **Also on roadmap:**
 ⚪ REQ-205: GitHub Issues Integration (Research-Analyst → Dev-Infrastructure)
 ⚪ REQ-206: Create /bind Command (Dev-Infrastructure)
+⚪ REQ-242: Auto-install missing dependencies in setup scripts (Dev-Infrastructure, M)
+⚪ REQ-243: Fix Windows setup not installing slash commands (Dev-Infrastructure, S)
 
 See `.haunt/plans/roadmap.md` for full details.
 

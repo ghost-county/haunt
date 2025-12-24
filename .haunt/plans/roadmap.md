@@ -1287,3 +1287,88 @@ Phase 3: Roadmap Creation
 **Completion:** Phase 2.5 integrated into orchestrator workflow, critic reviews requirements before roadmap creation, quick mode skips critic
 **Blocked by:** REQ-239 (need gco-research-critic agent to exist first)
 
+---
+
+## Batch: Setup & Installation Improvements
+
+### ⚪ REQ-242: Auto-install missing dependencies in setup scripts
+
+**Type:** Enhancement
+**Reported:** 2024-12-24
+**Source:** User feedback - manual dependency installation is friction point
+
+**Description:**
+Add automatic dependency installation to setup scripts with user consent. When setup detects missing dependencies (Python, Node.js, git, uv), prompt user to auto-install them using the appropriate package manager (winget on Windows, brew on macOS, apt/yum on Linux) instead of just showing manual installation instructions.
+
+**Tasks:**
+- [ ] Add dependency auto-install to `setup-haunt.sh` (macOS/Linux):
+  - [ ] Detect OS and package manager (brew/apt/yum)
+  - [ ] Add `--auto-install` flag (opt-in)
+  - [ ] Prompt user for each missing dependency: "Auto-install Python 3.11? (Y/n)"
+  - [ ] Install Python 3.11+ via package manager
+  - [ ] Install Node.js 18+ via package manager
+  - [ ] Install uv via curl script
+  - [ ] Verify installations succeeded
+- [ ] Add dependency auto-install to `setup-haunt.ps1` (Windows):
+  - [ ] Use winget for package management
+  - [ ] Add `-AutoInstall` parameter (opt-in)
+  - [ ] Prompt user for each missing dependency
+  - [ ] Install Python 3.11+ via `winget install Python.Python.3.11`
+  - [ ] Install Node.js 18+ via `winget install OpenJS.NodeJS`
+  - [ ] Install uv via PowerShell script
+  - [ ] Verify installations succeeded
+- [ ] Update documentation:
+  - [ ] Add auto-install section to SETUP-GUIDE.md
+  - [ ] Update Quick Start with `--auto-install` option
+  - [ ] Document that manual installation is still supported
+
+**Files:**
+- `Haunt/scripts/setup-haunt.sh` (modify)
+- `Haunt/scripts/setup-haunt.ps1` (modify)
+- `Haunt/SETUP-GUIDE.md` (modify)
+- `Haunt/README.md` (modify)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Setup scripts can auto-install Python, Node.js, and uv with user consent on all platforms
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-243: Fix Windows setup not installing slash commands
+
+**Type:** Bug Fix
+**Reported:** 2024-12-24
+**Source:** User report - Windows setup completed but slash commands missing
+
+**Description:**
+The Windows PowerShell setup script (`setup-haunt.ps1`) is not installing slash commands to `.claude/commands/` directory. The bash script works correctly on macOS/Linux, but Windows users are missing commands like `/summon`, `/banish`, `/seance`, etc. after setup completes.
+
+**Root Cause Investigation Needed:**
+- Is the commands directory being created?
+- Are files being copied but to wrong location?
+- Is there a PowerShell-specific path issue?
+- Is the `--scope project` flag being handled correctly?
+
+**Tasks:**
+- [ ] Reproduce the issue on Windows
+- [ ] Debug `setup-haunt.ps1` commands installation logic
+- [ ] Compare with working `setup-haunt.sh` logic
+- [ ] Fix PowerShell script to correctly copy commands
+- [ ] Verify commands are installed to correct location:
+  - [ ] Global scope: `~/.claude/commands/`
+  - [ ] Project scope: `./.claude/commands/`
+- [ ] Test that commands are accessible after setup
+- [ ] Add verification step to confirm commands installed
+- [ ] Update setup completion message to confirm commands location
+
+**Files:**
+- `Haunt/scripts/setup-haunt.ps1` (modify - fix commands installation)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Windows setup correctly installs slash commands, verified by user testing
+**Blocked by:** None
+
