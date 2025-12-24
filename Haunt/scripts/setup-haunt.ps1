@@ -776,6 +776,123 @@ function Install-Rules {
 }
 
 # ============================================================================
+# PHASE 4B: SLASH COMMANDS INSTALLATION
+# ============================================================================
+
+function Install-CommandsToDirectory {
+    param(
+        [string]$TargetDir,
+        [string]$ScopeName
+    )
+
+    Write-Info "Inscribing slash commands to: $TargetDir"
+
+    if (-not (Test-Path $SourceCommandsDir)) {
+        Write-Warn "No source commands directory found, skipping"
+        return
+    }
+
+    # Count source commands
+    $sourceCommands = Get-ChildItem -Path $SourceCommandsDir -Filter "*.md" -ErrorAction SilentlyContinue
+    if ($sourceCommands.Count -eq 0) {
+        Write-Warn "No command files found in $SourceCommandsDir"
+        return
+    }
+    Write-Info "Found $($sourceCommands.Count) command(s) to install"
+
+    # Create target directory
+    if (-not (Test-Path $TargetDir)) {
+        if (-not $DryRun) {
+            New-Item -ItemType Directory -Path $TargetDir -Force | Out-Null
+            Write-Success "Created $TargetDir"
+        }
+        else {
+            Write-Info "[DRY RUN] Would create $TargetDir"
+        }
+    }
+    else {
+        Write-Info "Directory already exists: $TargetDir"
+    }
+
+    # Copy command files
+    $installedCount = 0
+    $updatedCount = 0
+    $unchangedCount = 0
+
+    foreach ($commandFile in $sourceCommands) {
+        $destFile = Join-Path $TargetDir $commandFile.Name
+
+        if (Test-Path $destFile) {
+            $sourceHash = (Get-FileHash $commandFile.FullName -Algorithm MD5).Hash
+            $destHash = (Get-FileHash $destFile -Algorithm MD5).Hash
+
+            if ($sourceHash -ne $destHash) {
+                if (-not $DryRun) {
+                    Copy-Item -Path $commandFile.FullName -Destination $destFile -Force
+                    Write-Success "Updated $($commandFile.Name)"
+                }
+                else {
+                    Write-Info "[DRY RUN] Would update $($commandFile.Name)"
+                }
+                $updatedCount++
+            }
+            else {
+                Write-Info "Unchanged: $($commandFile.Name)"
+                $unchangedCount++
+            }
+        }
+        else {
+            if (-not $DryRun) {
+                Copy-Item -Path $commandFile.FullName -Destination $destFile
+                Write-Success "Installed $($commandFile.Name)"
+            }
+            else {
+                Write-Info "[DRY RUN] Would install $($commandFile.Name)"
+            }
+            $installedCount++
+        }
+    }
+
+    Write-Host ""
+    Write-Info "Commands installation summary for ${ScopeName}:"
+    Write-Host "  - Installed: $installedCount new command(s)"
+    Write-Host "  - Updated:   $updatedCount command(s)"
+    Write-Host "  - Unchanged: $unchangedCount command(s)"
+}
+
+function Install-Commands {
+    Write-Section "Phase 4b: Inscribing Slash Commands (Scope: $Scope)"
+
+    if (-not (Test-Path $SourceCommandsDir)) {
+        Write-Warn "Source commands directory not found: $SourceCommandsDir"
+        Write-Warn "Skipping commands installation"
+        return
+    }
+
+    switch ($Scope) {
+        'global' {
+            Install-CommandsToDirectory -TargetDir $GlobalCommandsDir -ScopeName "global"
+            Write-Success "Global commands setup complete"
+        }
+        'project' {
+            Install-CommandsToDirectory -TargetDir $ProjectCommandsDir -ScopeName "project"
+            Write-Success "Project commands setup complete"
+        }
+        'both' {
+            Write-Info "Inscribing to both global and project scopes..."
+            Write-Host ""
+            Write-Info "=== Inscribing commands to GLOBAL scope ==="
+            Install-CommandsToDirectory -TargetDir $GlobalCommandsDir -ScopeName "global"
+            Write-Host ""
+            Write-Info "=== Inscribing commands to PROJECT scope ==="
+            Install-CommandsToDirectory -TargetDir $ProjectCommandsDir -ScopeName "project"
+            Write-Host ""
+            Write-Success "Commands setup complete for both scopes"
+        }
+    }
+}
+
+# ============================================================================
 # PHASE 5: PROJECT STRUCTURE
 # ============================================================================
 
@@ -992,6 +1109,7 @@ function Main {
         Install-Agents
         Install-Skills
         Install-Rules
+        Install-Commands
         Install-ProjectStructure
     }
 
