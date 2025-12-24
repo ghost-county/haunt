@@ -1299,6 +1299,38 @@ setup_global_agents() {
         echo ""
         success "Agents setup complete for both scopes"
     fi
+
+    # Copy version file to track installed version
+    copy_version_file
+}
+
+# ============================================================================
+# VERSION FILE TRACKING
+# ============================================================================
+
+copy_version_file() {
+    local source_version_file="${PROJECT_ROOT}/.haunt-version"
+    local global_version_file="${HOME}/.claude/.haunt-version"
+
+    if [[ ! -f "$source_version_file" ]]; then
+        warning "Version file not found: ${source_version_file}"
+        info "Skipping version tracking (framework may not support it yet)"
+        return 0
+    fi
+
+    # Copy version file to global ~/.claude/ directory
+    if [[ "$DRY_RUN" == false ]]; then
+        cp "$source_version_file" "$global_version_file"
+        chmod 644 "$global_version_file"
+        success "Installed version file to ${global_version_file}"
+
+        # Extract and display version info
+        local version=$(grep "^HAUNT_VERSION=" "$source_version_file" | cut -d'=' -f2)
+        local sha=$(grep "^HAUNT_SHA=" "$source_version_file" | cut -d'=' -f2 | cut -c1-8)
+        info "Haunt version: ${version} (${sha})"
+    else
+        info "[DRY RUN] Would copy version file to ${global_version_file}"
+    fi
 }
 
 # ============================================================================

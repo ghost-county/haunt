@@ -1,0 +1,7 @@
+# Haunt Framework Version Tracking
+# This file tracks the installed version of the Haunt framework
+# Updated by setup-haunt.sh during installation
+
+HAUNT_VERSION=2.0.0
+HAUNT_SHA=039e872ef28de8611b1c7161d15598ea33db21b6
+INSTALL_DATE=2024-12-24

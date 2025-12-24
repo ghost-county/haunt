@@ -1,11 +1,13 @@
 ---
 name: gco-orchestrator
-description: Conduct a séance - the Ghost County workflow orchestration ritual. Detects context (new vs existing project), guides through idea-to-roadmap planning, then optionally summons worker spirits. Use when starting a new project, adding features to existing projects, or when user says "start a seance", "hold a seance", "time for a seance", or "let's seance".
+description: Conduct a séance - the Ghost County workflow orchestration ritual. Checks for Haunt framework updates, detects context (new vs existing project), guides through idea-to-roadmap planning, then optionally summons worker spirits. Use when starting a new project, adding features to existing projects, or when user says "start a seance", "hold a seance", "time for a seance", or "let's seance".
 ---
 
 # Seance Workflow Orchestration
 
 The Seance is Ghost County's primary workflow orchestration layer - a ritual that guides you from raw ideas to actionable roadmaps, then optionally summons worker agents ("spirits") to implement the plan.
+
+**Framework Update Check:** Every seance begins by checking if the Haunt framework has been updated. If a new version is available, you'll be prompted to reinstall before continuing.
 
 ## When to Use
 
@@ -534,6 +536,121 @@ REQ-XXX Tasks now include:
 - Low-risk documentation updates
 
 ## Workflow Steps
+
+### Step 0: Check Haunt Framework Version (Run First)
+
+Before starting the seance workflow, check if the Haunt framework needs updating:
+
+```python
+import os
+import subprocess
+
+def check_haunt_version():
+    """
+    Check if local Haunt installation matches repository version.
+    Returns tuple: (is_outdated: bool, local_sha: str, repo_sha: str)
+    """
+    # Get repository SHA from Haunt/.haunt-version
+    repo_version_file = "Haunt/.haunt-version"
+    if not os.path.exists(repo_version_file):
+        return (False, None, None)  # Version tracking not available
+
+    # Parse repo SHA
+    repo_sha = None
+    with open(repo_version_file, 'r') as f:
+        for line in f:
+            if line.startswith("HAUNT_SHA="):
+                repo_sha = line.split('=')[1].strip()
+                break
+
+    if not repo_sha:
+        return (False, None, None)
+
+    # Get installed SHA from user's home directory
+    home_version_file = os.path.expanduser("~/.claude/.haunt-version")
+    if not os.path.exists(home_version_file):
+        return (True, None, repo_sha)  # Not installed or old installation
+
+    # Parse installed SHA
+    local_sha = None
+    with open(home_version_file, 'r') as f:
+        for line in f:
+            if line.startswith("HAUNT_SHA="):
+                local_sha = line.split('=')[1].strip()
+                break
+
+    # Compare
+    is_outdated = (local_sha != repo_sha)
+    return (is_outdated, local_sha, repo_sha)
+
+# At seance start, check version
+is_outdated, local_sha, repo_sha = check_haunt_version()
+
+if is_outdated:
+    # Prompt user for reinstall
+    print("\n🔮 Haunt framework has new features available.\n")
+    if local_sha:
+        print(f"   Installed: {local_sha[:8]}")
+    else:
+        print("   Installed: Unknown or not installed")
+    print(f"   Available: {repo_sha[:8]}\n")
+
+    user_response = input("Reinstall to get latest features? (Y/n): ").strip().lower()
+
+    if user_response in ['', 'y', 'yes']:
+        # Run setup script
+        print("\n📦 Reinstalling Haunt framework...\n")
+
+        # Detect platform
+        import platform
+        if platform.system() == "Windows":
+            # PowerShell script
+            subprocess.run(["powershell", "-File", "Haunt/scripts/setup-haunt.ps1"], check=False)
+        else:
+            # Bash script
+            subprocess.run(["bash", "Haunt/scripts/setup-haunt.sh"], check=False)
+
+        # Display restart instructions
+        print("\n✅ Haunt framework reinstalled!\n")
+        print("⚠️  To use new features, restart Claude Code:")
+        print("   1. Type 'exit' or close this chat session")
+        print("   2. Start a new session")
+        print("   3. New agents, skills, and commands will be available\n")
+
+        # Ask if user wants to continue or restart
+        continue_response = input("Continue with current session? (y/N): ").strip().lower()
+        if continue_response not in ['y', 'yes']:
+            print("\n👻 The spirits rest. Restart Claude Code when ready.")
+            return  # Exit seance
+    else:
+        print("\n⚠️  Continuing with current version. Some features may be unavailable.\n")
+
+# Proceed with normal seance workflow...
+```
+
+**When to run this check:**
+- At the very start of every `/seance` invocation
+- Before any mode detection or user prompts
+- Skip if version file doesn't exist (backward compatibility)
+
+**Restart Instructions:**
+
+After successful reinstall, provide clear restart guidance:
+
+```
+✅ Haunt framework reinstalled!
+
+⚠️  To use new features, restart Claude Code:
+   1. Type 'exit' or close this chat session
+   2. Start a new session
+   3. New agents, skills, and commands will be available
+```
+
+**Error Handling:**
+- If version file doesn't exist: Skip check silently (backward compatibility)
+- If setup script fails: Report error, continue with current version
+- If user declines reinstall: Warn about missing features, continue
+- If user declines to continue after reinstall: Exit seance gracefully
 
 ### Step 1: Detect Mode and Context
 

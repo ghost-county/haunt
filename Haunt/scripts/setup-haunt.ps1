@@ -83,7 +83,9 @@ param(
     [switch]$NoBackup,
     [switch]$NoMcp,
     [switch]$Cleanup,
+    [switch]$Yes,
     [switch]$Help
+)
 )
 
 # ============================================================================
@@ -205,6 +207,7 @@ OPTIONS:
     -SkillsOnly         Only conjure project-specific skills
     -Verify             Only verify existing haunt, don't modify
     -Fix                Exorcise issues found during verification
+    -Yes                Auto-install all missing dependencies without prompting
     -SkipPrereqs        Skip prerequisite divination
     -NoBackup           Skip backup of existing spirits
     -NoMcp              Skip MCP server channeling
@@ -339,6 +342,203 @@ function Initialize-Resources {
 }
 
 # ============================================================================
+
+# ============================================================================
+# DEPENDENCY INSTALLATION HELPERS
+# ============================================================================
+
+function Prompt-Install {
+    param(
+        [string]$PackageName,
+        [string]$InstallCommand
+    )
+
+    # If -Yes flag is set, auto-confirm
+    if ($Yes) {
+        Write-Info "Auto-installing $PackageName (-Yes flag set)"
+        return $true
+    }
+
+    # Interactive prompt
+    Write-Host -NoNewline -ForegroundColor Yellow "? "
+    Write-Host -NoNewline "Install $PackageName via $InstallCommand? (Y/n): "
+    $response = Read-Host
+
+    # Default to Yes if empty
+    if ([string]::IsNullOrWhiteSpace($response) -or $response -match '^[Yy]$') {
+        return $true
+    }
+    else {
+        return $false
+    }
+}
+
+function Install-Git {
+    # Check if winget is available
+    $wingetCmd = Get-Command winget -ErrorAction SilentlyContinue
+    
+    if ($wingetCmd) {
+        if (Prompt-Install "git" "winget") {
+            Write-Info "Installing git via winget..."
+            try {
+                winget install --id Git.Git -e --silent
+                
+                # Verify installation
+                $gitCmd = Get-Command git -ErrorAction SilentlyContinue
+                if ($gitCmd) {
+                    Write-Success "git installed successfully"
+                    return $true
+                }
+                else {
+                    Write-Warn "git installed but not found in PATH. Please restart PowerShell."
+                    return $false
+                }
+            }
+            catch {
+                Write-Err "Failed to install git: $_"
+                Write-Info "  Install manually: https://git-scm.com/download/win"
+                return $false
+            }
+        }
+        else {
+            Write-Warn "Skipping git installation"
+            return $false
+        }
+    }
+    else {
+        Write-Err "winget not available"
+        Write-Info "  Install git manually: https://git-scm.com/download/win"
+        Write-Info "  Or install winget: https://aka.ms/getwinget"
+        return $false
+    }
+}
+
+function Install-Python {
+    # Check if winget is available
+    $wingetCmd = Get-Command winget -ErrorAction SilentlyContinue
+    
+    if ($wingetCmd) {
+        if (Prompt-Install "Python 3.11+" "winget") {
+            Write-Info "Installing Python 3.11 via winget..."
+            try {
+                winget install --id Python.Python.3.11 -e --silent
+                
+                # Verify installation
+                $pythonCmd = Get-Command python -ErrorAction SilentlyContinue
+                if (-not $pythonCmd) {
+                    $pythonCmd = Get-Command python3 -ErrorAction SilentlyContinue
+                }
+                
+                if ($pythonCmd) {
+                    Write-Success "Python installed successfully"
+                    return $true
+                }
+                else {
+                    Write-Warn "Python installed but not found in PATH. Please restart PowerShell."
+                    return $false
+                }
+            }
+            catch {
+                Write-Err "Failed to install Python: $_"
+                Write-Info "  Install manually: https://python.org/downloads/"
+                return $false
+            }
+        }
+        else {
+            Write-Warn "Skipping Python installation"
+            return $false
+        }
+    }
+    else {
+        Write-Err "winget not available"
+        Write-Info "  Install Python manually: https://python.org/downloads/"
+        Write-Info "  Or install winget: https://aka.ms/getwinget"
+        return $false
+    }
+}
+
+function Install-Node {
+    # Check if winget is available
+    $wingetCmd = Get-Command winget -ErrorAction SilentlyContinue
+    
+    if ($wingetCmd) {
+        if (Prompt-Install "Node.js 18+" "winget") {
+            Write-Info "Installing Node.js LTS via winget..."
+            try {
+                winget install --id OpenJS.NodeJS.LTS -e --silent
+                
+                # Verify installation
+                $nodeCmd = Get-Command node -ErrorAction SilentlyContinue
+                if ($nodeCmd) {
+                    Write-Success "Node.js installed successfully"
+                    return $true
+                }
+                else {
+                    Write-Warn "Node.js installed but not found in PATH. Please restart PowerShell."
+                    return $false
+                }
+            }
+            catch {
+                Write-Err "Failed to install Node.js: $_"
+                Write-Info "  Install manually: https://nodejs.org/"
+                return $false
+            }
+        }
+        else {
+            Write-Warn "Skipping Node.js installation"
+            return $false
+        }
+    }
+    else {
+        Write-Err "winget not available"
+        Write-Info "  Install Node.js manually: https://nodejs.org/"
+        Write-Info "  Or install winget: https://aka.ms/getwinget"
+        return $false
+    }
+}
+
+function Install-Uv {
+    # uv installation via pip
+    $pipCmd = Get-Command pip -ErrorAction SilentlyContinue
+    if (-not $pipCmd) {
+        $pipCmd = Get-Command pip3 -ErrorAction SilentlyContinue
+    }
+    
+    if ($pipCmd) {
+        if (Prompt-Install "uv package manager" "pip") {
+            Write-Info "Installing uv via pip..."
+            try {
+                & $pipCmd.Source install uv
+                
+                # Verify installation
+                $uvCmd = Get-Command uv -ErrorAction SilentlyContinue
+                if ($uvCmd) {
+                    Write-Success "uv installed successfully"
+                    return $true
+                }
+                else {
+                    Write-Warn "uv installed but not found in PATH. Please restart PowerShell."
+                    return $false
+                }
+            }
+            catch {
+                Write-Err "Failed to install uv: $_"
+                Write-Info "  Install manually: pip install uv"
+                return $false
+            }
+        }
+        else {
+            Write-Warn "Skipping uv installation"
+            return $false
+        }
+    }
+    else {
+        Write-Err "pip not available (Python must be installed first)"
+        return $false
+    }
+}
+
+
 # PHASE 1: PREREQUISITES CHECK
 # ============================================================================
 
@@ -622,6 +822,39 @@ function Install-Agents {
             Write-Host ""
             Install-AgentsToDirectory -TargetDir $ProjectAgentsDir -BackupDir "$ProjectAgentsDir.backup" -ScopeName "project"
         }
+    }
+
+    # Copy version file to track installed version
+    Copy-HauntVersionFile
+}
+
+# ============================================================================
+# VERSION FILE TRACKING
+# ============================================================================
+
+function Copy-HauntVersionFile {
+    $sourceVersionFile = Join-Path $ProjectRoot ".haunt-version"
+    $globalVersionFile = Join-Path $env:USERPROFILE ".claude\.haunt-version"
+
+    if (-not (Test-Path $sourceVersionFile)) {
+        Write-Warning "Version file not found: $sourceVersionFile"
+        Write-Info "Skipping version tracking (framework may not support it yet)"
+        return
+    }
+
+    # Copy version file to global ~/.claude/ directory
+    if (-not $DryRun) {
+        Copy-Item -Path $sourceVersionFile -Destination $globalVersionFile -Force
+        Write-Success "Installed version file to $globalVersionFile"
+
+        # Extract and display version info
+        $content = Get-Content $sourceVersionFile
+        $version = ($content | Select-String "^HAUNT_VERSION=").ToString().Split('=')[1]
+        $sha = ($content | Select-String "^HAUNT_SHA=").ToString().Split('=')[1].Substring(0, 8)
+        Write-Info "Haunt version: $version ($sha)"
+    }
+    else {
+        Write-Info "[DRY RUN] Would copy version file to $globalVersionFile"
     }
 }
 
