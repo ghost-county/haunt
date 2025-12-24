@@ -1510,21 +1510,22 @@ Deployed via setup-haunt.sh. Testing is ongoing as agents use this guidance duri
 
 ---
 
-### 🟡 REQ-247: Implement File Read Caching Awareness in All Agents
+### 🟢 REQ-247: Implement File Read Caching Awareness in All Agents
 
 **Type:** Enhancement
 **Reported:** 2024-12-24
+**Completed:** 2024-12-24
 **Source:** Token efficiency analysis - agents waste 38K tokens re-reading same files
 
 **Description:**
 Add file caching awareness to all agent character sheets. Agents re-read roadmap 4-5x and setup scripts 8-12x without recognizing they have the content. Add guidance to avoid redundant reads unless file was modified.
 
 **Tasks:**
-- [ ] Update all agent character sheets with read caching section
-- [ ] Add guidance: "Recently read files are cached. Avoid re-reading unless file changed."
-- [ ] Add reminder: "Before reading file, check if you read it in last 10 tool calls"
-- [ ] Deploy via setup-haunt.sh
-- [ ] Test with redundant-read scenario
+- [x] Update all agent character sheets with read caching section
+- [x] Add guidance: "Recently read files are cached. Avoid re-reading unless file changed."
+- [x] Add reminder: "Before reading file, check if you read it in last 10 tool calls"
+- [x] Deploy via setup-haunt.sh
+- [x] Test with redundant-read scenario
 
 **Files:**
 - `Haunt/agents/gco-dev.md` (modify)
@@ -1539,6 +1540,16 @@ Add file caching awareness to all agent character sheets. Agents re-read roadmap
 **Completion:** All agents avoid redundant file reads, 30-40% token reduction
 **Blocked by:** None
 **RICE Score:** 315 (saves 38K tokens per M-sized task)
+
+**Implementation Notes:**
+Added "File Reading Best Practices" section to all 5 agent character sheets (gco-dev, gco-project-manager, gco-research, gco-research-analyst, gco-code-reviewer). Each section includes:
+- Cache awareness guidance (files cached in context)
+- Before-read checklist (check last 10 tool calls)
+- Re-read exceptions (file modified, git pull, context compacted)
+- Agent-specific examples (✅ good vs ❌ bad patterns)
+- Impact statement (30-40% token reduction)
+
+Changes deployed to `~/.claude/agents/` via manual copy. Estimated token savings: 38K per M-sized task by eliminating 4-5 redundant roadmap reads and 8-12 redundant setup script reads.
 
 ---
 
@@ -1602,4 +1613,45 @@ Add --quick/--standard/--deep modes to /seance for scale-appropriate planning.
 **Effort:** M
 **Complexity:** MODERATE
 **RICE Score:** 18
+
+
+---
+
+### ⚪ REQ-251: Add Haunt Reinstall Prompt to Orchestrator Workflow
+
+**Type:** Enhancement
+**Reported:** 2024-12-24
+**Source:** User request - ensure users have latest Haunt features before starting work
+
+**Description:**
+Add a check to the orchestrator (seance) workflow that detects if Haunt framework has been updated and recommends reinstalling. Optionally, offer to reinstall Haunt automatically for the user and provide instructions to restart Claude Code to use new features.
+
+**Workflow Integration:**
+When user runs `/seance`, before starting the orchestrator workflow:
+1. Check if local Haunt installation is outdated (compare git SHA or version)
+2. If outdated: Prompt "Haunt has new features. Reinstall to get latest? (Y/n)"
+3. If yes: Run setup script automatically (`bash Haunt/scripts/setup-haunt.sh`)
+4. After reinstall: Display message "Restart Claude Code to use new features: exit this session and start a new one"
+5. If no: Continue with current version, warn about missing features
+
+**Tasks:**
+- [ ] Add version/SHA tracking to Haunt framework
+- [ ] Create `check_haunt_version()` function in orchestrator skill
+- [ ] Add reinstall prompt at start of seance workflow
+- [ ] Implement automatic reinstall with user confirmation
+- [ ] Add restart instructions (how to exit and restart Claude Code)
+- [ ] Handle both bash and PowerShell setup scripts
+- [ ] Test on both Mac and Windows
+- [ ] Update orchestrator skill documentation
+
+**Files:**
+- `Haunt/skills/gco-orchestrator/SKILL.md` (modify)
+- `Haunt/VERSION` or `Haunt/.version` (create - track framework version)
+- `Haunt/commands/seance.md` (modify - document reinstall prompt)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Orchestrator detects outdated Haunt, prompts for reinstall, provides restart instructions
+**Blocked by:** None
 
