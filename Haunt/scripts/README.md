@@ -44,6 +44,13 @@ scripts/
 Install directly from GitHub without cloning the repository:
 
 ```bash
+# RECOMMENDED: Manual installation (works on all platforms, including Windows)
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
+bash Haunt/scripts/setup-haunt.sh
+cd .. && rm -rf ghost-county  # Optional cleanup
+
+# ALTERNATIVE: Remote installation (one-liner, may fail on some networks)
 # Quick install (clones repo temporarily, keeps it for reference)
 curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
 
@@ -53,10 +60,17 @@ curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haun
 # Install with options
 curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
 
-# Alternative: Use GitHub API to bypass CDN cache (if you need latest immediately)
+# Use GitHub API to bypass CDN cache (if you need latest immediately)
 curl -fsSL -H "Accept: application/vnd.github.v3.raw" \
   "https://api.github.com/repos/ghost-county/ghost-county/contents/Haunt/scripts/setup-haunt.sh" | bash
 ```
+
+**Windows Users:**
+- Use **Git Bash** (recommended) or WSL, not PowerShell
+- If clone fails, see [SETUP-GUIDE.md Issue 11](../SETUP-GUIDE.md#issue-11-failed-to-clone-repository-during-remote-installation)
+
+**Troubleshooting:**
+If you get "Failed to clone repository" error, the manual installation method above will always work.
 
 ### Local Installation
 

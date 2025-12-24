@@ -19,17 +19,64 @@
 
 ## Quick Start
 
-**For impatient users: Complete setup in 3 commands**
+**For impatient users: Complete setup in 4 commands**
+
+### macOS / Linux
 
 ```bash
-# 1. Navigate to repository
-cd /path/to/Claude
+# 1. Clone repository
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
 
 # 2. Run setup script
 bash Haunt/scripts/setup-haunt.sh
 
 # 3. Verify installation
 bash Haunt/scripts/setup-haunt.sh --verify
+
+# 4. (Optional) Remove repository clone
+cd .. && rm -rf ghost-county
+```
+
+**Alternative: Remote installation (one-liner)**
+```bash
+# Quick install via curl (may fail on some networks - see Troubleshooting Issue 11)
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+```
+**Note:** If the curl command fails with "Failed to clone repository", use the manual method above instead.
+
+### Windows (PowerShell)
+
+**Recommended: Use Git Bash on Windows**
+```bash
+# 1. Clone repository
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
+
+# 2. Run setup script
+bash Haunt/scripts/setup-haunt.sh
+
+# 3. Verify installation
+bash Haunt/scripts/setup-haunt.sh --verify
+
+# 4. (Optional) Remove repository clone
+cd .. && rm -rf ghost-county
+```
+
+**Alternative: PowerShell (if available)**
+```powershell
+# 1. Clone repository
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
+
+# 2. Run setup script
+.\Haunt\scripts\setup-haunt.ps1
+
+# 3. Verify installation
+.\Haunt\scripts\setup-haunt.ps1 -Verify
+
+# 4. (Optional) Remove repository clone
+cd .. ; Remove-Item -Recurse -Force ghost-county
 ```
 
 **First command to try:**
@@ -59,6 +106,10 @@ sudo apt-get install git
 
 # Install on CentOS/RHEL
 sudo yum install git
+
+# Install on Windows
+winget install Git.Git
+# Or download from: https://git-scm.com/download/win
 ```
 
 **Configure Git:**
@@ -72,7 +123,8 @@ git config --global user.email "your.email@example.com"
 
 ```bash
 # Check version
-python3 --version
+python3 --version   # macOS/Linux
+python --version    # Windows
 
 # Install on macOS
 brew install python@3.11
@@ -82,6 +134,10 @@ sudo apt-get install python3.11 python3.11-venv
 
 # Install on CentOS/RHEL
 sudo yum install python311
+
+# Install on Windows
+winget install Python.Python.3.11
+# Or download from: https://python.org/downloads/
 ```
 
 #### 3. Node.js 18+ (for Claude Code CLI)
@@ -97,6 +153,10 @@ brew install node
 # Install on Ubuntu/Debian
 curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
 sudo apt-get install -y nodejs
+
+# Install on Windows
+winget install OpenJS.NodeJS.LTS
+# Or download from: https://nodejs.org/
 
 # Install with nvm (recommended for version management)
 nvm install 18
@@ -123,8 +183,11 @@ claude --list-agents
 **Purpose:** Fast Python package and MCP server management
 
 ```bash
-# Install
+# Install on macOS/Linux
 curl -LsSf https://astral.sh/uv/install.sh | sh
+
+# Install on Windows (PowerShell)
+irm https://astral.sh/uv/install.ps1 | iex
 
 # Verify installation
 uv --version
@@ -151,14 +214,86 @@ npx playwright install
 
 ## Installation
 
+### Windows Installation
+
+Haunt fully supports Windows via PowerShell. Choose one of these methods:
+
+#### Method 1: Local Installation (Recommended)
+
+```powershell
+# 1. Clone the repository
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
+
+# 2. Run the PowerShell setup script
+.\Haunt\scripts\setup-haunt.ps1
+
+# 3. Verify installation
+.\Haunt\scripts\setup-haunt.ps1 -Verify
+
+# 4. Start your first session
+claude -a dev
+```
+
+#### Method 2: Remote Installation (One-Liner)
+
+```powershell
+# Quick install - downloads and runs setup automatically
+irm https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.ps1 | iex
+```
+
+#### Method 3: WSL (Windows Subsystem for Linux)
+
+If you prefer bash, use WSL:
+
+```powershell
+# Enable WSL (run as Administrator)
+wsl --install
+
+# After restart, open Ubuntu and run:
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
+bash Haunt/scripts/setup-haunt.sh
+```
+
+#### PowerShell Script Options
+
+```powershell
+# Full setup (default: project-local)
+.\setup-haunt.ps1
+
+# Install to user-level (~/.claude/)
+.\setup-haunt.ps1 -Scope global
+
+# Install to both locations
+.\setup-haunt.ps1 -Scope both
+
+# Preview without making changes
+.\setup-haunt.ps1 -DryRun
+
+# Only install agents
+.\setup-haunt.ps1 -AgentsOnly
+
+# Verify and fix issues
+.\setup-haunt.ps1 -Verify -Fix
+
+# Skip prerequisite checks
+.\setup-haunt.ps1 -SkipPrereqs
+
+# Show all options
+Get-Help .\setup-haunt.ps1 -Detailed
+```
+
+---
+
 ### Scenario 1: First-Time Setup (New User)
 
 **Goal:** Install Haunt v2.0 from scratch
 
-**Steps:**
+**Steps (macOS/Linux):**
 ```bash
 # 1. Clone or navigate to repository
-cd /path/to/Claude
+cd /path/to/ghost-county
 
 # 2. Run full setup
 bash Haunt/scripts/setup-haunt.sh
@@ -171,6 +306,28 @@ ls -la ~/.claude/agents/
 
 # 5. Review available skills
 ls -1 Haunt/skills/
+
+# 6. Start your first session
+claude -a dev
+```
+
+**Steps (Windows PowerShell):**
+
+```powershell
+# 1. Clone or navigate to repository
+cd C:\path\to\ghost-county
+
+# 2. Run full setup
+.\Haunt\scripts\setup-haunt.ps1
+
+# 3. Verify installation
+.\Haunt\scripts\setup-haunt.ps1 -Verify
+
+# 4. Review installed agents
+Get-ChildItem $env:USERPROFILE\.claude\agents\
+
+# 5. Review available skills
+Get-ChildItem Haunt\skills\
 
 # 6. Start your first session
 claude -a dev
@@ -658,6 +815,176 @@ bash Haunt/scripts/setup-haunt.sh  # Without --dry-run
 grep -n "TODO" Haunt/scripts/setup-haunt.sh
 # If TODOs exist, agent copying may not be implemented yet
 ```
+
+### Issue 11: "Failed to clone repository" during remote installation
+
+**Symptoms:**
+```
+[i] Remote execution detected - cloning repository...
+[X] Failed to clone repository from https://github.com/ghost-county/ghost-county.git
+```
+
+**Occurs on:** macOS, Linux, Windows (all platforms)
+
+**When:** Running the one-liner curl install command:
+```bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+```
+
+**Diagnostic:**
+```bash
+# Test 1: Verify git is installed
+git --version
+# Should show: git version 2.x.x
+
+# Test 2: Test GitHub connectivity
+curl -I https://github.com
+# Should show: HTTP/2 200
+
+# Test 3: Try manual clone
+git clone https://github.com/ghost-county/ghost-county.git /tmp/haunt-test
+# If this works, issue is with curl | bash execution context
+
+# Test 4: Check git credentials (if clone asks for password)
+git config --get credential.helper
+```
+
+**Common Causes:**
+
+1. **Git not installed or not in PATH**
+   - The curl | bash command runs in a shell that may not have git accessible
+   - Git is installed but not in the default PATH
+
+2. **Corporate firewall/proxy blocking git:// protocol**
+   - Some networks block git protocol or require proxy configuration
+   - GitHub may be blocked or throttled
+
+3. **Git credentials required (unlikely for public repo)**
+   - Git asking for authentication even though repo is public
+   - Credential helper not configured
+
+4. **Temporary GitHub service issues**
+   - GitHub API rate limiting
+   - GitHub downtime or degraded performance
+
+**Fix Options:**
+
+**Option A: Manual installation (Recommended - always works)**
+```bash
+# 1. Clone repository manually first
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
+
+# 2. Run setup script locally
+bash Haunt/scripts/setup-haunt.sh
+
+# 3. (Optional) Remove clone after setup
+cd ..
+rm -rf ghost-county
+```
+
+**Option B: Use HTTPS with explicit path**
+```bash
+# Force HTTPS and explicit branch
+export GIT_SSL_NO_VERIFY=false
+git clone --depth 1 --branch main https://github.com/ghost-county/ghost-county.git /tmp/haunt-setup
+cd /tmp/haunt-setup
+bash Haunt/scripts/setup-haunt.sh
+cd -
+rm -rf /tmp/haunt-setup
+```
+
+**Option C: Configure git proxy (if behind corporate firewall)**
+```bash
+# Set proxy for git
+git config --global http.proxy http://proxy.example.com:8080
+git config --global https.proxy https://proxy.example.com:8080
+
+# Then retry curl install
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+
+# Remove proxy after install (if needed)
+git config --global --unset http.proxy
+git config --global --unset https.proxy
+```
+
+**Option D: Download script and run with explicit clone**
+```bash
+# 1. Download script
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh -o setup-haunt.sh
+
+# 2. Make executable
+chmod +x setup-haunt.sh
+
+# 3. Clone repo first
+git clone https://github.com/ghost-county/ghost-county.git
+
+# 4. Run from cloned directory
+cd ghost-county
+bash setup-haunt.sh
+
+# 5. Cleanup
+cd ..
+rm -rf ghost-county setup-haunt.sh
+```
+
+**Option E: Use GitHub CLI (if you have gh installed)**
+```bash
+# Clone with gh (respects GitHub credentials)
+gh repo clone ghost-county/ghost-county
+cd ghost-county
+bash Haunt/scripts/setup-haunt.sh
+cd ..
+rm -rf ghost-county
+```
+
+**Windows-Specific Fix:**
+
+If on Windows and getting clone errors:
+
+```powershell
+# PowerShell: Use Git Bash or WSL
+# Option 1: Git Bash (recommended)
+# Open Git Bash and run:
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
+bash Haunt/scripts/setup-haunt.sh
+
+# Option 2: WSL (Windows Subsystem for Linux)
+wsl
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
+bash Haunt/scripts/setup-haunt.sh
+
+# Option 3: PowerShell with manual steps
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
+bash Haunt/scripts/setup-haunt.sh
+```
+
+**Verification after any fix:**
+```bash
+# Check agents were installed
+ls -la ~/.claude/agents/gco-*.md
+
+# Should show:
+# gco-dev.md
+# gco-project-manager.md
+# gco-research-analyst.md
+# ... etc
+
+# Verify setup worked
+bash Haunt/scripts/setup-haunt.sh --verify
+```
+
+**Still not working?**
+
+If all options fail:
+1. Check GitHub status: https://www.githubstatus.com
+2. Verify you can access GitHub: `curl -I https://github.com`
+3. Try from a different network (mobile hotspot, different WiFi)
+4. Contact your network administrator if on corporate network
+5. File an issue: https://github.com/ghost-county/ghost-county/issues
 
 ---
 

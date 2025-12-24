@@ -181,8 +181,8 @@ Project Manager agent performs **strategic analysis** on all requirements:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/yourusername/haunt.git
-cd haunt
+git clone https://github.com/ghost-county/ghost-county.git
+cd ghost-county
 
 # 2. Run setup
 bash Haunt/scripts/setup-haunt.sh
@@ -190,6 +190,8 @@ bash Haunt/scripts/setup-haunt.sh
 # 3. Verify installation
 bash Haunt/scripts/setup-haunt.sh --verify
 ```
+
+**Troubleshooting:** If you encounter "Failed to clone repository" errors with the one-liner curl install, use the manual method above. See [SETUP-GUIDE.md](SETUP-GUIDE.md#issue-11-failed-to-clone-repository-during-remote-installation) for detailed troubleshooting.
 
 **What setup does:**
 - Copies agent character sheets to `~/.claude/agents/`
