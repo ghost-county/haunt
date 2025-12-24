@@ -73,6 +73,31 @@ This skill works with the `gco-playwright-tests` skill:
 - For selector strategies: See `gco-playwright-tests` skill
 - For common patterns: See `gco-playwright-tests` skill
 
+## Frontend Design Plugin Integration
+
+When working on UI features, the optional `frontend-design` Claude Code plugin provides additional capabilities:
+
+**What the plugin offers:**
+- Component scaffolding and templates
+- Responsive design utilities
+- Accessibility validation
+- Browser preview integration
+- Visual design helpers
+
+**Installation:**
+```bash
+claude plugin marketplace add anthropics/claude-code
+claude plugin install frontend-design@claude-code-plugins
+```
+
+**When to use:**
+- Creating new UI components from scratch
+- Building responsive layouts
+- Implementing accessibility features
+- Designing component APIs
+
+**Note:** The plugin is **optional** and installed during Haunt setup if you choose "Yes" at the prompt. If you skipped it and need it later, install manually with the commands above.
+
 ## TDD Workflow for UI Features
 
 Follow this sequence for all UI work:

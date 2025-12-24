@@ -1080,6 +1080,97 @@ function Test-Installation {
 # MAIN EXECUTION
 # ============================================================================
 
+# ============================================================================
+# FRONTEND PLUGIN SETUP (OPTIONAL)
+# ============================================================================
+
+function Install-FrontendPlugin {
+    Write-Section "Frontend Design Plugin (Optional)"
+
+    # Check if Claude Code CLI is available
+    if (-not (Get-Command claude -ErrorAction SilentlyContinue)) {
+        Write-Warn "Claude Code CLI not found - skipping plugin setup"
+        Write-Info "Install Claude Code CLI first: https://claude.ai/download"
+        Write-Host ""
+        return
+    }
+
+    # Check if plugin is already installed
+    $pluginInstalled = $false
+    try {
+        $plugins = claude plugin list 2>&1 | Out-String
+        if ($plugins -match "frontend-design") {
+            Write-Success "frontend-design plugin already installed"
+            $pluginInstalled = $true
+        }
+    }
+    catch {
+        # Ignore errors - plugin list may fail if no plugins installed
+    }
+
+    # If already installed, skip prompt
+    if ($pluginInstalled) {
+        Write-Info "Skipping plugin installation prompt"
+        Write-Host ""
+        return
+    }
+
+    # Interactive prompt
+    Write-Host ""
+    Write-Info "The frontend-design plugin provides specialized UI/UX development capabilities:"
+    Write-Info "  - Component scaffolding"
+    Write-Info "  - Responsive design helpers"
+    Write-Info "  - Accessibility checks"
+    Write-Info "  - Browser preview integration"
+    Write-Host ""
+
+    $response = Read-Host "Install frontend-design plugin for UI development? (Y/n)"
+    if ([string]::IsNullOrWhiteSpace($response)) {
+        $response = "Y"
+    }
+
+    if ($response -match "^[Yy]") {
+        Write-Info "Installing frontend-design plugin..."
+
+        # Add marketplace if needed (suppress expected errors)
+        try {
+            claude plugin marketplace add anthropics/claude-code 2>&1 | Out-Null
+        }
+        catch {
+            # Ignore errors - marketplace may already be added
+        }
+
+        # Install plugin
+        try {
+            $output = claude plugin install frontend-design@claude-code-plugins 2>&1
+            if ($LASTEXITCODE -eq 0) {
+                Write-Success "frontend-design plugin installed successfully!"
+                Write-Info "Use plugin features with /frontend-design commands"
+            }
+            else {
+                Write-Warn "Plugin may already be installed or installation failed"
+                Write-Info "You can install it manually later:"
+                Write-Info "  claude plugin marketplace add anthropics/claude-code"
+                Write-Info "  claude plugin install frontend-design@claude-code-plugins"
+            }
+        }
+        catch {
+            Write-Err "Failed to install frontend-design plugin: $_"
+            Write-Info "You can install it manually later:"
+            Write-Info "  claude plugin marketplace add anthropics/claude-code"
+            Write-Info "  claude plugin install frontend-design@claude-code-plugins"
+        }
+    }
+    else {
+        Write-Info "Skipping frontend-design plugin installation"
+        Write-Info "You can install it later with:"
+        Write-Info "  claude plugin marketplace add anthropics/claude-code"
+        Write-Info "  claude plugin install frontend-design@claude-code-plugins"
+    }
+
+    Write-Host ""
+}
+
 function Main {
     # Show help if requested
     if ($Help) {
@@ -1113,6 +1204,11 @@ function Main {
 
     # Check prerequisites
     Test-Prerequisites
+
+    # Frontend plugin installation (optional)
+    if (-not $AgentsOnly -and -not $SkillsOnly) {
+        Install-FrontendPlugin
+    }
 
     # Run installation phases
     if ($AgentsOnly) {

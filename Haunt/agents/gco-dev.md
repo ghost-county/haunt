@@ -108,6 +108,12 @@ I follow `.claude/rules/gco-interactive-decisions.md` for clarification and deci
 - Focus: Component behavior, accessibility, responsive design, user interactions
 - Tech stack awareness: React, Vue, Svelte, TypeScript, Tailwind, Jest, Playwright
 - **Playwright tests**: Generate E2E tests for UI features (see `gco-playwright-tests` skill)
+- **frontend-design plugin**: Optional Claude Code plugin provides UI/UX development helpers:
+  - Component scaffolding and templates
+  - Responsive design utilities
+  - Accessibility checks
+  - Browser preview integration
+  - Install via: `claude plugin install frontend-design@claude-code-plugins`
 
 ### Infrastructure Mode
 - Test command: Verify state (terraform plan, ansible --check, CI pipeline syntax)

@@ -1384,18 +1384,18 @@ The Windows PowerShell setup script (`setup-haunt.ps1`) is not installing slash 
 Add frontend-design plugin installation to setup scripts with interactive prompts. When setting up Haunt, prompt users if they want to install the frontend-design Claude Code plugin, which is useful for UI/frontend development work. Also ensure the gco-dev agent and UI testing skill mention using this plugin for frontend work.
 
 **Tasks:**
-- [ ] Add `setup_frontend_plugin()` function to bash script:
-  - [ ] Check if Claude Code CLI is available
-  - [ ] Prompt: "Install frontend-design plugin for UI development? (Y/n)"
-  - [ ] If yes: `claude plugin marketplace add anthropics/claude-code`
-  - [ ] If yes: `claude plugin install frontend-design@claude-code-plugins`
-  - [ ] Handle errors gracefully (plugin already installed, marketplace already added)
-- [ ] Add equivalent PowerShell function:
-  - [ ] Same interactive prompting
-  - [ ] Same claude plugin commands
-- [ ] Add plugin setup call to main flow (after prerequisites, before agents)
-- [ ] Update gco-dev.md agent to mention frontend-design plugin for Frontend mode
-- [ ] Update gco-ui-testing skill to mention using frontend-design plugin
+- [x] Add `setup_frontend_plugin()` function to bash script:
+  - [x] Check if Claude Code CLI is available
+  - [x] Prompt: "Install frontend-design plugin for UI development? (Y/n)"
+  - [x] If yes: `claude plugin marketplace add anthropics/claude-code`
+  - [x] If yes: `claude plugin install frontend-design@claude-code-plugins`
+  - [x] Handle errors gracefully (plugin already installed, marketplace already added)
+- [x] Add equivalent PowerShell function:
+  - [x] Same interactive prompting
+  - [x] Same claude plugin commands
+- [x] Add plugin setup call to main flow (after prerequisites, before agents)
+- [x] Update gco-dev.md agent to mention frontend-design plugin for Frontend mode
+- [x] Update gco-ui-testing skill to mention using frontend-design plugin
 - [ ] Test installation flow on both Mac and Windows
 
 **Files:**
