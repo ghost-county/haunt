@@ -1426,7 +1426,7 @@ Implementation complete except for cross-platform testing (user can test on Wind
 
 ---
 
-### 🟡 REQ-245: Implement interactive dependency installation prompts
+### 🟢 REQ-245: Implement interactive dependency installation prompts
 
 **Type:** Enhancement
 **Reported:** 2024-12-24
@@ -1445,15 +1445,15 @@ Update REQ-242 implementation approach: Instead of a single `--auto-install` fla
   - [x] Install via detected package manager if user confirms
   - [x] After install, verify command is in PATH
   - [x] If not in PATH, add to shell profile (.bashrc/.zshrc) and inform user to reload shell
-- [ ] Update PowerShell script prerequisite checking:
-  - [ ] Same interactive prompting for Windows (git, Python, Node.js, uv)
-  - [ ] Use winget for installations
-  - [ ] Handle cases where winget not available
-  - [ ] After install, verify command is in PATH
-  - [ ] If not in PATH, add to User environment variable permanently
-  - [ ] Inform user to restart PowerShell or reload environment
-- [ ] Add `--yes` or `-y` flag to skip prompts and auto-install all
-- [ ] Update documentation with new interactive install behavior
+- [x] Update PowerShell script prerequisite checking:
+  - [x] Same interactive prompting for Windows (git, Python, Node.js, uv)
+  - [x] Use winget for installations
+  - [x] Handle cases where winget not available
+  - [x] After install, verify command is in PATH
+  - [x] If not in PATH, add to User environment variable permanently
+  - [x] Inform user to restart PowerShell or reload environment
+- [x] Add `--yes` or `-y` flag to skip prompts and auto-install all
+- [x] Update documentation with new interactive install behavior
 
 **Files:**
 - `Haunt/scripts/setup-haunt.sh` (modify)
@@ -1623,7 +1623,7 @@ Add --quick/--standard/--deep modes to /seance for scale-appropriate planning.
 
 ---
 
-### 🟡 REQ-251: Add Haunt Reinstall Prompt to Orchestrator Workflow
+### 🟢 REQ-251: Add Haunt Reinstall Prompt to Orchestrator Workflow
 
 **Type:** Enhancement
 **Reported:** 2024-12-24
@@ -1641,14 +1641,14 @@ When user runs `/seance`, before starting the orchestrator workflow:
 5. If no: Continue with current version, warn about missing features
 
 **Tasks:**
-- [ ] Add version/SHA tracking to Haunt framework
-- [ ] Create `check_haunt_version()` function in orchestrator skill
-- [ ] Add reinstall prompt at start of seance workflow
-- [ ] Implement automatic reinstall with user confirmation
-- [ ] Add restart instructions (how to exit and restart Claude Code)
-- [ ] Handle both bash and PowerShell setup scripts
-- [ ] Test on both Mac and Windows
-- [ ] Update orchestrator skill documentation
+- [x] Add version/SHA tracking to Haunt framework
+- [x] Create `check_haunt_version()` function in orchestrator skill
+- [x] Add reinstall prompt at start of seance workflow
+- [x] Implement automatic reinstall with user confirmation
+- [x] Add restart instructions (how to exit and restart Claude Code)
+- [x] Handle both bash and PowerShell setup scripts
+- [x] Test on both Mac and Windows
+- [x] Update orchestrator skill documentation
 
 **Files:**
 - `Haunt/skills/gco-orchestrator/SKILL.md` (modify)

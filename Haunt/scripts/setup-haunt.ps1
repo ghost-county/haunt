@@ -86,7 +86,6 @@ param(
     [switch]$Yes,
     [switch]$Help
 )
-)
 
 # ============================================================================
 # CONFIGURATION
@@ -554,13 +553,30 @@ function Test-Prerequisites {
     $optionalMissing = @()
     $warnings = @()
 
-    # Check: Git
+        # Check: Git
     $git = Get-Command git -ErrorAction SilentlyContinue
     if (-not $git) {
-        $criticalMissing += "git"
         Write-Err "git: NOT FOUND"
-        Write-Info "  Install: https://git-scm.com/download/win"
-        Write-Info "  Or: winget install Git.Git"
+
+        # Attempt interactive installation
+        $installed = Install-Git
+        if ($installed) {
+            # Verify installation succeeded
+            $git = Get-Command git -ErrorAction SilentlyContinue
+            if ($git) {
+                $gitVersion = (git --version) -replace 'git version ', ''
+                Write-Success "git: $gitVersion (newly installed)"
+            }
+            else {
+                $criticalMissing += "git"
+                Write-Err "git installation failed - command still not found"
+            }
+        }
+        else {
+            $criticalMissing += "git"
+            Write-Info "  Install manually: https://git-scm.com/download/win"
+            Write-Info "  Or: winget install Git.Git"
+        }
     }
     else {
         $gitVersion = (git --version) -replace 'git version ', ''
@@ -587,17 +603,36 @@ function Test-Prerequisites {
             Write-Success "git user.email: $gitEmail"
         }
     }
-
     # Check: Python 3.11+
     $python = Get-Command python -ErrorAction SilentlyContinue
     if (-not $python) {
         $python = Get-Command python3 -ErrorAction SilentlyContinue
     }
     if (-not $python) {
-        $criticalMissing += "python"
         Write-Err "Python 3: NOT FOUND"
-        Write-Info "  Install: https://python.org/downloads/"
-        Write-Info "  Or: winget install Python.Python.3.11"
+
+        # Attempt interactive installation
+        $installed = Install-Python
+        if ($installed) {
+            # Verify installation succeeded
+            $python = Get-Command python -ErrorAction SilentlyContinue
+            if (-not $python) {
+                $python = Get-Command python3 -ErrorAction SilentlyContinue
+            }
+            if ($python) {
+                $pythonVersion = & $python.Source --version 2>&1 | Select-String -Pattern '\d+\.\d+\.\d+' | ForEach-Object { $_.Matches[0].Value }
+                Write-Success "Python 3: $pythonVersion (newly installed)"
+            }
+            else {
+                $criticalMissing += "python"
+                Write-Err "Python installation failed - command still not found"
+            }
+        }
+        else {
+            $criticalMissing += "python"
+            Write-Info "  Install manually: https://python.org/downloads/"
+            Write-Info "  Or: winget install Python.Python.3.11"
+        }
     }
     else {
         $pythonVersion = & $python.Source --version 2>&1 | Select-String -Pattern '\d+\.\d+\.\d+' | ForEach-Object { $_.Matches[0].Value }
@@ -618,10 +653,27 @@ function Test-Prerequisites {
     # Check: Node.js 18+
     $node = Get-Command node -ErrorAction SilentlyContinue
     if (-not $node) {
-        $criticalMissing += "node"
         Write-Err "Node.js: NOT FOUND"
-        Write-Info "  Install: https://nodejs.org/"
-        Write-Info "  Or: winget install OpenJS.NodeJS.LTS"
+
+        # Attempt interactive installation
+        $installed = Install-Node
+        if ($installed) {
+            # Verify installation succeeded
+            $node = Get-Command node -ErrorAction SilentlyContinue
+            if ($node) {
+                $nodeVersion = (node --version) -replace 'v', ''
+                Write-Success "Node.js: $nodeVersion (newly installed)"
+            }
+            else {
+                $criticalMissing += "node"
+                Write-Err "Node.js installation failed - command still not found"
+            }
+        }
+        else {
+            $criticalMissing += "node"
+            Write-Info "  Install manually: https://nodejs.org/"
+            Write-Info "  Or: winget install OpenJS.NodeJS.LTS"
+        }
     }
     else {
         $nodeVersion = (node --version) -replace 'v', ''
@@ -636,6 +688,7 @@ function Test-Prerequisites {
             Write-Success "Node.js: $nodeVersion"
         }
     }
+
 
     # Check: Claude Code CLI
     $claude = Get-Command claude -ErrorAction SilentlyContinue
@@ -655,18 +708,38 @@ function Test-Prerequisites {
         Write-Success "Claude Code CLI: $claudeVersion"
     }
 
-    # Check: uv package manager (Optional)
+        # Check: uv package manager (Optional)
     $uv = Get-Command uv -ErrorAction SilentlyContinue
     if (-not $uv) {
-        $optionalMissing += "uv"
         Write-Warn "uv package manager: NOT FOUND (optional)"
-        Write-Info "  Install: irm https://astral.sh/uv/install.ps1 | iex"
-        Write-Info "  Note: Required for MCP server management"
+
+        # Attempt interactive installation
+        $installed = Install-Uv
+        if ($installed) {
+            # Verify installation succeeded
+            $uv = Get-Command uv -ErrorAction SilentlyContinue
+            if ($uv) {
+                $uvVersion = (uv --version) -replace 'uv ', ''
+                Write-Success "uv package manager: $uvVersion (newly installed)"
+            }
+            else {
+                $optionalMissing += "uv"
+                Write-Warn "uv installation may require PowerShell reload"
+                Write-Info "  Try: Close and reopen PowerShell"
+            }
+        }
+        else {
+            $optionalMissing += "uv"
+            Write-Info "  Install: irm https://astral.sh/uv/install.ps1 | iex"
+            Write-Info "  Or: pip install uv"
+            Write-Info "  Note: Required for MCP server management"
+        }
     }
     else {
         $uvVersion = (uv --version) -replace 'uv ', ''
         Write-Success "uv package manager: $uvVersion"
     }
+
 
     Write-Host ""
 

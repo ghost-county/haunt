@@ -89,6 +89,9 @@ claude -a dev
 
 ## Prerequisites
 
+**Note:** The setup script will interactively prompt to install missing dependencies. Use `--yes` or `-Yes` flag to auto-install without prompts.
+
+
 ### Required Dependencies
 
 #### 1. Git (version control)
@@ -275,6 +278,9 @@ bash Haunt/scripts/setup-haunt.sh
 .\setup-haunt.ps1 -AgentsOnly
 
 # Verify and fix issues
+# Auto-install missing dependencies without prompting
+.\setup-haunt.ps1 -Yes
+
 .\setup-haunt.ps1 -Verify -Fix
 
 # Skip prerequisite checks
@@ -1310,12 +1316,14 @@ bash scripts/setup-agentic-sdlc.sh [OPTIONS]
 --verify               # Verify existing setup
 --fix                  # Fix issues during verification
 --skip-prereqs         # Skip prerequisite checks
+--yes, -y              # Auto-install all missing dependencies without prompting
 --verbose              # Detailed output
 
 # Examples
 bash scripts/setup-agentic-sdlc.sh                    # Full setup
 bash scripts/setup-agentic-sdlc.sh --dry-run          # Preview
 bash scripts/setup-agentic-sdlc.sh --agents-only      # Agents only
+bash scripts/setup-agentic-sdlc.sh --yes             # Auto-install dependencies
 bash scripts/setup-agentic-sdlc.sh --verify           # Verify
 bash scripts/setup-agentic-sdlc.sh --verify --fix     # Verify & fix
 bash scripts/setup-agentic-sdlc.sh --verbose          # Verbose output
