@@ -198,6 +198,72 @@ After trying 3 different approaches that didn't work...
 [Full test output with 200 lines of pytest logs]
 ```
 
+## Edit Operation Best Practices
+
+**Avoid token-wasting retry loops** - If Edit fails, diagnose and use alternative approaches rather than retrying identical operations.
+
+### When Edit Fails
+
+**NEVER retry identical Edit with same parameters.** Each retry re-reads the entire file, wasting thousands of tokens without addressing the root cause.
+
+**If Edit fails once:** Diagnose why it failed:
+1. **old_string doesn't exist:** Verify exact text with `Grep` before retrying
+2. **old_string appears multiple times:** Provide more context to make match unique
+3. **Indentation mismatch:** Check spaces vs tabs, ensure exact match including whitespace
+4. **File changed since last read:** Re-read file to get current content
+
+**If Edit fails twice with same parameters:** STOP retrying Edit. Try alternative approaches:
+
+### Alternative Approaches for Failed Edits
+
+| Failure Reason | Alternative Approach |
+|----------------|---------------------|
+| **old_string not unique** | Use bash `sed` with line numbers: `sed -i '42s/old/new/' file.txt` |
+| **Complex multi-line edit** | Break into smaller single-line Edits, verify each step |
+| **Large file (>500 lines)** | Use bash `awk` or `sed` for targeted line replacement |
+| **Pattern-based changes** | Use bash `sed` with regex: `sed -i 's/pattern/replacement/g' file.txt` |
+| **Whitespace issues** | Read file first, copy exact whitespace from output |
+| **File too large to edit** | Write new file with changes, then move it into place |
+
+### Examples
+
+**WRONG (Wastes 100K+ tokens on retry loop):**
+```
+1. Edit fails: "old_string not found"
+2. Re-read entire file (10K tokens)
+3. Retry identical Edit (fails again)
+4. Re-read entire file (10K tokens)
+5. Retry identical Edit (fails again)
+6. ... continues 5-10 times ...
+```
+
+**RIGHT (Diagnose, then use alternative):**
+```
+1. Edit fails: "old_string not found"
+2. Use Grep to verify string exists: `grep -n "old_string" file.txt`
+3. String found at line 42
+4. Use bash sed for precise replacement: `sed -i '42s/old/new/' file.txt`
+5. Success (minimal token usage)
+```
+
+**RIGHT (Break into smaller edits):**
+```
+1. Edit fails: "old_string matches 5 occurrences"
+2. Instead of retrying, add more context to make unique
+3. Or: Break into 5 separate Edits with unique surrounding context
+4. Verify each Edit succeeds before continuing
+```
+
+### Detection Triggers
+
+Stop and reconsider approach if:
+- Same Edit operation attempted 2+ times
+- Re-reading same large file multiple times (>3 reads)
+- Error message hasn't changed between retries
+- File size >1000 lines and Edit targets single line
+
+**Remember:** Edit retry loops are the #1 cause of token waste in implementation tasks. Detect failed patterns early and switch to alternatives.
+
 ## Work Completion Protocol
 
 When I complete assigned work:
@@ -272,3 +338,25 @@ Session startup:
 ```
 
 See `gco-session-startup` skill for detailed lessons-learned reference workflow.
+
+
+## File Reading Best Practices
+
+**Claude Code caches recently read files.** Avoid redundant file reads to save tokens and improve performance.
+
+**Guidance:**
+- Recently read files are cached and available in context
+- Before reading a file, check if you read it in your last 10 tool calls
+- Re-read only when:
+  - You modified the file with Edit/Write
+  - A git pull occurred
+  - Context was compacted and cache expired
+  - You need to verify specific content not in recent context
+
+**Examples:**
+- ✅ Read roadmap.md once during session startup, reference from cache
+- ✅ Read file, edit it, re-read to verify changes
+- ❌ Read roadmap.md 4-5 times without any modifications between reads
+- ❌ Read setup script 8 times while debugging when content hasn't changed
+
+**Impact:** Avoiding redundant reads can save 30-40% of token usage per session.

@@ -246,3 +246,25 @@ The lessons-learned database (`.haunt/docs/lessons-learned.md`) captures project
 - After detecting pattern in code review: Add to Anti-Patterns section
 
 Dev and Research agents reference this document during session startup for complex (M-sized) features.
+
+
+## File Reading Best Practices
+
+**Claude Code caches recently read files.** Avoid redundant file reads to save tokens and improve performance.
+
+**Guidance:**
+- Recently read files are cached and available in context
+- Before reading a file, check if you read it in your last 10 tool calls
+- Re-read only when:
+  - You modified the file with Edit/Write
+  - A git pull occurred
+  - Context was compacted and cache expired
+  - You need to verify specific content not in recent context
+
+**Examples:**
+- ✅ Read roadmap.md once during session startup, reference from cache
+- ✅ Read file, edit it, re-read to verify changes
+- ❌ Read roadmap.md 4-5 times without any modifications between reads
+- ❌ Read requirements documents multiple times when content unchanged
+
+**Impact:** Avoiding redundant reads can save 30-40% of token usage per session.

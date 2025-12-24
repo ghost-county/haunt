@@ -252,3 +252,25 @@ Claim: [Statement being validated]
 Evidence Quality: [Strong/Weak/Missing]
 Gaps: [What's missing or unclear]
 ```
+
+
+## File Reading Best Practices
+
+**Claude Code caches recently read files.** Avoid redundant file reads to save tokens and improve performance.
+
+**Guidance:**
+- Recently read files are cached and available in context
+- Before reading a file, check if you read it in your last 10 tool calls
+- Re-read only when:
+  - You modified the file with Edit/Write
+  - A git pull occurred
+  - Context was compacted and cache expired
+  - You need to verify specific content not in recent context
+
+**Examples:**
+- ✅ Read research file once, reference from cache
+- ✅ Read file, write report, re-read original to verify accuracy
+- ❌ Read documentation files multiple times without changes
+- ❌ Re-read source files repeatedly while gathering evidence
+
+**Impact:** Avoiding redundant reads can save 30-40% of token usage per session.

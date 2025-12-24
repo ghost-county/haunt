@@ -146,3 +146,25 @@ Do NOT return:
 - Complete file contents (summarize with line references instead)
 
 This keeps responses concise and focuses on insights, not process.
+
+
+## File Reading Best Practices
+
+**Claude Code caches recently read files.** Avoid redundant file reads to save tokens and improve performance.
+
+**Guidance:**
+- Recently read files are cached and available in context
+- Before reading a file, check if you read it in your last 10 tool calls
+- Re-read only when:
+  - A git pull occurred
+  - Context was compacted and cache expired
+  - You need to verify specific content not in recent context
+  - (Note: As read-only agent, you never modify files)
+
+**Examples:**
+- ✅ Read codebase file once during investigation, reference from cache
+- ✅ Search with Grep, read specific files, reference results from cache
+- ❌ Read same file 5-6 times while analyzing patterns
+- ❌ Re-read documentation repeatedly during research
+
+**Impact:** Avoiding redundant reads can save 30-40% of token usage per session.

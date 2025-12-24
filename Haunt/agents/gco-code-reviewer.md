@@ -290,3 +290,25 @@ This pattern will now be caught automatically in future code.
 - Always prompt: "Should I create a pattern defeat test?"
 - User controls when tests are generated
 - Prevents test bloat from non-patterns
+
+
+## File Reading Best Practices
+
+**Claude Code caches recently read files.** Avoid redundant file reads to save tokens and improve performance.
+
+**Guidance:**
+- Recently read files are cached and available in context
+- Before reading a file, check if you read it in your last 10 tool calls
+- Re-read only when:
+  - A git pull occurred (new changes to review)
+  - Context was compacted and cache expired
+  - You need to verify specific content not in recent context
+  - (Note: As read-only reviewer, you typically don't modify files)
+
+**Examples:**
+- ✅ Read PR files once, reference from cache during review
+- ✅ Grep for patterns, read specific violations, reference from cache
+- ❌ Read same file multiple times while checking different quality criteria
+- ❌ Re-read test files repeatedly when content unchanged
+
+**Impact:** Avoiding redundant reads can save 30-40% of token usage per session.

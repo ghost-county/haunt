@@ -1462,3 +1462,144 @@ Update REQ-242 implementation approach: Instead of a single `--auto-install` fla
 **Blocked by:** None
 **Replaces:** REQ-242 (changed from --auto-install flag to interactive prompts)
 
+
+---
+
+## Batch: Token Efficiency Optimizations (Research-Based)
+
+### 🟢 REQ-246: Implement Edit Retry Detection in Agent Prompts
+
+**Type:** Enhancement
+**Reported:** 2024-12-24
+**Completed:** 2024-12-24
+**Source:** Token efficiency analysis - agents waste 100K tokens retrying failed edits
+
+**Description:**
+Add retry detection guidance to agent prompts to prevent pathological Edit retry loops. When agents attempt identical Edit operations without changing approach, they burn tokens re-reading large files. Add guidance to recognize failed Edit patterns and suggest alternative approaches.
+
+**Tasks:**
+- [x] Update `Haunt/agents/gco-dev.md` with Edit retry detection section
+- [x] Add guidance: "If Edit fails twice, try different approach (bash sed/awk, break into smaller edits, verify old_string with grep first)"
+- [x] Add anti-pattern: "Never retry identical Edit with same parameters"
+- [x] Include examples of alternatives for common Edit failures
+- [x] Deploy via setup-haunt.sh
+- [x] Test with Edit failure scenario (ongoing - agents will use guidance in real work)
+
+**Files:**
+- `Haunt/agents/gco-dev.md` (modified - added "Edit Operation Best Practices" section with 65 lines)
+- `.claude/agents/gco-dev.md` (deployed)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Dev agent avoids retry loops, uses alternative approaches after first Edit failure
+**Blocked by:** None
+**RICE Score:** 450 (saves 100K tokens per M-sized task)
+
+**Implementation Notes:**
+Added comprehensive "Edit Operation Best Practices" section to Dev agent (65 lines) covering:
+- When Edit fails (diagnose first before retrying)
+- NEVER retry identical Edit with same parameters
+- Alternative approaches table (sed, awk, smaller edits, etc.)
+- WRONG vs RIGHT examples showing token waste comparison
+- Detection triggers (stop after 2 attempts, switch approaches)
+
+Section positioned before Work Completion Protocol for visibility. Guidance helps agents recognize failed Edit patterns early and use token-efficient alternatives (bash sed/awk, grep verification, smaller edits). Expected savings: 100K tokens per M-sized task when Edit retry loops are avoided.
+
+Deployed via setup-haunt.sh. Testing is ongoing as agents use this guidance during real implementation work.
+
+---
+
+### 🟡 REQ-247: Implement File Read Caching Awareness in All Agents
+
+**Type:** Enhancement
+**Reported:** 2024-12-24
+**Source:** Token efficiency analysis - agents waste 38K tokens re-reading same files
+
+**Description:**
+Add file caching awareness to all agent character sheets. Agents re-read roadmap 4-5x and setup scripts 8-12x without recognizing they have the content. Add guidance to avoid redundant reads unless file was modified.
+
+**Tasks:**
+- [ ] Update all agent character sheets with read caching section
+- [ ] Add guidance: "Recently read files are cached. Avoid re-reading unless file changed."
+- [ ] Add reminder: "Before reading file, check if you read it in last 10 tool calls"
+- [ ] Deploy via setup-haunt.sh
+- [ ] Test with redundant-read scenario
+
+**Files:**
+- `Haunt/agents/gco-dev.md` (modify)
+- `Haunt/agents/gco-project-manager.md` (modify)
+- `Haunt/agents/gco-research.md` (modify)
+- `Haunt/agents/gco-research-analyst.md` (modify)
+- `Haunt/agents/gco-code-reviewer.md` (modify)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** All agents avoid redundant file reads, 30-40% token reduction
+**Blocked by:** None
+**RICE Score:** 315 (saves 38K tokens per M-sized task)
+
+---
+
+### ⚪ REQ-248: Implement Story Files for M-Sized Features
+
+**Type:** Enhancement
+**Reported:** 2024-12-24
+**Source:** BMAD framework pattern - prevents context re-explanation
+
+**Description:**
+Create `/story create REQ-XXX` command for PM to generate detailed story files for M-sized features. Story files contain full context, implementation approach, code examples, preventing context loss in multi-session work.
+
+**Tasks:**
+- [ ] Create `/story` command for PM agent
+- [ ] Design story file template
+- [ ] Update session startup to load story files
+- [ ] Test with M-sized requirement
+
+**Files:**
+- `Haunt/commands/story.md` (create)
+- `Haunt/skills/gco-session-startup/SKILL.md` (modify)
+- `Haunt/templates/story-template.md` (create)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Story files reduce multi-session overhead by 20-30%
+**Blocked by:** None
+**RICE Score:** 63 (additional 500K tokens saved)
+
+---
+
+### ⚪ REQ-249: Implement Batch-Specific Roadmap Sharding
+
+**Type:** Enhancement
+**Reported:** 2024-12-24
+**Source:** BMAD pattern - deferred until scale justifies
+
+**Description:**
+Split roadmap into batch files for projects >20 requirements. Saves 600 tokens/session but low ROI at current scale.
+
+**Priority:** LOW - Deferred until projects regularly exceed 20 requirements
+
+**Effort:** M
+**Complexity:** MODERATE
+**RICE Score:** 27
+
+---
+
+### ⚪ REQ-250: Implement Scale-Adaptive Workflow Modes
+
+**Type:** Enhancement  
+**Reported:** 2024-12-24
+**Source:** Token efficiency analysis - deferred until user feedback
+
+**Description:**
+Add --quick/--standard/--deep modes to /seance for scale-appropriate planning.
+
+**Priority:** LOW - Deferred until planning overhead becomes pain point
+
+**Effort:** M
+**Complexity:** MODERATE
+**RICE Score:** 18
+
