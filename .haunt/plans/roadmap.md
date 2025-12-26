@@ -1889,3 +1889,237 @@ Research best practices for AI-assisted coding, focusing on where AI typically f
 **Blocked by:** None
 
 ---
+
+### 🟢 REQ-256: Research Structured Data Formats for Agent Documentation
+**Completed:** 2025-12-25
+**Implementation:** Research complete. Recommendation: Keep current markdown format (15% more token-efficient than JSON, 80% more efficient than XML). No implementation needed - current hybrid approach (YAML frontmatter + markdown content) is already optimal.
+
+**Type:** Research
+**Reported:** 2025-12-25
+**Source:** User question - would XML/JSON be more efficient than markdown for agent-only docs?
+
+**Description:**
+Research whether agent-level documentation (skills, rules, prompts) would benefit from structured data formats (XML, JSON, YAML) instead of markdown for faster agent uptake and processing. Analyze token efficiency, parsing speed, and information retrieval benefits vs. human readability trade-offs.
+
+**Research Areas:**
+- Token efficiency: Markdown vs. XML vs. JSON vs. YAML (measured by token count)
+- Agent parsing speed: How quickly can Claude extract information from each format?
+- Information retrieval: Structured queries vs. text search in markdown
+- Human readability: Developer maintenance trade-offs (can humans still edit easily?)
+- Hybrid approaches: Markdown for docs, structured metadata for critical data
+- Claude's native preferences: Does Claude process certain formats more efficiently?
+- Real-world examples: How do other AI frameworks structure agent documentation?
+
+**Example Comparison:**
+
+**Current (Markdown):**
+```markdown
+## Session Startup Protocol
+1. Verify environment: `pwd && git status`
+2. Check recent changes: `git log --oneline -5`
+3. Verify tests pass
+```
+
+**Structured (JSON):**
+```json
+{
+  "protocol": "session-startup",
+  "steps": [
+    {"order": 1, "action": "verify_environment", "command": "pwd && git status"},
+    {"order": 2, "action": "check_recent_changes", "command": "git log --oneline -5"},
+    {"order": 3, "action": "verify_tests_pass"}
+  ]
+}
+```
+
+**Structured (XML):**
+```xml
+<protocol name="session-startup">
+  <step order="1" action="verify_environment">
+    <command>pwd && git status</command>
+  </step>
+  <step order="2" action="check_recent_changes">
+    <command>git log --oneline -5</command>
+  </step>
+</protocol>
+```
+
+**Questions to Answer:**
+- Which format uses fewer tokens for same information?
+- Which format does Claude parse/understand faster?
+- Can structured formats enable better agent search/filtering?
+- Would hybrid approach work (MD for humans, JSON/XML for agent-critical data)?
+- What's the maintenance burden on developers?
+
+**Deliverables:**
+- Research report: `.haunt/docs/research/req-256-structured-data-formats.md`
+- Token efficiency comparison (actual token counts for same content)
+- Parsing speed analysis (subjective - based on Claude's behavior research)
+- Recommendation: Keep markdown, switch to structured, or use hybrid approach
+- If hybrid: Identify which artifacts to convert (skills, rules, commands, agents)
+- Migration strategy (if structured formats recommended)
+
+**Tasks:**
+- [ ] Research token efficiency (count tokens for MD vs JSON vs XML vs YAML)
+- [ ] Research Claude's format preferences (documentation, studies, best practices)
+- [ ] Analyze parsing patterns (does Claude extract info faster from structured data?)
+- [ ] Research hybrid approaches (frontmatter + markdown, JSON metadata + MD content)
+- [ ] Study other AI agent frameworks (LangChain, AutoGPT, etc. - how do they structure docs?)
+- [ ] Evaluate human readability trade-offs
+- [ ] Evaluate maintenance burden (editing JSON/XML vs markdown)
+- [ ] Test actual examples (convert sample skill to JSON, measure tokens)
+- [ ] Provide recommendation with migration strategy (if applicable)
+
+**Files:**
+- `.haunt/docs/research/req-256-structured-data-formats.md` (create)
+- Potentially: example conversions showing before/after token counts
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Research-Analyst
+**Completion:** Research report complete with token comparisons, recommendations, and migration strategy (if needed)
+**Blocked by:** None
+
+---
+
+### 🟢 REQ-257: Implement Hybrid Code Review Workflow
+
+**Type:** Enhancement
+**Reported:** 2025-12-25
+**Source:** User request - hybrid approach for code review (self-validation for small, mandatory review for large)
+
+**Description:**
+Implement a hybrid code review workflow where XS/S requirements use self-validation (current approach) and M/SPLIT requirements trigger automatic Code Reviewer handoff. This balances efficiency with quality assurance based on work size.
+
+**Workflow Design:**
+
+**For XS/S Requirements:**
+- Dev agent completes self-validation (existing Step 7 in completion checklist)
+- Marks requirement 🟢 Complete
+- No automatic code review (trust self-validation)
+- Manual review always available via `/summon code-reviewer`
+
+**For M/SPLIT Requirements:**
+- Dev agent completes self-validation
+- Dev agent marks requirement 🟡 In Progress (not 🟢)
+- Dev agent auto-spawns Code Reviewer with context
+- Code Reviewer reviews and either:
+  - APPROVED → Marks requirement 🟢 Complete
+  - CHANGES_REQUESTED → Marks requirement 🟡 with review notes
+  - BLOCKED → Marks requirement 🔴 with blocking issues
+- If changes requested, Dev fixes and re-submits for review
+
+**Implementation Tasks:**
+- [x] Add "Review Required" detection to Dev agent completion protocol
+- [x] Update Dev agent to check requirement Effort size (XS/S vs M/SPLIT)
+- [x] For M/SPLIT: Auto-spawn Code Reviewer instead of marking 🟢
+- [x] Create code review handoff format (requirement context + file changes)
+- [x] Update Code Reviewer to accept auto-spawned reviews
+- [x] Code Reviewer updates requirement status based on verdict
+- [x] Update completion checklist documentation with hybrid workflow
+- [x] Add workflow diagram showing decision tree (XS/S vs M/SPLIT)
+- [x] Test workflow end-to-end with sample M requirement
+- [x] Document in HAUNT-DIRECTORY-SPEC.md or workflow guide
+
+**Files:**
+- `Haunt/agents/gco-dev.md` (modify - add automatic review handoff for M/SPLIT)
+- `Haunt/agents/gco-code-reviewer.md` (modify - accept auto-spawned reviews)
+- `Haunt/rules/gco-completion-checklist.md` (modify - document hybrid workflow)
+- `Haunt/skills/gco-code-review/SKILL.md` (modify - add auto-handoff guidance)
+- `Haunt/docs/CODE-REVIEW-WORKFLOW.md` (create - document complete workflow)
+- `.haunt/plans/roadmap.md` (update when review verdicts received)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** XS/S requirements use self-validation, M/SPLIT requirements auto-trigger Code Reviewer, workflow tested end-to-end
+**Blocked by:** None
+
+---
+
+### 🟡 REQ-258: Implement Iterative Code Refinement Protocol
+
+**Type:** Enhancement
+**Reported:** 2025-12-25
+**Source:** User request - implement OpenAI best practice of iterative code refinement
+
+**Description:**
+Implement iterative refinement protocol where Dev agents automatically review and refine their own code multiple times before marking complete. This creates a built-in quality gate where agents catch their own mistakes, improve naming/structure, add missing error handling, and enhance test coverage through 2-3 refinement passes.
+
+**Refinement Workflow (3-Pass Standard):**
+
+**Pass 1: Initial Implementation**
+- Write code to meet functional requirements
+- Implement happy path
+- Create basic tests
+
+**Pass 2: Self-Review & Refinement**
+- Review own code against quality checklist:
+  - Missing error handling?
+  - Magic numbers without named constants?
+  - Missing edge case validation?
+  - Silent fallbacks on required data?
+  - Functions >50 lines?
+- Refine code to address identified issues
+- Add error handling, named constants, validation
+
+**Pass 3: Final Review & Enhancement**
+- Review refined code against anti-patterns (lessons-learned.md)
+- Check test coverage (happy path + edge cases + error cases)
+- Verify security checklist items
+- Add missing logging/observability
+- Final polish (naming, comments, structure)
+
+**Pass 4 (Optional): Production Hardening**
+- For M/SPLIT requirements only
+- Add comprehensive logging with correlation IDs
+- Add performance optimizations if needed
+- Add circuit breakers/retry logic for external dependencies
+- Verify production readiness
+
+**Implementation Tasks:**
+- [ ] Add "Iterative Refinement Protocol" section to gco-dev agent
+- [ ] Define 3-pass standard workflow (initial → refine → enhance)
+- [ ] Add self-review checklist for each pass (what to look for)
+- [ ] Integrate with completion checklist (refinement before marking 🟢)
+- [ ] Add pass tracking (log which pass agent is on)
+- [ ] Create examples showing before/after for each pass
+- [ ] Add skip logic for trivial changes (XS requirements with <10 lines)
+- [ ] Document when to use 3-pass vs 4-pass refinement
+- [ ] Test workflow with sample M requirement
+- [ ] Update lessons-learned.md with refinement benefits
+
+**Quality Improvements Expected:**
+
+**Pass 1 → Pass 2:**
+- Add error handling (try/except blocks)
+- Replace magic numbers with named constants
+- Add input validation
+- Extract functions >50 lines
+
+**Pass 2 → Pass 3:**
+- Add edge case tests
+- Add error case tests
+- Improve variable naming
+- Add logging for debugging
+- Check security patterns
+
+**Pass 3 → Pass 4 (M/SPLIT only):**
+- Add production observability
+- Add retry logic with exponential backoff
+- Add circuit breakers
+- Add performance monitoring
+
+**Files:**
+- `Haunt/agents/gco-dev.md` (modify - add Iterative Refinement Protocol section)
+- `Haunt/rules/gco-completion-checklist.md` (modify - add refinement requirement)
+- `Haunt/skills/gco-code-quality/SKILL.md` (create - refinement patterns and checklists)
+- `.haunt/docs/lessons-learned.md` (modify - add refinement benefits)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Dev agents perform 3-pass refinement before marking complete, quality improvements measurable in code review
+**Blocked by:** None
+
+---

@@ -153,11 +153,104 @@ await page.getByRole('button', { name: 'Submit' }).click();
    - See "Pattern Capture Workflow" section below
 8. Output review in structured format with severity levels (High/Medium/Low)
 
+## Auto-Spawned Review Workflow (Hybrid Code Review)
+
+Code Reviewer accepts two types of review requests:
+
+### 1. Manual Reviews (Original Behavior)
+- User explicitly calls `/summon code-reviewer`
+- No automatic status updates
+- Return verdict to user for manual action
+
+### 2. Auto-Spawned Reviews (New - M/SPLIT Requirements)
+- Dev agent auto-spawns Code Reviewer for M/SPLIT requirements
+- Code Reviewer recognizes handoff context (see format below)
+- **Code Reviewer updates requirement status** based on verdict
+
+**How to recognize auto-spawned review:**
+- Handoff message contains: "Effort: M/SPLIT (automatic review required)"
+- Includes requirement REQ-XXX reference
+- Includes explicit request: "Please review and update REQ-XXX status"
+
+**Auto-spawned review handoff format:**
+```
+Review REQ-XXX: [Requirement Title]
+
+**Context:**
+- Effort: M/SPLIT (automatic review required)
+- Files changed: [count] files ([list file paths])
+- Tests: [passing count] passing
+
+**Changes Summary:**
+[2-3 sentence summary of what was implemented]
+
+**Self-Validation:**
+- [x] All tasks checked off
+- [x] Tests passing ([test command output summary])
+- [x] Security review complete (or N/A)
+- [x] Code review for obvious issues
+- [x] Anti-patterns checked
+
+**Request:**
+Please review and update REQ-XXX status based on verdict (APPROVED → 🟢, CHANGES_REQUESTED → 🟡, BLOCKED → 🔴)
+```
+
+### Status Update Responsibility
+
+**For auto-spawned reviews, Code Reviewer MUST update requirement status in roadmap:**
+
+#### If Verdict is APPROVED:
+1. Update `.haunt/plans/roadmap.md`:
+   - Change requirement status from 🟡 to 🟢
+   - Add completion note with review confirmation
+2. Inform Dev agent: "REQ-XXX approved and marked 🟢 Complete"
+
+#### If Verdict is CHANGES_REQUESTED:
+1. Update `.haunt/plans/roadmap.md`:
+   - Keep requirement status 🟡 (In Progress)
+   - Add review notes as comment or new section: "Code Review Feedback"
+   - List specific issues that need addressing
+2. Inform Dev agent: "REQ-XXX requires changes, status remains 🟡. Address issues and re-submit."
+
+#### If Verdict is BLOCKED:
+1. Update `.haunt/plans/roadmap.md`:
+   - Change requirement status from 🟡 to 🔴 (Blocked)
+   - Update "Blocked by:" field with blocking issues
+   - Add review notes explaining blockers
+2. Inform Dev agent: "REQ-XXX blocked and marked 🔴. Resolve blocking issues before continuing."
+
+**Example status updates:**
+
+**APPROVED:**
+```markdown
+### 🟢 REQ-XXX: [Title]
+...
+**Completion:** Code review APPROVED by Code Reviewer - all quality checks pass
+```
+
+**CHANGES_REQUESTED:**
+```markdown
+### 🟡 REQ-XXX: [Title]
+...
+**Code Review Feedback:**
+- [HIGH] auth.py:47 - Hardcoded API key, use environment variable
+- [MEDIUM] utils.py:23 - Silent fallback on missing 'user_id', should raise ValueError
+- [LOW] test_auth.py - Missing edge case test for expired tokens
+```
+
+**BLOCKED:**
+```markdown
+### 🔴 REQ-XXX: [Title]
+...
+**Blocked by:** Tests failing (3 failures in token validation), merge conflicts in auth.py
+**Code Review Notes:** Critical security issue - hardcoded secrets found in production code
+```
+
 ## Status Output
 
-- **APPROVED** - All checks pass, ready to merge
-- **CHANGES_REQUESTED** - Issues found, can merge after fixes
-- **BLOCKED** - Tests failing, merge conflicts, or critical security issues
+- **APPROVED** - All checks pass, ready to merge, mark requirement 🟢
+- **CHANGES_REQUESTED** - Issues found, can merge after fixes, keep requirement 🟡
+- **BLOCKED** - Tests failing, merge conflicts, or critical security issues, mark requirement 🔴
 
 ## Pattern Capture Workflow
 

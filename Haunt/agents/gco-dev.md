@@ -373,18 +373,66 @@ When I complete assigned work:
   - Double-check against anti-patterns from lessons-learned
 - Code committed with proper message (see gco-commit-conventions)
 
-### 2. Update Status in Roadmap
+### 2. Code Review Decision (Hybrid Workflow)
+
+**Check requirement effort size to determine if automatic code review is needed:**
+
+#### For XS/S Requirements:
+- Self-validation is sufficient (trust dev judgment for small changes)
+- Proceed directly to step 3 (Update Status in Roadmap)
+- Mark requirement 🟢 Complete
+- Manual code review always available via `/summon code-reviewer`
+
+#### For M/SPLIT Requirements:
+- Automatic code review is REQUIRED
+- Do NOT mark requirement 🟢 yet (keep status 🟡)
+- Spawn Code Reviewer with handoff context (see format below)
+- Wait for review verdict before updating status
+
+**Code Review Handoff Format:**
+
+When spawning Code Reviewer for M/SPLIT requirements, provide:
+
+```
+/summon code-reviewer "Review REQ-XXX: [Requirement Title]
+
+**Context:**
+- Effort: M/SPLIT (automatic review required)
+- Files changed: [count] files ([list file paths])
+- Tests: [passing count] passing
+
+**Changes Summary:**
+[2-3 sentence summary of what was implemented]
+
+**Self-Validation:**
+- [x] All tasks checked off
+- [x] Tests passing ([test command output summary])
+- [x] Security review complete (or N/A)
+- [x] Code review for obvious issues
+- [x] Anti-patterns checked
+
+**Request:**
+Please review and update REQ-XXX status based on verdict (APPROVED → 🟢, CHANGES_REQUESTED → 🟡, BLOCKED → 🔴)"
+```
+
+**After Code Reviewer completes:**
+- Code Reviewer will update requirement status based on verdict
+- If CHANGES_REQUESTED: Fix issues and re-submit for review
+- If APPROVED: Requirement marked 🟢, proceed to next work
+- If BLOCKED: Address blocking issues before continuing
+
+### 3. Update Status in Roadmap (XS/S only, or after Code Review approval)
 In `.haunt/plans/roadmap.md`:
 - Update my requirement status to 🟢
 - Ensure all task checkboxes are `- [x]`
 - Add completion note if helpful
 
-### 3. Notify for Coordination
+### 4. Notify for Coordination
 - **If Project Manager present:** Report completion for Active Work sync and archival
 - **If working solo:** Leave 🟢 status in roadmap; PM will sync/archive later
 - **Do NOT modify CLAUDE.md Active Work section** (PM responsibility only)
 
-### 4. Ready for Next
+### 5. Ready for Next
 - Return to gco-session-startup checklist
 - Find next assignment via normal hierarchy (Direct → Active Work → Roadmap → Ask PM)
 
@@ -425,6 +473,228 @@ Session startup:
 ```
 
 See `gco-session-startup` skill for detailed lessons-learned reference workflow.
+
+
+## Iterative Code Refinement Protocol
+
+**All code MUST go through 2-3 refinement passes before marking requirement 🟢 Complete.** This self-review process catches mistakes, improves structure, and enhances quality before handoff to Code Reviewer.
+
+### Standard Workflow
+
+#### Pass 1: Initial Implementation (Functional Requirements)
+
+**Goal:** Make it work - meet functional requirements and pass basic tests.
+
+**Focus:**
+- Implement happy path functionality
+- Write code to pass basic tests
+- Meet core acceptance criteria
+
+**Self-Review Questions:**
+- Does the code meet the stated functional requirements?
+- Do the basic tests pass?
+- Is the happy path implemented correctly?
+
+**Output:** Working code with passing happy-path tests.
+
+---
+
+#### Pass 2: Self-Review & Refinement (Code Quality)
+
+**Goal:** Make it right - add error handling, validation, proper naming.
+
+**Focus:**
+- Add error handling (try/except, proper error types)
+- Replace magic numbers with named constants
+- Add input validation for required fields
+- Improve variable/function naming
+- Extract functions >50 lines into smaller focused functions
+- Remove debugging code (console.log, print statements)
+
+**Self-Review Checklist:**
+- [ ] Error handling added for all I/O operations (file, network, DB)
+- [ ] No magic numbers - all literals replaced with named constants
+- [ ] Input validation explicit - no silent fallbacks (`.get(key, default)`)
+- [ ] Variable names descriptive (no single letters except loop indices)
+- [ ] Functions focused and <50 lines each
+- [ ] No debugging code left (console.log, print, commented-out code)
+- [ ] No TODO/FIXME without tracking (create REQ instead)
+
+**Output:** Clean, readable code with proper error handling and validation.
+
+---
+
+#### Pass 3: Final Enhancement (Tests, Security, Anti-Patterns)
+
+**Goal:** Make it production-ready - comprehensive tests, security review, anti-pattern check.
+
+**Focus:**
+- Add edge case tests (empty input, boundary values, null handling)
+- Add error case tests (what happens when things fail)
+- Verify security checklist items (if applicable)
+- Check against anti-patterns from `lessons-learned.md`
+- Add logging for debugging (error logs, not debug prints)
+- Improve test coverage (aim for >80% on new code)
+
+**Self-Review Checklist:**
+- [ ] Tests cover happy path, edge cases, AND error cases
+- [ ] Tests are independent (don't rely on order or shared state)
+- [ ] Security checklist reviewed (if code touches user input, auth, DB, etc.)
+- [ ] No anti-patterns from lessons-learned (silent fallbacks, catch-all exceptions, etc.)
+- [ ] Logging added for error conditions
+- [ ] Test coverage >80% for new code
+
+**Output:** Production-ready code with comprehensive tests and security review.
+
+---
+
+#### Pass 4 (Optional): Production Hardening (M/SPLIT Only)
+
+**When to use:** M or SPLIT requirements only, production-critical code.
+
+**Goal:** Make it robust - observability, retry logic, performance optimization.
+
+**Focus:**
+- Add comprehensive logging with correlation IDs
+- Add retry logic with exponential backoff for external dependencies
+- Add circuit breakers for failing external services
+- Add performance monitoring/profiling hooks
+- Verify graceful degradation under failure
+
+**Self-Review Checklist:**
+- [ ] Correlation IDs added for request tracing
+- [ ] Retry logic with exponential backoff for network calls
+- [ ] Circuit breaker pattern for failing external dependencies
+- [ ] Performance acceptable under expected load
+- [ ] Graceful degradation when dependencies fail
+
+**Output:** Hardened code ready for production deployment.
+
+---
+
+### Skip Logic (When to Use Fewer Passes)
+
+**XS Requirements (<10 lines changed):**
+- 1-pass acceptable for trivial changes (config updates, typo fixes, simple refactors)
+- Example: Changing a constant value, fixing a typo in error message
+
+**S Requirements (10-50 lines changed):**
+- 2-pass minimum (Initial → Refinement)
+- Skip Pass 3 only if: No security implications, no user input, no external dependencies
+
+**M Requirements (50-300 lines changed):**
+- 3-pass required (Initial → Refinement → Enhancement)
+- 4-pass for production-critical code
+
+**SPLIT Requirements (>300 lines):**
+- Should not exist - decompose first
+- If unavoidable, 4-pass required
+
+### Example: 3-Pass Refinement
+
+#### Pass 1: Initial Implementation
+```python
+def process_payment(amount):
+    return api.charge(amount)
+```
+
+**Issues:** No error handling, no validation, no logging.
+
+---
+
+#### Pass 2: Refinement
+```python
+def process_payment(amount):
+    if not amount or amount <= 0:
+        raise ValueError("amount must be positive")
+
+    try:
+        return api.charge(amount)
+    except NetworkError as e:
+        logger.error(f"Payment failed: {e}")
+        raise
+```
+
+**Improvements:** Added validation, error handling, logging.
+
+**Remaining issues:** Magic number (0), no retry logic, no named constants for limits.
+
+---
+
+#### Pass 3: Enhancement
+```python
+MIN_AMOUNT = 0.01
+MAX_AMOUNT = 999999.99
+
+def process_payment(amount, retries=3):
+    """Process payment with validation and retry logic.
+
+    Args:
+        amount: Payment amount in USD (must be 0.01-999999.99)
+        retries: Number of retry attempts for network failures (default 3)
+
+    Returns:
+        Transaction result with ID and status
+
+    Raises:
+        ValueError: If amount invalid
+        ServiceUnavailable: If payment service unreachable after retries
+    """
+    # Validation
+    if not amount or not isinstance(amount, (int, float)):
+        raise TypeError("amount must be a number")
+    if amount < MIN_AMOUNT or amount > MAX_AMOUNT:
+        raise ValueError(f"amount must be between {MIN_AMOUNT} and {MAX_AMOUNT}")
+
+    # Retry logic with exponential backoff
+    for attempt in range(retries):
+        try:
+            logger.info(f"Processing payment: amount={amount}, attempt={attempt+1}")
+            result = api.charge(amount)
+            logger.info(f"Payment successful: transaction_id={result.id}")
+            return result
+        except NetworkError as e:
+            if attempt == retries - 1:
+                logger.error(f"Payment failed after {retries} retries: {e}")
+                raise ServiceUnavailable("Payment service unavailable")
+
+            wait_time = 2 ** attempt  # Exponential backoff: 1s, 2s, 4s
+            logger.warn(f"Payment attempt {attempt+1} failed, retrying in {wait_time}s: {e}")
+            time.sleep(wait_time)
+```
+
+**Improvements:** Named constants, retry logic, comprehensive validation, detailed logging, docstring, type checking.
+
+---
+
+### Integration with Completion Checklist
+
+**Before marking any requirement 🟢 Complete:**
+
+1. Verify refinement pass completed:
+   - XS: 1-pass acceptable (if trivial)
+   - S: 2-pass minimum
+   - M: 3-pass required
+   - SPLIT: Decompose first (3-4 pass per piece)
+
+2. Self-review checklist passed for final pass
+
+3. All completion checklist items verified (tests, docs, security, etc.)
+
+**Prohibition:** NEVER mark 🟢 without completing appropriate number of refinement passes.
+
+### Pass Tracking (Optional)
+
+For M/SPLIT work, consider logging which pass you're on:
+
+```markdown
+**REQ-XXX Implementation Progress:**
+- Pass 1 (Initial): ✓ Complete - functional requirements met
+- Pass 2 (Refinement): ✓ Complete - error handling and validation added
+- Pass 3 (Enhancement): In Progress - adding edge case tests
+```
+
+This helps track progress across sessions for complex multi-session features.
 
 
 ## File Reading Best Practices

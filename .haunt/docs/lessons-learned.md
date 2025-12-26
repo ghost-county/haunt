@@ -434,3 +434,102 @@ What was done:
 - Include "Discovered:" date and REQ-XXX reference
 - Provide code examples for anti-patterns and best practices
 - Keep "Why It Works" / "Why Bad" explanations concise (2-3 sentences)
+
+### Iterative Code Refinement: Multiple Passes Before Completion
+
+**Practice:** All code goes through 2-3 refinement passes before marking complete (XS: 1-pass, S: 2-pass, M: 3-pass).
+
+**Workflow:**
+1. **Pass 1 (Initial):** Make it work - implement functional requirements and happy path
+2. **Pass 2 (Refinement):** Make it right - add error handling, validation, proper naming
+3. **Pass 3 (Enhancement):** Make it production-ready - comprehensive tests, security, anti-patterns check
+4. **Pass 4 (Optional, M/SPLIT only):** Make it robust - observability, retry logic, circuit breakers
+
+**Why It Works:**
+- **Catches AI code mistakes systematically:** First AI output typically has missing error handling, magic numbers, poor naming, incomplete tests
+- **Each pass focuses on specific quality dimension:** Functional → Quality → Production-ready → Robust
+- **Reduces Code Reviewer rework:** Catching own mistakes before review saves 30-50% review cycles
+- **Builds quality incrementally:** Don't try to write perfect code first time - refine iteratively
+
+**Quality Improvements by Pass:**
+
+**Pass 1 → Pass 2 improvements:**
+- Add error handling (try/except blocks around I/O)
+- Replace magic numbers with named constants
+- Add input validation (no silent fallbacks)
+- Improve naming (descriptive variables, verb function names)
+- Extract long functions (>50 lines) into helpers
+
+**Pass 2 → Pass 3 improvements:**
+- Add edge case tests (empty input, boundary values, null)
+- Add error case tests (network failures, invalid input)
+- Security review (sanitize input, check auth, no secrets)
+- Anti-pattern check (lessons-learned.md reference)
+- Add logging for errors
+
+**Pass 3 → Pass 4 improvements (optional, M/SPLIT only):**
+- Add correlation IDs for request tracing
+- Add retry logic with exponential backoff
+- Add circuit breakers for external dependencies
+- Performance optimization and load testing
+- Graceful degradation under failure
+
+**Example Improvement (3-Pass):**
+
+**Pass 1 (Initial):**
+```python
+def process_payment(amount):
+    return api.charge(amount)
+```
+**Issues:** No error handling, no validation, no logging.
+
+**Pass 2 (Refined):**
+```python
+def process_payment(amount):
+    if not amount or amount <= 0:
+        raise ValueError("amount must be positive")
+    try:
+        return api.charge(amount)
+    except NetworkError as e:
+        logger.error(f"Payment failed: {e}")
+        raise
+```
+**Improvements:** Validation, error handling, logging added.
+
+**Pass 3 (Enhanced):**
+```python
+MIN_AMOUNT = 0.01
+MAX_AMOUNT = 999999.99
+
+def process_payment(amount, retries=3):
+    # Validation
+    if not amount or not isinstance(amount, (int, float)):
+        raise TypeError("amount must be a number")
+    if amount < MIN_AMOUNT or amount > MAX_AMOUNT:
+        raise ValueError(f"amount must be {MIN_AMOUNT}-{MAX_AMOUNT}")
+
+    # Retry logic with exponential backoff
+    for attempt in range(retries):
+        try:
+            logger.info(f"Processing payment: amount={amount}, attempt={attempt+1}")
+            result = api.charge(amount)
+            logger.info(f"Payment successful: transaction_id={result.id}")
+            return result
+        except NetworkError as e:
+            if attempt == retries - 1:
+                logger.error(f"Payment failed after {retries} retries: {e}")
+                raise ServiceUnavailable("Payment service unavailable")
+            wait_time = 2 ** attempt
+            logger.warn(f"Attempt {attempt+1} failed, retrying in {wait_time}s: {e}")
+            time.sleep(wait_time)
+```
+**Improvements:** Named constants, comprehensive validation, retry logic, detailed logging, docstring.
+
+**Discovered:** REQ-258 (2025-12-25) - Research from OpenAI best practices shows iterative refinement significantly improves AI code quality.
+
+**Prevention:** Added to Dev agent character sheet, completion checklist, and gco-code-quality skill.
+
+**Related:** See Dev agent "Iterative Code Refinement Protocol" section and `gco-code-quality` skill for detailed checklists and patterns.
+
+---
+

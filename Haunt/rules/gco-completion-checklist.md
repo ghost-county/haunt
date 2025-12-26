@@ -47,6 +47,56 @@ Before marking any requirement as 🟢 Complete, verify ALL of the following:
 - If no security-relevant changes, note "Security review: N/A"
 
 ### 7. Self-Validation
+### 7. Iterative Code Refinement
+
+**CRITICAL:** All code must go through iterative refinement passes before marking complete.
+
+**Refinement Requirements by Task Size:**
+- **XS (<10 lines):** 1-pass acceptable for trivial changes
+- **S (10-50 lines):** 2-pass minimum (Initial → Refinement)
+- **M (50-300 lines):** 3-pass required (Initial → Refinement → Enhancement)
+- **SPLIT (>300 lines):** Decompose first, then 3-4 passes per piece
+
+**Verify appropriate passes completed:**
+
+**Pass 1 - Initial Implementation:**
+- [ ] Functional requirements met
+- [ ] Happy path implemented
+- [ ] Basic tests pass
+
+**Pass 2 - Refinement (S/M required):**
+- [ ] Error handling added for all I/O operations
+- [ ] Magic numbers replaced with named constants
+- [ ] Input validation explicit (no silent fallbacks)
+- [ ] Variable/function names descriptive
+- [ ] Functions <50 lines each
+- [ ] No debugging code left
+
+**Pass 3 - Enhancement (M required):**
+- [ ] Edge case tests added
+- [ ] Error case tests added
+- [ ] Security checklist reviewed (if applicable)
+- [ ] Anti-patterns checked (lessons-learned.md)
+- [ ] Logging added for error conditions
+- [ ] Test coverage >80%
+
+**Pass 4 - Production Hardening (M/SPLIT optional):**
+- [ ] Correlation IDs for request tracing
+- [ ] Retry logic with exponential backoff
+- [ ] Circuit breakers for external dependencies
+- [ ] Performance verified under load
+- [ ] Graceful degradation tested
+
+**Why this matters:** Iterative refinement catches mistakes AI code typically has: missing error handling, magic numbers, poor naming, incomplete tests. Each pass systematically improves quality before handoff to Code Reviewer.
+
+**See:** Dev agent "Iterative Code Refinement Protocol" section for detailed workflow and examples.
+
+---
+
+### 8. Self-Validation
+
+**After completing refinement passes**, perform final self-validation:
+
 - **Re-read the original requirement** and verify all completion criteria are met
 - **Review your own code changes** for obvious issues before handoff:
   - No debugging code left (console.log, print statements, commented-out code)
@@ -70,7 +120,57 @@ Before marking any requirement as 🟢 Complete, verify ALL of the following:
 
 **Why this matters:** Catching your own mistakes before Code Reviewer saves time and reduces rework. Self-validation is the difference between "I'm done" and "This is ready for review."
 
-### 8. UI/UX Validation (REQUIRED for Frontend Work)
+### 8. Code Review (Hybrid Workflow - Depends on Effort Size)
+
+**After self-validation, check requirement effort size to determine if automatic code review is needed.**
+
+#### For XS/S Requirements:
+- **Self-validation is sufficient** (no automatic code review)
+- Proceed directly to "Completion Sequence" (step 9 below)
+- Mark requirement 🟢 Complete after all verifications
+- Manual code review always available via `/summon code-reviewer` if desired
+
+#### For M/SPLIT Requirements:
+- **Automatic code review is REQUIRED**
+- Do NOT mark requirement 🟢 yet (keep status 🟡)
+- Spawn Code Reviewer with handoff context
+- Wait for review verdict before proceeding
+
+**Code Review Handoff (for M/SPLIT only):**
+
+Use `/summon code-reviewer` with this format:
+
+```
+/summon code-reviewer "Review REQ-XXX: [Requirement Title]
+
+**Context:**
+- Effort: M/SPLIT (automatic review required)
+- Files changed: [count] files ([list file paths])
+- Tests: [passing count] passing
+
+**Changes Summary:**
+[2-3 sentence summary of what was implemented]
+
+**Self-Validation:**
+- [x] All tasks checked off
+- [x] Tests passing ([test command output summary])
+- [x] Security review complete (or N/A)
+- [x] Code review for obvious issues
+- [x] Anti-patterns checked
+
+**Request:**
+Please review and update REQ-XXX status based on verdict (APPROVED → 🟢, CHANGES_REQUESTED → 🟡, BLOCKED → 🔴)"
+```
+
+**After Code Review (M/SPLIT only):**
+- Code Reviewer updates requirement status based on verdict
+- APPROVED → Requirement marked 🟢, work complete
+- CHANGES_REQUESTED → Status remains 🟡, fix issues and re-submit
+- BLOCKED → Status changed to 🔴, resolve blocking issues
+
+**Rationale:** XS/S changes (1-2 files, 1-2 hours) have low risk and benefit from faster iteration with self-validation. M/SPLIT changes (4+ files, 2+ hours) have higher complexity and risk, warranting mandatory code review for quality assurance.
+
+### 9. UI/UX Validation (REQUIRED for Frontend Work)
 
 **Applies to:** All UI generation, component creation, or visual design changes.
 
@@ -122,8 +222,8 @@ Before marking any requirement as 🟢 Complete, verify ALL of the following:
 
 ## Completion Sequence
 
-1. Verify all applicable items above (7 items for all work, +8 for frontend work)
-2. Update requirement status: 🟡 → 🟢
+1. Verify all applicable items above (steps 1-7 for all work, +step 8 for M/SPLIT, +step 9 for frontend work)
+2. Update requirement status: 🟡 → 🟢 (or wait for Code Reviewer verdict for M/SPLIT)
 3. Update "Completion:" field with verification note
 4. Notify PM (if present) for archival
 
@@ -134,3 +234,5 @@ Before marking any requirement as 🟢 Complete, verify ALL of the following:
 - NEVER mark 🟢 without verifying completion criteria
 - NEVER skip the checklist "because it's a small change"
 - NEVER skip self-validation before requesting code review
+- NEVER mark M/SPLIT requirements 🟢 without automatic code review (wait for Code Reviewer verdict)
+- NEVER skip code review for M/SPLIT requirements (automatic review is mandatory)
