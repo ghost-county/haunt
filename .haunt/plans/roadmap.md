@@ -1669,7 +1669,7 @@ When user runs `/seance`, before starting the orchestrator workflow:
 **Source:** User conversation - need better UI design guidance and testing enforcement
 **Estimated Effort:** 2 M items = ~12 hours
 
-### ⚪ REQ-252: Research UI/UX Design Principles for Claude Code
+### 🟢 REQ-252: Research UI/UX Design Principles for Claude Code
 
 **Type:** Research
 **Reported:** 2025-12-25
@@ -1694,16 +1694,16 @@ Research comprehensive UI/UX design principles that can help Claude Code make be
 - Checklist for UI generation validation
 
 **Tasks:**
-- [ ] Research visual hierarchy and spacing systems (8px grid, 60-30-10 rule)
-- [ ] Research typography best practices (line height, font pairing, accessibility)
-- [ ] Research color/contrast standards (WCAG AA/AAA, colorblindness testing)
-- [ ] Research touch target sizing and interaction design
-- [ ] Research layout fundamentals and scanning patterns
-- [ ] Research accessibility requirements (semantic HTML, ARIA, keyboard nav)
-- [ ] Analyze common gaps in AI-generated UIs
-- [ ] Create actionable guidelines document
-- [ ] Propose skill/rule enhancements for frontend work
-- [ ] Update Dev-Frontend agent with design principles
+- [x] Research visual hierarchy and spacing systems (8px grid, 60-30-10 rule)
+- [x] Research typography best practices (line height, font pairing, accessibility)
+- [x] Research color/contrast standards (WCAG AA/AAA, colorblindness testing)
+- [x] Research touch target sizing and interaction design
+- [x] Research layout fundamentals and scanning patterns
+- [x] Research accessibility requirements (semantic HTML, ARIA, keyboard nav)
+- [x] Analyze common gaps in AI-generated UIs
+- [x] Create actionable guidelines document
+- [x] Propose skill/rule enhancements for frontend work
+- [x] Update Dev-Frontend agent with design principles
 
 **Files:**
 - `.haunt/docs/research/req-252-ui-ux-design-principles.md` (create)
