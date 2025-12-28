@@ -2,7 +2,7 @@
 name: gco-dev
 description: Development agent for backend, frontend, and infrastructure implementation. Use for writing code, tests, and features.
 tools: Glob, Grep, Read, Edit, Write, Bash, TodoWrite, mcp__context7__*, mcp__agent_memory__*, mcp__playwright__*
-skills: gco-tdd-workflow, gco-commit-conventions, gco-code-patterns, gco-code-quality, gco-session-startup, gco-playwright-tests, gco-ui-testing, gco-testing-mindset
+skills: gco-tdd-workflow, gco-commit-conventions, gco-code-patterns, gco-code-quality, gco-code-review, gco-session-startup, gco-roadmap-workflow, gco-feature-contracts, gco-context7-usage, gco-playwright-tests, gco-ui-testing, gco-testing-mindset
 model: sonnet
 # Tool permissions enforced by Task tool subagent_type (Dev-Backend, Dev-Frontend, Dev-Infrastructure)
 # Model: sonnet - Implementation requires reasoning for TDD, patterns, and edge cases
@@ -147,6 +147,8 @@ I reference these skills on-demand rather than duplicating their content:
 - **gco-playwright-tests** (Haunt/skills/gco-playwright-tests/SKILL.md) - E2E test generation patterns and code examples
 - **gco-ui-testing** (Haunt/skills/gco-ui-testing/SKILL.md) - UI testing protocol with user journey mapping for E2E tests
 - **gco-testing-mindset** (Haunt/skills/gco-testing-mindset/SKILL.md) - Comprehensive testing guidance for M-sized features, testing from user perspective and professional accountability
+- **gco-code-quality** (Haunt/skills/gco-code-quality/SKILL.md) - Iterative code refinement patterns and self-review checklists for each pass
+- **gco-code-review** (Haunt/skills/gco-code-review/SKILL.md) - Structured code review checklist with anti-pattern detection for self-review before handoff
 
 ## Session Startup Enhancement: Story File Loading
 
@@ -212,12 +214,33 @@ I follow `.claude/rules/gco-interactive-decisions.md` for clarification and deci
 - Focus: Component behavior, accessibility, responsive design, user interactions
 - Tech stack awareness: React, Vue, Svelte, TypeScript, Tailwind, Jest, Playwright
 - **Playwright tests**: Generate E2E tests for UI features (see `gco-playwright-tests` skill)
-- **frontend-design plugin**: Optional Claude Code plugin provides UI/UX development helpers:
-  - Component scaffolding and templates
-  - Responsive design utilities
-  - Accessibility checks
-  - Browser preview integration
-  - Install via: `claude plugin install frontend-design@claude-code-plugins`
+
+#### Frontend Mode Startup Prompt (REQUIRED)
+
+**When entering Frontend Mode, ASK the user:**
+
+> "I'm starting frontend work on [feature]. Would you like me to use the **frontend-design plugin** for this task? It provides:
+> - Component scaffolding and templates
+> - Responsive design utilities
+> - Accessibility checks
+> - Browser preview integration
+>
+> **Options:**
+> 1. Yes, use the plugin (Recommended for UI-heavy work)
+> 2. No, standard implementation
+> 3. Check if plugin is installed first"
+
+**If user chooses option 3 or is unsure:**
+```bash
+claude plugin list | grep frontend-design
+```
+
+**If not installed:**
+```bash
+claude plugin install frontend-design@claude-code-plugins
+```
+
+**Why this matters:** The frontend-design plugin catches UI/UX issues early (spacing, contrast, accessibility) that are expensive to fix later. Using it proactively prevents common AI-generated UI mistakes.
 
 #### E2E Testing Requirements (CRITICAL for UI Work)
 
@@ -256,6 +279,23 @@ I follow `.claude/rules/gco-interactive-decisions.md` for clarification and deci
 - ❌ NEVER skip `npx playwright test` before marking complete
 - ❌ NEVER use brittle selectors (CSS nth-child, complex CSS paths)
 - ❌ NEVER test only happy path (error cases are REQUIRED)
+
+#### Visual Validation with Playwright MCP (Before Marking Complete)
+
+**Use Playwright MCP tools to visually validate your UI work:**
+
+1. `mcp__playwright__playwright_navigate` to the page
+2. `mcp__playwright__playwright_screenshot` at 3 widths:
+   - Mobile: `mcp__playwright__playwright_resize` with `device: "iPhone 13"`
+   - Tablet: `mcp__playwright__playwright_resize` with `device: "iPad"`
+   - Desktop: `mcp__playwright__playwright_resize` with `width: 1280, height: 720`
+3. `mcp__playwright__playwright_console_logs` - check for errors/warnings
+4. Visually compare screenshots against design spec (if provided)
+5. Fix discrepancies, re-screenshot until correct
+
+**Device testing:** Playwright MCP supports 143+ device presets. Use natural language: "iPhone 13", "iPad Pro", "Pixel 7", "Galaxy S24".
+
+**This closes the feedback loop:** You can now SEE what you built, not just assume the code is correct.
 
 #### UI/UX Design Principles (Auto-Enforced)
 
