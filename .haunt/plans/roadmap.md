@@ -2123,3 +2123,264 @@ Implement iterative refinement protocol where Dev agents automatically review an
 **Blocked by:** None
 
 ---
+
+### 🟢 REQ-259: Fix Séance Project Detection for Empty Roadmap
+
+**Type:** Bug Fix
+**Reported:** 2025-12-26
+**Source:** User report - séance incorrectly detects new projects as existing when roadmap.md is empty
+**Completed:** 2025-12-26
+
+**Implementation Summary:**
+
+Added three-state detection to gco-orchestrator skill:
+1. detect_project_state() function checks roadmap content for REQ-XXX patterns
+2. count_source_files() function counts meaningful source files (>3 = existing codebase)
+3. Returns one of three states: new_project, existing_codebase, or active_project
+4. Workflow type determined by project_state (full vs incremental)
+5. User-facing messages updated to reflect detected state
+6. Added comprehensive documentation section explaining detection logic
+
+**Description:**
+Fix the séance workflow's project detection logic to correctly identify new vs existing projects. Currently, when HAUNT is installed to a new project, it creates an empty roadmap.md template. The séance workflow sees this file exists and incorrectly assumes it's an existing project, when it should recognize it as a brand new project requiring full JTBD/Kano/RICE analysis.
+
+**Current Problem:**
+
+- Fresh HAUNT install creates empty roadmap.md template
+- Séance sees roadmap.md exists → assumes "existing project"
+- Skips new project workflows inappropriately
+
+**Desired Detection Logic:**
+
+1. **New Project** → Full idea-to-roadmap workflow
+   - Empty/minimal directory (only .git, .claude, .haunt setup files)
+   - roadmap.md exists BUT is empty or contains only template structure (no REQ-XXX items)
+
+2. **Existing Codebase, No Work Items** → Add features to existing product
+   - Many source files present (src/, lib/, package.json, etc.)
+   - roadmap.md empty or has no REQ-XXX items
+   - Treat as existing product needing new features
+
+3. **Active Project** → Add to existing roadmap
+   - roadmap.md contains actual REQ-XXX requirements
+   - Treat as existing project, add new work items to roadmap
+
+**Detection Strategy:**
+
+- Check if roadmap.md exists AND contains actual requirements (search for `### ⚪ REQ-` or `### 🟡 REQ-` patterns)
+- Check directory for meaningful source files (not just setup/config)
+- Combine both signals to determine project state
+
+**Tasks:**
+
+- [x] Read gco-orchestrator or gco-seance skill to understand current detection logic
+- [x] Add roadmap content check (not just file existence)
+- [x] Add directory content check (count non-setup files)
+- [x] Update detection logic with three-state classification
+- [x] Add detection result to séance output (debug visibility)
+- [x] Test with: empty dir, fresh install, existing codebase, active project
+- [x] Update skill documentation with detection logic
+- [x] Deploy to ~/.claude/skills/ and .claude/skills/
+
+**Files:**
+
+- `Haunt/skills/gco-seance/SKILL.md` (modify - update detection logic)
+- `Haunt/skills/gco-orchestrator/SKILL.md` (modify if detection is here instead)
+- `~/.claude/skills/gco-seance/SKILL.md` (deploy)
+- `.claude/skills/gco-seance/SKILL.md` (deploy)
+
+**Effort:** S
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Séance correctly identifies (1) new projects with empty roadmap, (2) existing codebases without work items, (3) active projects with requirements, and starts appropriate workflow for each
+**Blocked by:** None
+
+---
+
+## Batch: Testing Accountability Reinforcement
+
+**Goal:** Embed professional testing standards into agent identity and protocols so testing becomes automatic, not optional.
+
+**Priority:** CRITICAL (RICE: 158) - Directly impacts user trust and time waste
+**Estimated Effort:** 12 hours total (3S + 2M)
+
+**Context:** Agents currently mark work "complete" without proper end-to-end testing, especially for UI work. This wastes user time debugging work that should have been validated by the agent. Testing must become part of agent DNA, not an optional checklist item.
+
+---
+
+### 🟢 REQ-260: Embed Testing Accountability in All Agent Identities
+
+**Type:** Enhancement
+**Reported:** 2025-12-27
+**Completed:** 2025-12-27
+**Source:** User escalation - agents shipping untested work
+
+**Description:**
+Update all Dev agent character sheets (Backend, Frontend, Infrastructure) to embed "professional testing accountability" in their core identity. Testing should feel like professional duty, not optional checklist. Include the "Would I hand this to my CTO?" mantra as a core professional value.
+
+**User's Professional Standards Quote (to embed in agent identity):**
+> "I want to make CRYSTAL CLEAR that I want YOU to test features, ESPECIALLY the UI, completely and totally from a user's perspective. I will not touch it until you actually do end to end testing and get EVERYTHING working. Think of me as your CTO. I don't have time to help YOU, my development team that I entrust to do your jobs independently, troubleshoot your work and you are wasting my precious time when you hand me broken work. In my professional career, i would never hand my boss a project and tell him it's completed unless it's actually finished. I might, if the project is big enough, have to demonstrate the product for my boss. So if I have to do that, it would be unprofessional and embarassing to not have done my due dilligence testing it completely, end to fucking end. So when you think about if a work item is done, think about this message like a fucking mantra."
+
+**Tasks:**
+- [x] Update Dev-Frontend agent with testing-first identity statement
+- [x] Update Dev-Backend agent with testing-first identity statement
+- [x] Update Dev-Infrastructure agent with testing-first identity statement
+- [x] Add "Testing Accountability" section to each agent character sheet
+- [x] Include user's CTO quote as core value in each agent
+- [x] Deploy updated agents via setup script
+
+**Files:**
+- `Haunt/agents/gco-dev.md`
+- `Haunt/scripts/setup-haunt.sh` (deployment)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** All three dev agents include explicit testing accountability in identity section. Setup script deploys updated agents. `grep "Would I hand this to my CTO"` confirms quote present in all dev agents.
+**Blocked by:** None
+
+**Implementation Notes:**
+Added "Testing Accountability (Professional Duty)" section to unified Dev agent (gco-dev.md) immediately after Values section. Section includes:
+- Full user CTO quote verbatim (embedded as blockquote)
+- Three reflection questions agents must ask before marking complete:
+  1. "Would I demonstrate this to my CTO right now?"
+  2. "Did I test this completely, end-to-end?"
+  3. "Is this professional quality?"
+- Professional prohibitions (never ship untested work, never skip E2E tests for UI, never hand over broken work)
+- Professional trust framing: explains this is about delivering production-ready work independently
+
+Deployed successfully via setup script to .claude/agents/gco-dev.md. Quote verification passed:
+```
+grep "Think of me as your CTO" .claude/agents/gco-dev.md
+```
+Returns full quote confirming successful deployment.
+
+**Architecture Note:** Ghost County uses a unified Dev agent that adapts to Backend/Frontend/Infrastructure modes based on file paths and task context (not separate agent files for each mode). Single agent update applies to all dev work.
+
+---
+
+### 🟢 REQ-262: Add "Professional Standards" Section to Completion Checklist
+
+**Type:** Enhancement
+**Reported:** 2025-12-27
+**Source:** User escalation - need stronger professional framing
+**Completed:** 2025-12-27
+
+**Description:**
+Add a new "Professional Standards" section to the completion checklist that frames testing as professional accountability, not bureaucratic checkbox. Include the "Would I demonstrate this to my boss?" question as a final gate before marking work complete.
+
+**Tasks:**
+- [x] Add "Professional Standards" as new section in completion checklist
+- [x] Include user's CTO quote verbatim as context
+- [x] Add reflection questions: "Would I demo this to my CTO? Is this professional quality?"
+- [x] Position this section BEFORE final status update (can't mark 🟢 without answering yes)
+- [x] Update all agent startup protocols to reference this section
+
+**Files:**
+- `.claude/rules/gco-completion-checklist.md`
+- `.claude/rules/gco-session-startup.md`
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Completion checklist includes "Professional Standards" section with CTO quote and reflection questions. Section positioned as final gate before marking complete.
+**Blocked by:** None
+
+**Implementation Notes:**
+- Added section 11 "Professional Standards (FINAL GATE)" to completion checklist
+- Positioned before Completion Sequence as mandatory final gate
+- Includes "The CTO Question" as core professional accountability prompt
+- Added reflection questions covering quality, testing, and corner-cutting
+- Updated Completion Sequence to reference step 11 Professional Standards
+- Added prohibition: "NEVER mark 🟢 if you wouldn't confidently demo it to your CTO"
+- Session startup rule didn't require updates (doesn't reference completion checklist)
+
+---
+
+### ⚪ REQ-261: Make E2E Testing Mandatory Gate for UI Work
+
+**Type:** Enhancement
+**Reported:** 2025-12-27
+**Source:** User escalation - UI work shipped untested
+
+**Description:**
+Strengthen `gco-ui-testing.md` rule and `gco-completion-checklist.md` to make E2E testing an absolute gate, not a suggestion. Agents CANNOT mark UI work complete without passing E2E tests. No exceptions. Add verification script to check for E2E test files before allowing 🟢 status.
+
+**Tasks:**
+- [ ] Update `gco-ui-testing.md` with "NON-NEGOTIABLE" language
+- [ ] Add explicit failure cases: "If E2E tests don't exist, requirement CANNOT be 🟢"
+- [ ] Update `gco-completion-checklist.md` step 3 to include E2E test requirement
+- [ ] Add verification script: check for E2E test files before allowing 🟢
+- [ ] Document consequences of bypassing (mark as incomplete, flag for review)
+
+**Files:**
+- `.claude/rules/gco-ui-testing.md`
+- `.claude/rules/gco-completion-checklist.md`
+- `Haunt/scripts/verify-e2e-tests.sh` (new)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Rules updated with mandatory language. Verification script exists that checks for E2E test files. Documentation includes explicit "CANNOT mark complete without tests" statements.
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-263: Create "Testing Mindset" Skill for Complex Features
+
+**Type:** Enhancement
+**Reported:** 2025-12-27
+**Source:** User escalation - need deeper testing guidance
+
+**Description:**
+Create a new skill `gco-testing-mindset` that provides comprehensive testing guidance for M-sized features. This skill teaches agents how to think about testing from a user's perspective, not just technical validation. Include scenarios, edge cases, error paths, and user journey mapping.
+
+**Tasks:**
+- [ ] Create `Haunt/skills/gco-testing-mindset/SKILL.md`
+- [ ] Include section: "Testing from CTO's Perspective"
+- [ ] Add user journey mapping for E2E test design
+- [ ] Include common mistakes: "works for me" vs "works for users"
+- [ ] Add checklist: happy path, error path, edge cases, UX validation
+- [ ] Reference from Dev agents as invoked skill for M-sized work
+
+**Files:**
+- `Haunt/skills/gco-testing-mindset/SKILL.md` (new)
+- `Haunt/agents/gco-dev.md` (reference in skills list)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Skill exists with comprehensive testing guidance. Dev agents reference skill in character sheet. Skill includes user journey mapping and CTO perspective framing.
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-264: Add Automated E2E Test Verification to Git Hooks
+
+**Type:** Enhancement
+**Reported:** 2025-12-27
+**Source:** User escalation - need enforcement mechanism
+
+**Description:**
+Add pre-commit git hook that verifies E2E tests exist and pass for any UI-related file changes. This creates immediate feedback loop - agents can't commit untested UI work. Optional enforcement mechanism to complement cultural shift from other requirements.
+
+**Tasks:**
+- [ ] Create `.haunt/scripts/pre-commit-e2e-check.sh`
+- [ ] Detect UI file changes (components/, pages/, *.tsx, *.jsx)
+- [ ] Check for corresponding E2E test file in tests/e2e/
+- [ ] Run E2E tests if they exist
+- [ ] Block commit if tests missing or failing for UI work
+- [ ] Integrate into setup script as optional enforcement
+
+**Files:**
+- `.haunt/scripts/pre-commit-e2e-check.sh` (new)
+- `.git/hooks/pre-commit` (generated)
+- `Haunt/scripts/setup-haunt.sh` (integration)
+
+**Effort:** M
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Pre-commit hook exists and blocks UI commits without passing E2E tests. Hook installed by setup script. Test with UI change + missing E2E test = blocked commit.
+**Blocked by:** None
+
+---
