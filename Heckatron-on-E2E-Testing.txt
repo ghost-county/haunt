@@ -1,0 +1,3 @@
+I want to reiterate that I want you to test, ESPECIALLY the UI. I will not touch it until you actually do end to end testing and get everything working. Think of me 
+as your CTO. I don't have time to help YOU, my development team that I entrust to do your jobs independently, troubleshoot your work. i am your boss, not 
+your babysitter! BE A FUCKING PROFESSIONAL.

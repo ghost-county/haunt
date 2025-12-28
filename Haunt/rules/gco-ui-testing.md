@@ -309,7 +309,7 @@ bash Haunt/scripts/verify-e2e-tests.sh REQ-XXX frontend
 ### Professional Standard
 
 **From the CTO:**
-> "If you wouldn't demo untested UI to your boss, don't mark it complete."
+> "I want to reiterate that I want you to test everything, ESPECIALLY the UI. I will not touch it until you actually do end to end testing and get everything working. I don't have time to help YOU, my development team that I entrust to do your jobs independently, troubleshoot your work. If you hand me broken work that's EMBARASSING AND UNPROFESSIONAL. i am your boss, not your babysitter!"
 
 E2E tests are not optional. They are **professional accountability**. Untested UI is **incomplete work**, not "done except for tests."
 
