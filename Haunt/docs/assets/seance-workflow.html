@@ -1,3 +1,22 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Séance Workflow</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: white;
+        }
+        .mermaid {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="mermaid">
 %%{init: {'theme':'base', 'themeVariables': { 'fontSize':'16px'}}}%%
 flowchart TD
     Start([User has Idea/Bug/Feature]) --> Phase1
@@ -35,3 +54,9 @@ flowchart TD
     style Phase1 fill:#fff3cd
     style Phase2 fill:#f8d7da
     style Phase3 fill:#d1ecf1
+    </div>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+</html>

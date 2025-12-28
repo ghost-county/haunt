@@ -1,0 +1,54 @@
+%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
+flowchart TD
+    Start([Session Startup]) --> Step1
+
+    subgraph Verification["Environment Verification"]
+        Step1[Run: pwd && git status]
+        Step2{Working Directory<br/>Correct?}
+        Step3[Check Git Status:<br/>Clean or Uncommitted?]
+        Step1 --> Step2
+        Step2 -->|No| Error1[ERROR: Wrong Directory]
+        Step2 -->|Yes| Step3
+    end
+
+    subgraph Testing["Test Validation"]
+        Step4{Tests Required<br/>for Agent Type?}
+        Step5[Run Test Command:<br/>npm test / pytest]
+        Step6{Tests Pass?}
+        Step7[FIX TESTS FIRST]
+        Step4 -->|Yes| Step5
+        Step5 --> Step6
+        Step6 -->|No| Step7
+        Step7 --> Step5
+    end
+
+    subgraph Assignment["Assignment Lookup - Priority Order"]
+        Lookup1{Direct Assignment<br/>in User Message?}
+        Lookup2{Active Work Section<br/>in CLAUDE.md?}
+        Lookup3{⚪/🟡 in Roadmap<br/>for Agent Type?}
+        Lookup4[Ask PM:<br/>"What should I work on?"]
+        
+        Lookup1 -->|Yes| Found
+        Lookup1 -->|No| Lookup2
+        Lookup2 -->|Yes| Found
+        Lookup2 -->|No| Lookup3
+        Lookup3 -->|Yes| Found
+        Lookup3 -->|No| Lookup4
+    end
+
+    Step3 --> Step4
+    Step4 -->|No| Lookup1
+    Step6 -->|Yes| Lookup1
+
+    Found([Assignment Identified:<br/>REQ-XXX]) --> Ready([Ready to Work])
+
+    Error1 --> Stop([STOP])
+
+    style Start fill:#e1f5ff
+    style Ready fill:#d4edda
+    style Stop fill:#f8d7da
+    style Verification fill:#fff3cd
+    style Testing fill:#ffe0b2
+    style Assignment fill:#d1ecf1
+    style Error1 fill:#f8d7da
+    style Step7 fill:#fff3cd
