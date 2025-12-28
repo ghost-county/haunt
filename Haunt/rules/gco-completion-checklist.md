@@ -21,7 +21,12 @@ Before marking any requirement as 🟢 Complete, verify ALL of the following:
   - Infrastructure: Verify state
 - All tests must pass
 - No new test failures introduced
-- **For UI work:** E2E tests MUST exist and pass before marking complete
+- **For UI work (NON-NEGOTIABLE):**
+  - E2E tests MUST exist in correct location (tests/e2e/ or .haunt/tests/e2e/)
+  - All E2E tests MUST pass: `npx playwright test`
+  - **If E2E tests don't exist, requirement CANNOT be marked 🟢**
+  - **If E2E tests are failing, requirement CANNOT be marked 🟢**
+  - Manual testing is NOT a substitute for automated E2E tests
 
 ### 4. Files Updated
 - All files listed in "Files:" section have been modified/created
@@ -219,12 +224,66 @@ Please review and update REQ-XXX status based on verdict (APPROVED → 🟢, CHA
 
 **Why this matters:** UI/UX validation prevents common AI-generated UI failures: poor contrast, inconsistent spacing, missing interactive states, and accessibility gaps. These issues are expensive to fix later and frustrate users.
 
+## 11. Professional Standards (FINAL GATE)
+
+**Before marking any work 🟢 Complete, answer these questions honestly:**
+
+### The CTO Question
+
+**"Would I demonstrate this code to my CTO/boss with confidence?"**
+
+If the answer is **NO** or **"maybe with caveats"**, the work is **NOT complete**. Go back and fix it.
+
+### Reflection Questions
+
+Ask yourself:
+
+- **Is this professional quality work?**
+  - Would I be proud to show this in a code review?
+  - Does this represent my best work, or "good enough to pass"?
+  - Would I trust this code in production under load?
+
+- **Have I actually tested this, or just assumed it works?**
+  - Did I run the tests myself, or just write them?
+  - Did I manually verify the feature works as intended?
+  - Did I test edge cases and error scenarios, not just happy path?
+
+- **Am I cutting corners to mark this complete faster?**
+  - Am I skipping tests because "it's a simple change"?
+  - Am I leaving TODO comments instead of finishing the work?
+  - Am I marking incomplete work as complete to move on?
+
+### Professional Accountability
+
+**Testing is not a bureaucratic checkbox. It's professional accountability.**
+
+- Untested code ships bugs to users
+- Skipped edge cases cause production incidents
+- "It worked on my machine" is not professional
+- Your reputation is on the line with every commit
+
+### The Standard
+
+**If you wouldn't demo it to your boss, don't mark it 🟢**
+
+This is the final gate. If you cannot honestly answer "YES, I would confidently demonstrate this work to my CTO," then:
+
+1. Go back and fix what's missing
+2. Write the tests you skipped
+3. Handle the edge cases you ignored
+4. Make it professional quality
+
+**Only then** mark it complete.
+
+---
+
 ## Completion Sequence
 
-1. Verify all applicable items above (steps 1-7 for all work, +step 8 for M/SPLIT, +step 9 for frontend work)
-2. Update requirement status: 🟡 → 🟢 (or wait for Code Reviewer verdict for M/SPLIT)
-3. Update "Completion:" field with verification note
-4. Notify PM (if present) for archival
+1. Verify all applicable items above (steps 1-10 for all work, +step 11 Professional Standards)
+2. **Answer the CTO Question (step 11) - REQUIRED before marking 🟢**
+3. Update requirement status: 🟡 → 🟢 (or wait for Code Reviewer verdict for M/SPLIT)
+4. Update "Completion:" field with verification note
+5. Notify PM (if present) for archival
 
 ## Prohibitions
 
@@ -235,3 +294,4 @@ Please review and update REQ-XXX status based on verdict (APPROVED → 🟢, CHA
 - NEVER skip self-validation before requesting code review
 - NEVER mark M/SPLIT requirements 🟢 without automatic code review (wait for Code Reviewer verdict)
 - NEVER skip code review for M/SPLIT requirements (automatic review is mandatory)
+- **NEVER mark 🟢 if you wouldn't confidently demo it to your CTO** (Professional Standards gate is mandatory)
