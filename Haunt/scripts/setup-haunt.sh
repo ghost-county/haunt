@@ -2540,6 +2540,82 @@ CLAUDE_MD_EOF
     fi
 
     # -------------------------------------------------------------------------
+    # Install Git Hooks (E2E Test Verification)
+    # -------------------------------------------------------------------------
+    echo ""
+    info "Installing Git hooks..."
+
+    # Check if .git directory exists
+    if [[ ! -d "${project_root}/.git" ]]; then
+        warning "  No .git directory found - skipping git hook installation"
+        warning "  Run 'git init' if you want to use git hooks"
+    else
+        # Copy pre-commit hook script to project
+        local hook_source="${project_root}/.haunt/scripts/pre-commit-e2e-check.sh"
+        local hook_dest="${project_root}/.git/hooks/pre-commit"
+
+        # Check if hook source exists in .haunt/scripts/
+        if [[ ! -f "$hook_source" ]]; then
+            # Copy from Haunt framework if not already in project
+            local framework_hook="${SCRIPT_DIR}/../.haunt/scripts/pre-commit-e2e-check.sh"
+            if [[ -f "$framework_hook" ]]; then
+                if [[ "$DRY_RUN" == false ]]; then
+                    cp "$framework_hook" "$hook_source"
+                    chmod +x "$hook_source"
+                    success "  Copied pre-commit hook to .haunt/scripts/"
+                else
+                    info "  [DRY RUN] Would copy pre-commit hook to .haunt/scripts/"
+                fi
+            else
+                warning "  Pre-commit hook source not found at ${framework_hook}"
+                warning "  Skipping git hook installation"
+                hook_source=""  # Clear to skip installation
+            fi
+        fi
+
+        # Install hook if source exists
+        if [[ -n "$hook_source" ]]; then
+            if [[ -f "$hook_dest" ]]; then
+                # Backup existing hook
+                local backup_hook="${hook_dest}.backup.$(date +%Y%m%d%H%M%S)"
+                if [[ "$DRY_RUN" == false ]]; then
+                    mv "$hook_dest" "$backup_hook"
+                    warning "  Backed up existing pre-commit hook to ${backup_hook}"
+                else
+                    info "  [DRY RUN] Would backup existing pre-commit hook"
+                fi
+            fi
+
+            # Create symlink or copy
+            if [[ "$DRY_RUN" == false ]]; then
+                # Use symlink if possible, fallback to copy
+                if ln -s "../../.haunt/scripts/pre-commit-e2e-check.sh" "$hook_dest" 2>/dev/null; then
+                    success "  Installed pre-commit hook (symlink)"
+                else
+                    cp "$hook_source" "$hook_dest"
+                    chmod +x "$hook_dest"
+                    success "  Installed pre-commit hook (copy)"
+                fi
+            else
+                info "  [DRY RUN] Would install pre-commit hook"
+            fi
+
+            ((created_count++))
+
+            # Show configuration options
+            echo ""
+            info "  Git hook configuration:"
+            echo "    - Blocks UI commits without E2E tests (default: enabled)"
+            echo "    - Run E2E tests on commit (default: disabled for speed)"
+            echo ""
+            info "  To configure:"
+            echo "    - Disable strict mode: export STRICT_E2E_MODE=false"
+            echo "    - Enable test execution: export RUN_E2E_TESTS=true"
+            echo "    - Bypass hook once: git commit --no-verify"
+        fi
+    fi
+
+    # -------------------------------------------------------------------------
     # Summary
     # -------------------------------------------------------------------------
     echo ""
