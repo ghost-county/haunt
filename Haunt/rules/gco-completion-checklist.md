@@ -14,19 +14,45 @@ Before marking any requirement as 🟢 Complete, verify ALL of the following:
 - Verify each criterion is actually satisfied
 - If criteria are ambiguous, clarify before marking complete
 
-### 3. Tests Passing
-- Run appropriate test command for your work:
-  - Backend: `pytest tests/ -x -q`
-  - Frontend: `npm test` AND `npx playwright test` (E2E tests REQUIRED for UI work)
-  - Infrastructure: Verify state
-- All tests must pass
-- No new test failures introduced
-- **For UI work (NON-NEGOTIABLE):**
-  - E2E tests MUST exist in correct location (tests/e2e/ or .haunt/tests/e2e/)
-  - All E2E tests MUST pass: `npx playwright test`
-  - **If E2E tests don't exist, requirement CANNOT be marked 🟢**
-  - **If E2E tests are failing, requirement CANNOT be marked 🟢**
-  - Manual testing is NOT a substitute for automated E2E tests
+### 3. Tests Passing (NON-NEGOTIABLE)
+
+**CRITICAL:** Run verification script BEFORE marking complete. No exceptions.
+
+**Verification Command:**
+```bash
+bash Haunt/scripts/verify-tests.sh REQ-XXX <frontend|backend|infrastructure>
+```
+
+**Requirements:**
+- **Frontend:** Both `npm test` AND `npx playwright test` MUST show 0 failures
+- **Backend:** `npm test` (or `pytest tests/`) MUST show 0 failures
+- **Infrastructure:** Manual verification documented in completion notes
+
+**Evidence Required:**
+- Paste verification script output in completion notes
+- Output must show "✅ VERIFICATION PASSED" (or manual verification documented)
+- **If verification fails:** STOP, FIX tests, re-run verification
+
+**Workflow:**
+1. Run verification script: `bash Haunt/scripts/verify-tests.sh REQ-XXX <type>`
+2. If PASS: Paste output in completion notes, continue to next step
+3. If FAIL: STOP, debug and fix failing tests, re-run verification
+4. Repeat until verification passes
+
+**For UI Work (Additional Requirements):**
+- E2E tests MUST exist in correct location (tests/e2e/ or .haunt/tests/e2e/)
+- E2E tests MUST cover user-facing behavior (not implementation details)
+- **If E2E tests don't exist:** Requirement CANNOT be marked 🟢
+- **If E2E tests failing:** Requirement CANNOT be marked 🟢
+- Manual testing is NOT a substitute for automated E2E tests
+
+**Why This Matters:**
+See Dev agent "Core Values" section:
+- "If tests don't pass, code doesn't work - by definition"
+- "'Tests written' ≠ 'Tests passing'"
+- "Environment issues are problems to SOLVE, not excuses to SKIP"
+
+**NO EXCEPTIONS. If verification script fails, work is NOT complete.**
 
 ### 4. Files Updated
 - All files listed in "Files:" section have been modified/created
