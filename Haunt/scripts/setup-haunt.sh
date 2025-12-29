@@ -2561,7 +2561,7 @@ CLAUDE_MD_EOF
         # Check if hook source exists in .haunt/scripts/
         if [[ ! -f "$hook_source" ]]; then
             # Copy from Haunt framework if not already in project
-            local framework_hook="${SCRIPT_DIR}/../.haunt/scripts/pre-commit-e2e-check.sh"
+            local framework_hook="${SCRIPT_DIR}/pre-commit-e2e-check.sh"
             if [[ -f "$framework_hook" ]]; then
                 if [[ "$DRY_RUN" == false ]]; then
                     cp "$framework_hook" "$hook_source"
