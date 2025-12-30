@@ -1,11 +1,15 @@
 ---
 name: gco-roadmap-format
-description: Roadmap and planning file format specifications. Invoke when creating or editing requirements in roadmap.md or other planning files. Defines requirement structure, status icons, sizing rules, complexity indicators, and archiving protocols.
+description: Roadmap format standards for creating and organizing requirements. Invoke when creating new requirements, organizing batches, or managing roadmap structure. Contains requirement format, sizing rules, status icons, batch organization, and archiving workflows.
+---
+paths:
+  - .haunt/plans/roadmap.md
+  - .haunt/plans/*.md
 ---
 
 # Roadmap Format
 
-This skill provides format specifications when editing roadmap and planning files.
+This rule applies when editing roadmap and planning files.
 
 ## Requirement Format
 

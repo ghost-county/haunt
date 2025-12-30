@@ -1,0 +1,10 @@
+
+# ============================================================================
+# Haunt Framework - Git Ignore
+# ============================================================================
+
+# Project-local Claude Code configuration
+.claude/
+
+# Haunt project artifacts (entire directory)
+.haunt/
