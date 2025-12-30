@@ -50,6 +50,13 @@ info() {
     log "${BLUE}ℹ${NC} $1"
 }
 
+blank() {
+    # Only print blank line if QUIET is false (verbose mode)
+    if [[ "$QUIET" != true ]]; then
+        echo ""
+    fi
+}
+
 warning() {
     # Always visible (even in quiet mode)
     echo -e "${YELLOW}⚠${NC} $1"
@@ -517,7 +524,7 @@ parse_arguments() {
                 ;;
             *)
                 error "Unknown option: $1"
-                echo ""
+                blank
                 echo "Run with --help for usage information"
                 exit 2
                 ;;
@@ -654,7 +661,7 @@ scan_for_stale() {
         find_stale_files "$GLOBAL_RULES_DIR" "rules" "gco-*.md"
         find_stale_skills "$GLOBAL_SKILLS_DIR"
         find_stale_files "$GLOBAL_COMMANDS_DIR" "commands" "gco-*.md"
-        echo ""
+        blank
     fi
 
     if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
@@ -663,7 +670,7 @@ scan_for_stale() {
         find_stale_files "$PROJECT_RULES_INSTALL_DIR" "rules" "gco-*.md"
         find_stale_skills "$PROJECT_SKILLS_INSTALL_DIR"
         find_stale_files "$PROJECT_COMMANDS_INSTALL_DIR" "commands" "gco-*.md"
-        echo ""
+        blank
     fi
 
     local stale_count=$(wc -l < "$STALE_FILES_LIST" | tr -d ' ')
@@ -718,7 +725,7 @@ cleanup_stale_files() {
         fi
     fi
 
-    echo ""
+    blank
 }
 
 # ============================================================================
@@ -970,7 +977,7 @@ setup_frontend_plugin() {
     if ! command -v claude &> /dev/null; then
         warning "Claude Code CLI not found - skipping plugin setup"
         info "Install Claude Code CLI first: https://claude.ai/download"
-        echo ""
+        blank
         return 0
     fi
 
@@ -988,18 +995,18 @@ setup_frontend_plugin() {
     # If already installed, skip prompt
     if [[ "$plugin_installed" == true ]]; then
         info "Skipping plugin installation prompt"
-        echo ""
+        blank
         return 0
     fi
 
     # Interactive prompt
-    echo ""
+    blank
     info "The frontend-design plugin provides specialized UI/UX development capabilities:"
     info "  - Component scaffolding"
     info "  - Responsive design helpers"
     info "  - Accessibility checks"
     info "  - Browser preview integration"
-    echo ""
+    blank
 
     local response
     if [[ "${YES_TO_ALL:-false}" == "true" ]]; then
@@ -1039,7 +1046,7 @@ setup_frontend_plugin() {
         info "  claude plugin install frontend-design@claude-code-plugins"
     fi
 
-    echo ""
+    blank
 }
 
 # Install Node.js 18+
@@ -1342,7 +1349,7 @@ check_prerequisites() {
     # -------------------------------------------------------------------------
     # Summary and Exit Logic
     # -------------------------------------------------------------------------
-    echo ""
+    blank
 
     # Report critical missing dependencies
     if [[ ${#critical_missing[@]} -gt 0 ]]; then
@@ -1350,7 +1357,7 @@ check_prerequisites() {
         for dep in "${critical_missing[@]}"; do
             echo "  - $dep"
         done
-        echo ""
+        blank
         error "Setup cannot continue without critical dependencies."
         info "Install missing dependencies and re-run this script."
         exit 3
@@ -1362,9 +1369,9 @@ check_prerequisites() {
         for dep in "${optional_missing[@]}"; do
             echo "  - $dep"
         done
-        echo ""
+        blank
         warning "Setup will continue, but some features may be limited."
-        echo ""
+        blank
     fi
 
     # Report warnings
@@ -1373,13 +1380,13 @@ check_prerequisites() {
         for warn in "${warnings[@]}"; do
             echo "  - $warn"
         done
-        echo ""
+        blank
         warning "These issues may affect functionality."
-        echo ""
+        blank
     fi
 
     success "All critical prerequisites satisfied"
-    echo ""
+    blank
 }
 
 # ============================================================================
@@ -1471,7 +1478,7 @@ setup_agents_to_directory() {
     done
 
     # Summary
-    echo ""
+    blank
     info "Agent installation summary for ${scope_name}:"
     echo "  - Installed: ${installed_count} new agent(s)"
     echo "  - Updated:   ${updated_count} agent(s)"
@@ -1511,7 +1518,7 @@ setup_global_agents() {
         return 1
     fi
     info "Found ${agent_count} agent(s) to install"
-    echo ""
+    blank
 
     # Install based on scope
     if [[ "$SCOPE" == "global" ]]; then
@@ -1522,13 +1529,13 @@ setup_global_agents() {
         success "Project agents setup complete"
     elif [[ "$SCOPE" == "both" ]]; then
         info "Summoning to both global and project scopes..."
-        echo ""
+        blank
         info "=== Summoning to GLOBAL scope ==="
         setup_agents_to_directory "$GLOBAL_AGENTS_DIR" "$GLOBAL_AGENTS_BACKUP_DIR" "global"
-        echo ""
+        blank
         info "=== Summoning to PROJECT scope ==="
         setup_agents_to_directory "$PROJECT_AGENTS_INSTALL_DIR" "$PROJECT_AGENTS_BACKUP_DIR" "project"
-        echo ""
+        blank
         success "Agents setup complete for both scopes"
     fi
 
@@ -1645,7 +1652,7 @@ setup_rules_to_directory() {
     done
 
     # Summary
-    echo ""
+    blank
     info "Rules installation summary for ${scope_name}:"
     echo "  - Installed: ${installed_count} new rule(s)"
     echo "  - Updated:   ${updated_count} rule(s)"
@@ -1783,7 +1790,7 @@ setup_skills_to_directory() {
     done
 
     # Summary
-    echo ""
+    blank
     info "Skills installation summary for ${scope_name}:"
     echo "  - Installed: ${installed_count} new skill(s)"
     echo "  - Updated:   ${updated_count} skill(s)"
@@ -1829,29 +1836,39 @@ setup_project_skills() {
         return 1
     fi
     info "Found ${skill_count} skill(s) to install"
-    echo ""
+    blank
 
     # Validate skill frontmatter before installation
-    info "Validating skill frontmatter..."
     if [[ -f "${SCRIPT_DIR}/validation/validate-skills.sh" ]]; then
         if [[ "$DRY_RUN" == true ]]; then
             info "[DRY RUN] Would run: ${SCRIPT_DIR}/validation/validate-skills.sh"
             success "Would validate skills frontmatter"
         else
-            if bash "${SCRIPT_DIR}/validation/validate-skills.sh"; then
-                success "All skills have valid frontmatter"
-            else
-                error "Some skills have invalid frontmatter"
-                if [[ "$FIX_MODE" == true ]]; then
-                    warning "Fix mode: Skills require manual correction (missing name/description fields)"
+            if [[ "$QUIET" == true ]]; then
+                # Quiet mode: suppress validation output
+                if bash "${SCRIPT_DIR}/validation/validate-skills.sh" > /dev/null 2>&1; then
+                    success "All skills have valid frontmatter"
+                else
+                    error "Some skills have invalid frontmatter (run with --verbose for details)"
+                    return 1
                 fi
-                return 1
+            else
+                # Verbose mode: show validation output
+                info "Validating skill frontmatter..."
+                if bash "${SCRIPT_DIR}/validation/validate-skills.sh"; then
+                    success "All skills have valid frontmatter"
+                else
+                    error "Some skills have invalid frontmatter"
+                    if [[ "$FIX_MODE" == true ]]; then
+                        warning "Fix mode: Skills require manual correction (missing name/description fields)"
+                    fi
+                    return 1
+                fi
             fi
         fi
     else
         warning "validation/validate-skills.sh not found - skipping frontmatter validation"
     fi
-    echo ""
 
     # Install based on scope
     if [[ "$SCOPE" == "global" ]]; then
@@ -1862,29 +1879,39 @@ setup_project_skills() {
         success "Project skills setup complete"
     elif [[ "$SCOPE" == "both" ]]; then
         info "Summoning to both global and project scopes..."
-        echo ""
+        blank
         info "=== Conjuring skills to GLOBAL scope ==="
         setup_skills_to_directory "$GLOBAL_SKILLS_DIR" "$GLOBAL_SKILLS_BACKUP_DIR" "global"
-        echo ""
+        blank
         info "=== Conjuring skills to PROJECT scope ==="
         setup_skills_to_directory "$PROJECT_SKILLS_INSTALL_DIR" "$PROJECT_SKILLS_BACKUP_DIR" "project"
-        echo ""
+        blank
         success "Skills setup complete for both scopes"
     fi
 
     # Validate agent-skill references
-    echo ""
-    info "Validating agent-skill references..."
     if [[ -f "${SCRIPT_DIR}/validation/validate-agent-skills.sh" ]]; then
         if [[ "$DRY_RUN" == true ]]; then
             info "[DRY RUN] Would run: ${SCRIPT_DIR}/validation/validate-agent-skills.sh"
             success "Would validate agent-skill references"
         else
-            if bash "${SCRIPT_DIR}/validation/validate-agent-skills.sh"; then
-                success "All agent-skill references are valid"
+            if [[ "$QUIET" == true ]]; then
+                # Quiet mode: suppress validation output
+                if bash "${SCRIPT_DIR}/validation/validate-agent-skills.sh" > /dev/null 2>&1; then
+                    success "All agent-skill references are valid"
+                else
+                    warning "Some agent-skill references are broken (run with --verbose for details)"
+                fi
             else
-                warning "Some agent-skill references are broken"
-                warning "Agents reference skills that don't exist in Haunt/skills/ directory"
+                # Verbose mode: show validation output
+                blank
+                info "Validating agent-skill references..."
+                if bash "${SCRIPT_DIR}/validation/validate-agent-skills.sh"; then
+                    success "All agent-skill references are valid"
+                else
+                    warning "Some agent-skill references are broken"
+                    warning "Agents reference skills that don't exist in Haunt/skills/ directory"
+                fi
             fi
         fi
     else
@@ -1971,7 +1998,7 @@ setup_commands_to_directory() {
     done
 
     # Summary
-    echo ""
+    blank
     info "Commands installation summary for ${scope_name}:"
     echo "  - Installed: ${installed_count} new command(s)"
     echo "  - Updated:   ${updated_count} command(s)"
@@ -1995,7 +2022,7 @@ setup_project_commands() {
         return 0
     fi
     info "Found ${command_count} command(s) to install"
-    echo ""
+    blank
 
     # Install based on scope
     if [[ "$SCOPE" == "global" ]]; then
@@ -2006,13 +2033,13 @@ setup_project_commands() {
         success "Project commands setup complete"
     elif [[ "$SCOPE" == "both" ]]; then
         info "Inscribing to both global and project scopes..."
-        echo ""
+        blank
         info "=== Inscribing commands to GLOBAL scope ==="
         setup_commands_to_directory "$GLOBAL_COMMANDS_DIR" "$GLOBAL_COMMANDS_BACKUP_DIR" "global"
-        echo ""
+        blank
         info "=== Inscribing commands to PROJECT scope ==="
         setup_commands_to_directory "$PROJECT_COMMANDS_INSTALL_DIR" "$PROJECT_COMMANDS_BACKUP_DIR" "project"
-        echo ""
+        blank
         success "Commands setup complete for both scopes"
     fi
 }
@@ -2029,7 +2056,7 @@ setup_project_structure() {
     local project_root="$(pwd)"
 
     info "Project root: ${project_root}"
-    echo ""
+    blank
 
     # -------------------------------------------------------------------------
     # Create .claude/ subdirectories
@@ -2072,7 +2099,7 @@ setup_project_structure() {
     # -------------------------------------------------------------------------
     # Create .haunt/plans/ directory with template
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Manifesting .haunt/plans/ directory..."
 
     if [[ ! -d "${project_root}/.haunt/plans" ]]; then
@@ -2162,7 +2189,7 @@ ROADMAP_EOF
     # -------------------------------------------------------------------------
     # Create .haunt/completed/ directory with template
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Manifesting .haunt/completed/ directory..."
 
     if [[ ! -d "${project_root}/.haunt/completed" ]]; then
@@ -2213,7 +2240,7 @@ ARCHIVE_EOF
     # -------------------------------------------------------------------------
     # Create .haunt/progress/ directory with README
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Manifesting .haunt/progress/ directory..."
 
     if [[ ! -d "${project_root}/.haunt/progress" ]]; then
@@ -2260,7 +2287,7 @@ PROGRESS_EOF
     # -------------------------------------------------------------------------
     # Create .haunt/tests/ subdirectories
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Manifesting .haunt/tests/ subdirectories..."
 
     if [[ ! -d "${project_root}/.haunt/tests/patterns" ]]; then
@@ -2299,7 +2326,7 @@ PROGRESS_EOF
     # -------------------------------------------------------------------------
     # Create .haunt/docs/ directory
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Manifesting .haunt/docs/ directory..."
 
     if [[ ! -d "${project_root}/.haunt/docs" ]]; then
@@ -2316,7 +2343,7 @@ PROGRESS_EOF
     # -------------------------------------------------------------------------
     # Create .haunt/scripts/ directory
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Manifesting .haunt/scripts/ directory..."
 
     if [[ ! -d "${project_root}/.haunt/scripts" ]]; then
@@ -2334,7 +2361,7 @@ PROGRESS_EOF
     # Install ritual scripts (if --no-rituals not set)
     # -------------------------------------------------------------------------
     if [[ "$WITH_RITUALS" == true ]]; then
-        echo ""
+        blank
         info "Binding ritual scripts..."
 
         local ritual_scripts=(
@@ -2388,13 +2415,13 @@ PROGRESS_EOF
         done
 
         # Summary for ritual scripts
-        echo ""
+        blank
         info "Ritual script installation summary:"
         echo "  - Installed: ${installed_rituals} new script(s)"
         echo "  - Updated:   ${updated_rituals} script(s)"
         echo "  - Unchanged: ${unchanged_rituals} script(s)"
     else
-        echo ""
+        blank
         info "Skipping ritual script installation (--no-rituals flag set)"
     fi
 
@@ -2402,7 +2429,7 @@ PROGRESS_EOF
     # Install pattern detection tools (if --no-pattern-detection not set)
     # -------------------------------------------------------------------------
     if [[ "$WITH_PATTERN_DETECTION" == true ]]; then
-        echo ""
+        blank
         info "Conjuring pattern detection tools..."
 
         local pattern_tools=(
@@ -2497,21 +2524,21 @@ PROGRESS_EOF
             fi
 
             # Summary for pattern detection tools
-            echo ""
+            blank
             info "Pattern detection installation summary:"
             echo "  - Installed: ${installed_tools} new tool(s)"
             echo "  - Updated:   ${updated_tools} tool(s)"
             echo "  - Unchanged: ${unchanged_tools} tool(s)"
         fi
     else
-        echo ""
+        blank
         info "Skipping pattern detection installation (--no-pattern-detection flag set)"
     fi
 
     # -------------------------------------------------------------------------
     # Create feature contract template
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Manifesting feature contract template..."
 
     if [[ ! -f "${project_root}/.haunt/plans/feature-contract.json" ]]; then
@@ -2546,7 +2573,7 @@ CONTRACT_EOF
     # -------------------------------------------------------------------------
     # Create .haunt/.gitignore
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Manifesting .haunt/.gitignore..."
 
     if [[ ! -f "${project_root}/.haunt/.gitignore" ]]; then
@@ -2584,7 +2611,7 @@ HAUNT_GITIGNORE_EOF
     # -------------------------------------------------------------------------
     # Update project root .gitignore
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Updating project root .gitignore..."
 
     local gitignore_file="${project_root}/.gitignore"
@@ -2631,7 +2658,7 @@ ROOT_GITIGNORE_EOF
     # -------------------------------------------------------------------------
     # Create or update CLAUDE.md with Active Work section
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Setting up CLAUDE.md with Active Work section..."
 
     local claude_md_file="${project_root}/CLAUDE.md"
@@ -2748,7 +2775,7 @@ CLAUDE_MD_EOF
     # -------------------------------------------------------------------------
     # Install Git Hooks (E2E Test Verification)
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Installing Git hooks..."
 
     # Check if .git directory exists
@@ -2809,22 +2836,22 @@ CLAUDE_MD_EOF
             ((created_count++))
 
             # Show configuration options
-            echo ""
-            info "  Git hook configuration:"
-            echo "    - Blocks UI commits without E2E tests (default: enabled)"
-            echo "    - Run E2E tests on commit (default: disabled for speed)"
-            echo ""
-            info "  To configure:"
-            echo "    - Disable strict mode: export STRICT_E2E_MODE=false"
-            echo "    - Enable test execution: export RUN_E2E_TESTS=true"
-            echo "    - Bypass hook once: git commit --no-verify"
+            log ""
+            log "  Git hook configuration:"
+            log "    - Blocks UI commits without E2E tests (default: enabled)"
+            log "    - Run E2E tests on commit (default: disabled for speed)"
+            log ""
+            log "  To configure:"
+            log "    - Disable strict mode: export STRICT_E2E_MODE=false"
+            log "    - Enable test execution: export RUN_E2E_TESTS=true"
+            log "    - Bypass hook once: git commit --no-verify"
         fi
     fi
 
     # -------------------------------------------------------------------------
     # Summary
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     success "Project structure setup complete!"
     info "Created: ${created_count} directories/files"
     info "Skipped: ${skipped_count} (already existed)"
@@ -3000,7 +3027,7 @@ TEMPLATE_EOF
     # -------------------------------------------------------------------------
     # Configure Context7 MCP server (if available)
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Checking Context7 MCP server configuration..."
 
     if command -v claude &> /dev/null; then
@@ -3042,7 +3069,7 @@ TEMPLATE_EOF
     # -------------------------------------------------------------------------
     # Verify agent-memory-server.py has required dependencies
     # -------------------------------------------------------------------------
-    echo ""
+    blank
     info "Checking agent-memory server dependencies..."
 
     if command -v python3 &> /dev/null; then
@@ -3062,25 +3089,21 @@ TEMPLATE_EOF
     # -------------------------------------------------------------------------
     # Summary
     # -------------------------------------------------------------------------
-    echo ""
-    success "MCP server configuration complete!"
-    info "Configuration summary:"
-    echo "  • Configured: ${configured_count} server(s)"
-    echo "  • Skipped:    ${skipped_count} (already configured)"
-    echo ""
-    info "MCP servers installed:"
-    echo "  • agent-memory: ${dest_memory_server}"
+    success "MCP servers: ${configured_count} configured, ${skipped_count} skipped"
+    log ""
+    log "MCP servers installed:"
+    log "  • agent-memory: ${dest_memory_server}"
     if [[ -f "${dest_memory_server}" ]]; then
-        echo "    Status: Installed"
+        log "    Status: Installed"
     else
-        echo "    Status: Not installed"
+        log "    Status: Not installed"
     fi
-    echo ""
-    info "Next steps:"
-    echo "  1. Ensure MCP server dependencies are installed (pip install mcp)"
-    echo "  2. Configure MCP servers in Claude Desktop settings if not auto-configured"
-    echo "  3. Restart Claude Desktop to load MCP servers"
-    echo ""
+    log ""
+    log "Next steps:"
+    log "  1. Ensure MCP server dependencies are installed (pip install mcp)"
+    log "  2. Configure MCP servers in Claude Desktop settings if not auto-configured"
+    log "  3. Restart Claude Desktop to load MCP servers"
+    blank
 }
 
 # ============================================================================
@@ -3140,9 +3163,9 @@ EOF
         sed -i '' "s/MODE_PLACEHOLDER/$(if [[ "$FIX_MODE" == true ]]; then echo 'Verify + Fix'; else echo 'Verify Only'; fi)/" "$report_file"
     fi
 
-    echo ""
+    blank
     info "Running comprehensive verification checks..."
-    echo ""
+    blank
 
     # =========================================================================
     # CHECK 1: Prerequisites Still Valid
@@ -3775,23 +3798,33 @@ EOF
     # =========================================================================
     # SUMMARY
     # =========================================================================
-    echo ""
-    echo "=========================================="
-    info "Verification Summary"
-    echo "=========================================="
-    echo ""
-    echo "  Total Checks:  ${total_checks}"
-    echo -e "  Passed:        ${GREEN}${passed_checks}${NC}"
-    echo -e "  Failed:        ${RED}${failed_checks}${NC}"
-    echo -e "  Warnings:      ${YELLOW}${warnings_count}${NC}"
-    echo ""
+    if [[ "$QUIET" == true ]]; then
+        # Quiet mode: single summary line
+        if [[ ${failed_checks} -eq 0 ]]; then
+            success "Verification: ${passed_checks}/${total_checks} passed, ${warnings_count} warnings"
+        else
+            error "Verification: ${failed_checks}/${total_checks} failed"
+        fi
+    else
+        # Verbose mode: full summary
+        blank
+        echo "=========================================="
+        echo "Verification Summary"
+        echo "=========================================="
+        blank
+        echo "  Total Checks:  ${total_checks}"
+        echo -e "  Passed:        ${GREEN}${passed_checks}${NC}"
+        echo -e "  Failed:        ${RED}${failed_checks}${NC}"
+        echo -e "  Warnings:      ${YELLOW}${warnings_count}${NC}"
+        blank
+    fi
 
     if [[ ${#fixes_applied[@]} -gt 0 ]]; then
         success "Fixes Applied: ${#fixes_applied[@]}"
         for fix in "${fixes_applied[@]}"; do
             echo "  - ${fix}"
         done
-        echo ""
+        blank
     fi
 
     if [[ ${#issues[@]} -gt 0 ]]; then
@@ -3799,7 +3832,7 @@ EOF
         for issue in "${issues[@]}"; do
             echo "  - ${issue}"
         done
-        echo ""
+        blank
     fi
 
     # Write summary to report
@@ -3844,7 +3877,7 @@ EOF
     # Exit code determination
     if [[ $failed_checks -gt 0 ]]; then
         error "Verification FAILED: ${failed_checks} check(s) failed"
-        echo ""
+        blank
         if [[ "$FIX_MODE" != true ]]; then
             info "Run with --fix flag to attempt automatic repairs:"
             echo "  bash scripts/setup-haunt.sh --verify --fix"
@@ -3987,13 +4020,13 @@ main() {
     if [[ "$RUNNING_FROM_REMOTE" == true ]]; then
         info "Running from remote source"
         info "Resources cloned to: $REMOTE_CLONE_DIR"
-        echo ""
+        blank
     fi
 
     # Show dry-run notice
     if [[ "$DRY_RUN" == true ]]; then
         warning "DRY RUN MODE - No changes will be made"
-        echo ""
+        blank
     fi
 
     # Execute phases based on flags
@@ -4049,7 +4082,6 @@ main() {
     # Phase 5: MCP server configuration
     if [[ "$AGENTS_ONLY" == false ]]; then
         setup_mcp_servers
-        setup_playwright_mcp
     fi
 
     # Phase 5b: Infrastructure verification
@@ -4066,37 +4098,39 @@ main() {
     fi
 
     # Success message
-    echo ""
+    blank
     section "Haunt Manifested!"
 
     if [[ "$DRY_RUN" == true ]]; then
         info "This was a dry run. Re-run without --dry-run to apply changes."
     else
-        success "Your house is Haunted..."
-        echo ""
-        info "Next steps:"
+        if [[ "$QUIET" != true ]]; then
+            success "Your house is Haunted..."
+            blank
+            info "Next steps:"
 
-        # Show relevant paths based on scope
-        if [[ "$SCOPE" == "global" ]]; then
-            echo "  1. Review agent character sheets in ${GLOBAL_AGENTS_DIR}"
-            echo "  2. Review installed skills in ${GLOBAL_SKILLS_DIR}"
-        elif [[ "$SCOPE" == "project" ]]; then
-            echo "  1. Review agent character sheets in ${PROJECT_AGENTS_INSTALL_DIR}"
-            echo "  2. Review installed skills in ${PROJECT_SKILLS_INSTALL_DIR}"
-        elif [[ "$SCOPE" == "both" ]]; then
-            echo "  1. Review agent character sheets:"
-            echo "     - Global: ${GLOBAL_AGENTS_DIR}"
-            echo "     - Project: ${PROJECT_AGENTS_INSTALL_DIR}"
-            echo "  2. Review installed skills:"
-            echo "     - Global: ${GLOBAL_SKILLS_DIR}"
-            echo "     - Project: ${PROJECT_SKILLS_INSTALL_DIR}"
+            # Show relevant paths based on scope
+            if [[ "$SCOPE" == "global" ]]; then
+                echo "  1. Review agent character sheets in ${GLOBAL_AGENTS_DIR}"
+                echo "  2. Review installed skills in ${GLOBAL_SKILLS_DIR}"
+            elif [[ "$SCOPE" == "project" ]]; then
+                echo "  1. Review agent character sheets in ${PROJECT_AGENTS_INSTALL_DIR}"
+                echo "  2. Review installed skills in ${PROJECT_SKILLS_INSTALL_DIR}"
+            elif [[ "$SCOPE" == "both" ]]; then
+                echo "  1. Review agent character sheets:"
+                echo "     - Global: ${GLOBAL_AGENTS_DIR}"
+                echo "     - Project: ${PROJECT_AGENTS_INSTALL_DIR}"
+                echo "  2. Review installed skills:"
+                echo "     - Global: ${GLOBAL_SKILLS_DIR}"
+                echo "     - Project: ${PROJECT_SKILLS_INSTALL_DIR}"
+            fi
+
+            echo "  3. Restart Claude Code to load the new configuration"
+            echo "  4. Start a new session and run: /seance"
+            blank
+
+            info "The /seance command will guide you through getting started with Haunt"
         fi
-
-        echo "  3. Restart Claude Code to load the new configuration"
-        echo "  4. Start a new session and run: /seance"
-        echo ""
-
-        info "The /seance command will guide you through getting started with Haunt"
     fi
 
     # Cleanup cloned repository if running remotely
