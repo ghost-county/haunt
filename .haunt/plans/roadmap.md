@@ -169,7 +169,7 @@ Six rules totaling ~2,000 lines are loaded into every conversation but only need
 **Completion:** Heavy rules converted to skills, slim rules ~600 lines total, ~77% rule context reduction
 **Blocked by:** REQ-259
 
-### ⚪ REQ-261: Add Targeted Read Training to Agents
+### 🟢 REQ-261: Add Targeted Read Training to Agents
 
 **Type:** Enhancement
 **Reported:** 2025-12-30
@@ -182,13 +182,13 @@ Agents currently read full files (e.g., 1,647 line roadmap) when they only need 
 - Use `head -50` or `Read(file, limit=50)` for file previews
 
 **Tasks:**
-- [ ] Update `Haunt/agents/gco-dev.md` with targeted read guidance
-- [ ] Update `Haunt/agents/gco-research.md` with targeted read guidance
-- [ ] Update `Haunt/agents/gco-project-manager.md` with targeted read guidance
-- [ ] Update `Haunt/rules/gco-session-startup.md` with targeted read protocol
-- [ ] Add examples of good vs bad file access patterns
-- [ ] Run setup script to deploy updated agents
-- [ ] Test that agents use targeted reads in practice
+- [x] Update `Haunt/agents/gco-dev.md` with targeted read guidance
+- [x] Update `Haunt/agents/gco-research.md` with targeted read guidance
+- [x] Update `Haunt/agents/gco-project-manager.md` with targeted read guidance
+- [x] Update `Haunt/rules/gco-session-startup.md` with targeted read protocol
+- [x] Add examples of good vs bad file access patterns
+- [x] Run setup script to deploy updated agents
+- [x] Test that agents use targeted reads in practice
 
 **Files:**
 - `Haunt/agents/gco-dev.md` (modify)

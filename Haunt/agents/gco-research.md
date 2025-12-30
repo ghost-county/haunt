@@ -274,3 +274,39 @@ Gaps: [What's missing or unclear]
 - ❌ Re-read source files repeatedly while gathering evidence
 
 **Impact:** Avoiding redundant reads can save 30-40% of token usage per session.
+
+## Targeted Reads (Minimize Token Usage)
+
+**Use grep/head to extract specific sections instead of reading entire files.**
+
+### Research-Specific Targeted Patterns
+
+**Pattern 1: Extract Requirement Context**
+```bash
+# WRONG: Read entire roadmap to understand one REQ
+Read(.haunt/plans/roadmap.md)  # 1,647 lines
+
+# RIGHT: Extract only relevant requirement
+grep -A 30 "REQ-XXX" .haunt/plans/roadmap.md  # ~30 lines
+```
+
+**Pattern 2: Scan Documentation for Keywords**
+```bash
+# WRONG: Read full documentation file
+Read(docs/api-reference.md)  # 800 lines
+
+# RIGHT: Find relevant sections only
+grep -B 5 -A 10 "authentication" docs/api-reference.md  # ~15 lines per match
+```
+
+**Pattern 3: Preview Library Source**
+```bash
+# WRONG: Read entire library file
+Read(node_modules/package/index.js)  # 1,200 lines
+
+# RIGHT: Preview structure, then target specific exports
+head -100 node_modules/package/index.js  # First 100 lines
+grep -A 15 "export function targetFunc" node_modules/package/index.js  # Specific function
+```
+
+**Impact:** Research tasks often involve scanning large files. Targeted reads save 85-95% of tokens.

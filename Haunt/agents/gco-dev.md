@@ -860,3 +860,70 @@ This helps track progress across sessions for complex multi-session features.
 - ❌ Read setup script 8 times while debugging when content hasn't changed
 
 **Impact:** Avoiding redundant reads can save 30-40% of token usage per session.
+
+## Targeted Reads (Minimize Token Usage)
+
+**Use targeted tools instead of full file reads when you only need specific sections.**
+
+### When to Use Targeted Reads
+
+**Use grep/targeted tools when:**
+- Looking for specific requirement details in roadmap
+- Searching for specific configuration values
+- Finding function definitions or class implementations
+- Extracting specific sections from large files
+
+**Use full Read when:**
+- Need complete file overview (new file, major refactor)
+- File is small (<100 lines)
+- Need to understand entire structure
+
+### Targeted Read Patterns
+
+**Pattern 1: Extract Specific Requirement**
+```bash
+# WRONG: Read entire 1,647-line roadmap
+Read(/Users/heckatron/github_repos/ghost-county/.haunt/plans/roadmap.md)
+
+# RIGHT: Extract only REQ-261 (saves ~1,600 lines)
+grep -A 30 "REQ-261" .haunt/plans/roadmap.md
+```
+
+**Pattern 2: Find Configuration Values**
+```bash
+# WRONG: Read entire .env (84 lines)
+Read(/Users/heckatron/github_repos/ghost-county/.env)
+
+# RIGHT: Extract specific variables (saves ~80 lines)
+grep -E "DATABASE_URL|API_KEY" .env
+```
+
+**Pattern 3: Preview File Structure**
+```bash
+# WRONG: Read entire 500-line file
+Read(/Users/heckatron/github_repos/ghost-county/src/api/users.py)
+
+# RIGHT: Preview first 50 lines
+head -50 src/api/users.py
+# OR with Read tool:
+Read(src/api/users.py, limit=50)
+```
+
+**Pattern 4: Find Function Implementations**
+```bash
+# WRONG: Read entire file to find one function
+Read(/Users/heckatron/github_repos/ghost-county/src/utils.py)
+
+# RIGHT: Extract function and context (saves ~450 lines for 500-line file)
+grep -A 20 "def calculate_total" src/utils.py
+```
+
+### Token Savings
+
+| File Type | Full Read | Targeted Read | Savings |
+|-----------|-----------|---------------|---------|
+| Roadmap (1,647 lines) | 1,647 tokens | ~30 tokens | 98% |
+| .env (84 lines) | 84 tokens | ~5 tokens | 94% |
+| Source file (500 lines) | 500 tokens | ~50 tokens | 90% |
+
+**Impact:** Targeted reads can save 90-98% of tokens when accessing large files for specific information.

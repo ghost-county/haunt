@@ -268,3 +268,48 @@ Dev and Research agents reference this document during session startup for compl
 - ❌ Read requirements documents multiple times when content unchanged
 
 **Impact:** Avoiding redundant reads can save 30-40% of token usage per session.
+
+## Targeted Reads (Minimize Token Usage)
+
+**Use grep to extract specific requirements instead of reading entire roadmap.**
+
+### PM-Specific Targeted Patterns
+
+**Pattern 1: Check Requirement Status**
+```bash
+# WRONG: Read entire 1,647-line roadmap
+Read(.haunt/plans/roadmap.md)
+
+# RIGHT: Extract only specific requirement
+grep -A 25 "REQ-XXX" .haunt/plans/roadmap.md  # ~25 lines
+```
+
+**Pattern 2: Find Blocked Requirements**
+```bash
+# WRONG: Read entire roadmap to find blockers
+Read(.haunt/plans/roadmap.md)
+
+# RIGHT: Search for blocked items only
+grep -B 2 "Blocked by: REQ-" .haunt/plans/roadmap.md  # Shows blocked items + context
+```
+
+**Pattern 3: List Requirements by Status**
+```bash
+# WRONG: Read entire roadmap to count progress
+Read(.haunt/plans/roadmap.md)
+
+# RIGHT: Count by status icon
+grep "^###.*🟡" .haunt/plans/roadmap.md | wc -l  # Count in-progress
+grep "^###.*🟢" .haunt/plans/roadmap.md | wc -l  # Count complete
+```
+
+**Pattern 4: Find Requirements for Specific Agent**
+```bash
+# WRONG: Read entire roadmap to find agent assignments
+Read(.haunt/plans/roadmap.md)
+
+# RIGHT: Search for agent assignments
+grep -B 10 "Agent: Dev-Frontend" .haunt/plans/roadmap.md  # Shows REQ + agent field
+```
+
+**Impact:** PM tasks often query specific requirements. Targeted reads save 95-98% of tokens.
