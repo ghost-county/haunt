@@ -57,7 +57,7 @@ Add `--verbose` to restore full output for debugging.
 **Agent:** Dev-Infrastructure
 **Completion:** Setup runs quietly by default, `--verbose` shows all output
 **Blocked by:** None
-### ⚪ REQ-263: Add Optional Playwright MCP Installation Prompt
+### 🟢 REQ-263: Add Optional Playwright MCP Installation Prompt
 
 **Type:** Enhancement
 **Reported:** 2025-12-30
@@ -67,14 +67,14 @@ Add `--verbose` to restore full output for debugging.
 Add an interactive prompt during setup asking if the user wants to install Playwright MCP for UI/E2E testing. If yes, add it to project-level `.mcp.json`. If no, skip it. This keeps Playwright tokens (20k) out of non-frontend projects.
 
 **Tasks:**
-- [ ] Add prompt after MCP section: "Install Playwright MCP for UI testing? [y/N]"
-- [ ] If yes: Create/update `.mcp.json` with Playwright config
-- [ ] If no: Skip silently (default behavior)
-- [ ] Add `--with-playwright` flag to skip prompt and install
-- [ ] Add `--no-playwright` flag to skip prompt and skip install
-- [ ] Handle existing `.mcp.json` (merge, don't overwrite)
-- [ ] Test on fresh project and existing project
-- [ ] Update --help text
+- [x] Add prompt after MCP section: "Install Playwright MCP for UI testing? [y/N]"
+- [x] If yes: Create/update `.mcp.json` with Playwright config
+- [x] If no: Skip silently (default behavior)
+- [x] Add `--with-playwright` flag to skip prompt and install
+- [x] Add `--no-playwright` flag to skip prompt and skip install
+- [x] Handle existing `.mcp.json` (merge, don't overwrite)
+- [x] Test on fresh project and existing project
+- [x] Update --help text
 
 **Playwright MCP Config:**
 ```json

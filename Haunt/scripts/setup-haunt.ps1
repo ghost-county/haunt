@@ -1518,6 +1518,98 @@ function Install-FrontendPlugin {
     Write-Host ""
 }
 
+function Setup-PlaywrightMCP {
+    Write-Section "Playwright MCP Configuration"
+
+    $mcpJsonPath = Join-Path -Path (Get-Location) -ChildPath ".mcp.json"
+
+    # Determine if we should install
+    $shouldInstall = $null
+    if ($WithPlaywright) {
+        $shouldInstall = $true
+    }
+    elseif ($NoPlaywright) {
+        $shouldInstall = $false
+    }
+    else {
+        # Prompt user
+        Write-Host ""
+        Write-Info "Playwright MCP enables UI/E2E testing with browser automation."
+        Write-Info "It adds ~20k tokens to context but is only useful for frontend projects."
+        Write-Host ""
+
+        if ($Yes) {
+            $shouldInstall = $false  # Default to no when auto-accepting
+            Write-Info "Auto-install mode: Skipping Playwright MCP (default: no)"
+        }
+        else {
+            $response = Read-Host "Install Playwright MCP for UI testing? [y/N]"
+            $shouldInstall = ($response -eq 'y' -or $response -eq 'Y')
+        }
+    }
+
+    if (-not $shouldInstall) {
+        Write-Info "Skipping Playwright MCP installation"
+        return
+    }
+
+    # Install Playwright MCP
+    Write-Info "Installing Playwright MCP to $mcpJsonPath..."
+
+    $playwrightConfig = @{
+        mcpServers = @{
+            playwright = @{
+                command = "npx"
+                args    = @("@playwright/mcp@latest")
+            }
+        }
+    }
+
+    if (-not $DryRun) {
+        if (Test-Path $mcpJsonPath) {
+            # Merge with existing
+            Write-Info "Merging with existing .mcp.json..."
+
+            try {
+                $existing = Get-Content $mcpJsonPath -Raw | ConvertFrom-Json -AsHashtable
+                if ($existing.mcpServers.playwright) {
+                    Write-Info "Playwright MCP already configured in .mcp.json"
+                    return
+                }
+
+                # Add playwright to existing mcpServers
+                if (-not $existing.mcpServers) {
+                    $existing.mcpServers = @{}
+                }
+                $existing.mcpServers.playwright = $playwrightConfig.mcpServers.playwright
+
+                $existing | ConvertTo-Json -Depth 10 | Set-Content $mcpJsonPath
+                Write-Success "Merged Playwright MCP into existing .mcp.json"
+            }
+            catch {
+                Write-Err "Failed to merge .mcp.json: $_"
+                return
+            }
+        }
+        else {
+            # Create new file
+            $playwrightConfig | ConvertTo-Json -Depth 10 | Set-Content $mcpJsonPath
+            Write-Success "Created .mcp.json with Playwright MCP configuration"
+        }
+
+        Write-Host ""
+        Write-Info "Playwright MCP configuration complete!"
+        Write-Info "Next steps:"
+        Write-Host "  1. Install Playwright: npm install -D @playwright/test"
+        Write-Host "  2. Initialize Playwright: npx playwright install"
+        Write-Host "  3. Restart Claude Desktop to load Playwright MCP"
+        Write-Host ""
+    }
+    else {
+        Write-Info "[DRY RUN] Would configure Playwright MCP in $mcpJsonPath"
+    }
+}
+
 function Main {
     # Show help if requested
     if ($Help) {
@@ -1555,6 +1647,7 @@ function Main {
     # Frontend plugin installation (optional)
     if (-not $AgentsOnly -and -not $SkillsOnly) {
         Install-FrontendPlugin
+        Setup-PlaywrightMCP
     }
 
     # Run installation phases
