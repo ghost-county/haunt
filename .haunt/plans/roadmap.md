@@ -10,6 +10,7 @@
 - None (all current work complete!)
 
 **Recently Archived (2025-12-31):**
+- 🟢 REQ-282: Skill Token Optimization - gco-orchestrator refactored (1,773→326 lines, 5 reference files)
 - 🟢 REQ-279-281: Agent Iteration & Verification (Ralph Wiggum-inspired improvements)
 - 🟢 REQ-275-278: Deterministic Wrapper Scripts (haunt-lessons, haunt-story, haunt-read, haunt-archive)
 - 🟢 REQ-274: Structured Roadmap Lookup Wrapper

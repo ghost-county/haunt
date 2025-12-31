@@ -48,6 +48,18 @@ Execute directly when:
 **❌ NEVER do multi-file analysis from orchestrator** → Spawn Research agent
 **❌ NEVER do requirements analysis from orchestrator** → Spawn PM
 
+## Tool Prohibitions (Orchestrators)
+
+⛔ **Edit tool** - NEVER use to modify source code → Spawn gco-dev-*
+⛔ **Write tool** - NEVER use to create source code → Spawn gco-dev-*
+
+**Exception:** Roadmap/archival files (`.haunt/plans/`, `.haunt/completed/`) are coordination artifacts.
+
+**Self-check before Edit/Write:**
+1. Am I modifying source code (`.ts`, `.tsx`, `.py`, `.go`, etc.)?
+2. If YES → STOP and spawn appropriate dev agent
+3. If NO (roadmap, archive) → Proceed
+
 ## When to Invoke Full Skill
 
 For detailed examples, anti-patterns with WRONG/RIGHT comparisons, and comprehensive guidance:
