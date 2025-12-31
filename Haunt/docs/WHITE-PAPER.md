@@ -533,7 +533,300 @@ bash Haunt/scripts/setup-haunt.sh --verify
 
 ---
 
-## Key Workflows
+### Wrapper Scripts: Structured Execution Layer
+
+Haunt provides **structured wrapper scripts** that return JSON for programmatic verification and eliminate token-wasting manual file parsing.
+
+**Why Wrappers Matter:**
+
+Traditional workflow (token-intensive):
+```bash
+# Agent reads entire 1647-line roadmap to find one requirement
+Read(.haunt/plans/roadmap.md)  # 1647 lines = ~4000 tokens
+
+# Agent runs tests manually, parses output
+pytest tests/ -v  # Parses human-readable output
+```
+
+Wrapper workflow (token-efficient):
+```bash
+# Get specific requirement as JSON
+bash Haunt/scripts/haunt-roadmap.sh get REQ-XXX  # Returns ~30 lines JSON
+
+# Run tests with structured output
+bash Haunt/scripts/haunt-run.sh test  # Returns JSON with pass/fail/coverage
+```
+
+**Token savings:** 60-98% reduction for common operations.
+
+#### Available Wrapper Scripts
+
+| Script | Purpose | Output Format |
+|--------|---------|---------------|
+| `haunt-roadmap.sh` | Structured roadmap lookup | JSON (requirement details) |
+| `haunt-run.sh` | Build/test/lint execution | JSON (results, coverage, failures) |
+| `haunt-verify.sh` | Completion criteria verification | JSON (pass/fail per criterion) |
+| `haunt-archive.sh` | Archive completed requirements | JSON (archival confirmation) |
+| `haunt-read.sh` | Smart file reader with caching | Cached content or file path |
+| `haunt-story.sh` | Story file management | JSON (story context, session notes) |
+| `haunt-lessons.sh` | Lessons-learned query | Relevant lessons for requirement |
+| `haunt-metrics.sh` | Performance metrics collection | JSON (execution time, token usage) |
+| `haunt-git.sh` | Git operation wrappers | JSON (commit info, status) |
+
+#### Example: Structured Roadmap Lookup
+
+**Without wrapper (traditional):**
+```bash
+# Dev agent needs REQ-042 details
+Read(.haunt/plans/roadmap.md)  # 1647 lines
+grep -A 30 "REQ-042" .haunt/plans/roadmap.md  # Manual parsing
+```
+
+**With wrapper (optimized):**
+```bash
+# Get structured JSON output
+$ bash Haunt/scripts/haunt-roadmap.sh get REQ-042
+
+{
+  "id": "REQ-042",
+  "title": "Implement user authentication endpoints",
+  "status": "🟡",
+  "agent": "Dev-Backend",
+  "effort": "M",
+  "complexity": "MODERATE",
+  "tasks": [
+    {"text": "Create POST /auth/register", "done": true},
+    {"text": "Create POST /auth/login", "done": true},
+    {"text": "Add rate limiting", "done": false}
+  ],
+  "blocked_by": "None"
+}
+```
+
+**Result:** Agent gets exactly what it needs in 30 lines instead of reading 1647.
+
+#### Example: Structured Test Execution
+
+**Without wrapper:**
+```bash
+# Run tests, parse human-readable output
+pytest tests/ -v
+
+# Agent manually parses:
+# "test_auth.py::test_register PASSED [10%]"
+# "test_auth.py::test_login PASSED [20%]"
+# ... 100+ lines of output ...
+```
+
+**With wrapper:**
+```bash
+$ bash Haunt/scripts/haunt-run.sh test
+
+{
+  "success": true,
+  "framework": "pytest",
+  "passed": 23,
+  "failed": 0,
+  "skipped": 1,
+  "duration_seconds": 4.2,
+  "coverage_percent": 87.3,
+  "failures": []
+}
+```
+
+**Result:** Structured output for programmatic verification, no manual parsing.
+
+#### Example: Completion Verification
+
+**Without wrapper:**
+```bash
+# Agent manually checks each criterion:
+# 1. Read roadmap, count checkboxes
+# 2. Run pytest, check exit code
+# 3. Run coverage, parse output
+# 4. Check file existence
+# 5. Verify commit format
+# ... 30+ commands, 5000+ tokens ...
+```
+
+**With wrapper:**
+```bash
+$ bash Haunt/scripts/haunt-verify.sh REQ-042 backend
+
+{
+  "success": true,
+  "requirement": "REQ-042",
+  "summary": "5/5 criteria passed",
+  "criteria": [
+    {"name": "tasks_complete", "status": "PASS", "evidence": "3/3 tasks checked"},
+    {"name": "files_exist", "status": "PASS", "evidence": "All 2 files exist"},
+    {"name": "tests_pass", "status": "PASS", "evidence": "23/23 tests passed"},
+    {"name": "coverage", "status": "PASS", "evidence": "87% coverage"},
+    {"name": "commits_valid", "status": "PASS", "evidence": "3 commits follow convention"}
+  ]
+}
+```
+
+**Result:** One command verifies ALL completion criteria programmatically.
+
+---
+
+### Metrics Framework: Zero Agent Overhead
+
+Haunt includes a **lightweight metrics collection system** that tracks framework performance without requiring agent awareness or manual instrumentation.
+
+**Design principle:** Metrics collection happens **outside agent context**—wrapper scripts emit metrics, agents remain unaware.
+
+#### How It Works
+
+**Traditional metrics (problematic):**
+```python
+# Agent must manually track metrics (adds complexity)
+start_time = time.time()
+result = implement_feature()
+metrics.record("feature_time", time.time() - start_time)
+```
+
+**Haunt metrics (transparent):**
+```bash
+# Wrapper script handles metrics automatically
+$ bash Haunt/scripts/haunt-run.sh test
+
+# Emits metrics to .haunt/metrics/metrics.jsonl:
+{"timestamp": "2025-12-31T10:30:00Z", "operation": "test", "duration_seconds": 4.2, "success": true}
+
+# Agent sees only the test result (no metrics awareness needed)
+```
+
+#### What Gets Tracked
+
+| Metric | Source | Purpose |
+|--------|--------|---------|
+| Test execution time | `haunt-run.sh test` | Performance regression detection |
+| Build time | `haunt-run.sh build` | Build optimization opportunities |
+| Requirement completion time | `haunt-verify.sh` | Effort estimation calibration |
+| Token usage per operation | `haunt-read.sh`, `haunt-roadmap.sh` | Optimization validation |
+| Wrapper script usage | All wrapper scripts | Adoption tracking |
+
+#### Metrics Output Format
+
+**File:** `.haunt/metrics/metrics.jsonl` (JSON Lines format)
+
+```json
+{"timestamp": "2025-12-31T10:15:00Z", "operation": "test", "framework": "pytest", "passed": 23, "failed": 0, "duration_seconds": 4.2, "coverage_percent": 87.3}
+{"timestamp": "2025-12-31T10:20:00Z", "operation": "roadmap_lookup", "requirement": "REQ-042", "token_savings": 4100, "duration_ms": 45}
+{"timestamp": "2025-12-31T10:25:00Z", "operation": "verify_completion", "requirement": "REQ-042", "criteria_passed": 5, "criteria_failed": 0}
+```
+
+#### Analysis and Reporting
+
+```bash
+# Generate summary report
+$ bash Haunt/scripts/haunt-metrics.sh report --last-week
+
+Framework Performance (Last 7 Days):
+- Average test execution: 4.3s
+- Average token savings per lookup: 3,800 tokens
+- Requirements completed: 12
+- Wrapper script adoption: 89%
+
+Top optimization opportunities:
+1. Test execution +15% slower than baseline
+2. Coverage dropped from 91% to 87%
+3. REQ-042 took 3.2hr (estimated 2hr) - calibrate estimates
+```
+
+**Key insight:** Metrics inform framework improvements without burdening agents with instrumentation logic.
+
+---
+
+### Skill Refactoring Pattern: Reference Files + Consultation Gates
+
+To prevent token bloat in rules while maintaining comprehensive guidance, Haunt uses a **two-tier skill architecture**:
+
+**Tier 1: Slim Reference Files (Rules)**
+- Auto-loaded every session (~50-100 lines)
+- Core protocols and non-negotiable requirements
+- Summary checklists with "invoke full skill" gates
+
+**Tier 2: Comprehensive Skills (On-Demand)**
+- Loaded only when invoked (~300-600 lines)
+- Detailed examples, edge cases, anti-patterns
+- Complete methodology and best practices
+
+#### Example: Completion Checklist
+
+**Before refactoring** (rule file bloated):
+```markdown
+# gco-completion-checklist.md (800 lines - auto-loaded!)
+- Complete checklist with ALL details
+- Detailed examples for each step
+- Anti-patterns to avoid
+- Edge case handling
+- Integration with other workflows
+- ... 700 more lines ...
+```
+
+**Token cost:** 800 lines × ~2.5 tokens/line = **2,000 tokens per session**
+
+**After refactoring** (slim reference + consultation gate):
+
+**Tier 1: Slim Reference (Rule)** - `gco-completion-checklist.md` (~100 lines)
+```markdown
+# Completion Checklist (Slim Reference)
+
+## Before Marking ANY Requirement 🟢
+
+Run through this checklist:
+
+1. All Tasks Checked Off
+2. Completion Criteria Met
+3. Tests Passing (non-negotiable)
+4. Files Updated
+5. ...
+
+## When to Invoke Full Skill
+
+For detailed requirements, checklists for each step, examples, and anti-patterns:
+
+**Invoke:** `/gco-completion` skill
+
+The skill contains:
+- Detailed verification requirements for each step
+- Testing requirements by agent type
+- Iterative refinement checklist
+- Anti-patterns to avoid with examples
+```
+
+**Tier 2: Comprehensive Skill (On-Demand)** - `gco-completion/SKILL.md` (~600 lines)
+```markdown
+# Completion Checklist: Comprehensive Guide
+
+## Purpose
+Detailed verification workflow for marking requirements complete...
+
+[Full 600 lines of examples, anti-patterns, edge cases, etc.]
+```
+
+**Token savings:** 1,900 tokens saved per session (agents only load 100-line reference unless they need details).
+
+#### When to Use Consultation Gates
+
+Add consultation gates when:
+- Rule file exceeds 200 lines
+- Content includes many examples or edge cases
+- Guidance is context-specific (not needed every session)
+- Methodology changes frequently (easier to update skill than rule)
+
+**Pattern:**
+1. Identify bloated rule file (>200 lines)
+2. Extract detailed content to skill
+3. Leave slim checklist in rule with "Invoke skill for details"
+4. Agents load skill on-demand when they need comprehensive guidance
+
+**Result:** Rules stay lightweight (auto-loaded), skills provide depth (on-demand).
+
+---
 
 ### 1. Session Startup Protocol
 
@@ -595,15 +888,43 @@ $ /seance "Add OAuth login support"
 - **Parallel execution**: Agents work on independent requirements simultaneously
 - **Automatic archival**: Completed work moves to `.haunt/completed/` automatically
 - **Roadmap sharding**: Large projects split into batch files for performance
+- **Phase gates**: Deterministic workflow with explicit pass/fail criteria at each phase transition
+
+**Phase Gate Integration:**
+
+Each Séance phase includes verification gates to ensure deterministic progression:
+
+**Scrying Phase Gate:**
+- ✅ Requirements document created with clear acceptance criteria
+- ✅ Strategic analysis completed (or skipped if --quick)
+- ✅ Roadmap updated with sized, assigned requirements
+- ✅ No SPLIT-sized requirements (all decomposed to M or smaller)
+- ⛔ FAIL: Blocks execution until requirements properly defined
+
+**Summoning Phase Gate:**
+- ✅ All tests passing before starting new work
+- ✅ Git working directory clean or WIP properly committed
+- ✅ Agent assignments clear and unambiguous
+- ✅ Dependencies resolved (no 🔴 blocked requirements in batch)
+- ⛔ FAIL: Cannot spawn agents until foundation stable
+
+**Banishing Phase Gate:**
+- ✅ All requirements in batch marked 🟢
+- ✅ All task checkboxes checked
+- ✅ All commits follow convention
+- ✅ Documentation updated
+- ⛔ FAIL: Cannot archive incomplete work
 
 **Why it matters:**
 - Say what you want (one line) → come back to shipped features
 - Zero coordination overhead (roadmap is the communication layer)
 - Full SDLC automation from idea to production
+- Deterministic workflow prevents premature phase transitions
 
 **📖 For complete Séance documentation**, including:
 - All 6 operating modes (interactive, direct, explicit phases)
 - Planning depth levels (quick/medium/deep)
+- Phase gate details and failure recovery
 - Complete workflow examples (OAuth login walkthrough)
 - Advanced usage (batch execution, roadmap sharding)
 - Troubleshooting and best practices
@@ -1087,6 +1408,6 @@ ghost-county/
 ---
 
 **Version:** Haunt v2.0
-**Last Updated:** 2025-12-19
+**Last Updated:** 2025-12-31
 **License:** MIT
-**Documentation:** `Haunt/README.md`, `Haunt/SETUP-GUIDE.md`
+**Documentation:** `Haunt/README.md`, `Haunt/SETUP-GUIDE.md`, `Haunt/docs/SEANCE-EXPLAINED.md`

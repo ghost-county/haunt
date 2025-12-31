@@ -10,10 +10,64 @@
 - None (all current work complete!)
 
 **Recently Archived (2025-12-31):**
+- 🟢 REQ-286: Documentation Update (WHITE-PAPER.md + README.md refreshed for v2.0)
 - 🟢 REQ-282: Skill Token Optimization - gco-orchestrator refactored (1,773→326 lines, 5 reference files)
 - 🟢 REQ-279-281: Agent Iteration & Verification (Ralph Wiggum-inspired improvements)
 - 🟢 REQ-275-278: Deterministic Wrapper Scripts (haunt-lessons, haunt-story, haunt-read, haunt-archive)
 - 🟢 REQ-274: Structured Roadmap Lookup Wrapper
+
+---
+
+## Backlog: Core Documentation Update
+
+### 🟢 REQ-286: Update WHITE-PAPER.md and README.md
+
+**Type:** Documentation
+**Reported:** 2025-12-31
+**Source:** User request
+
+**Description:**
+Major documentation refresh to reflect significant framework evolution since last update. Recent work includes:
+- Wrapper scripts (haunt-verify, haunt-archive, haunt-read, haunt-story, haunt-roadmap, haunt-run)
+- Metrics framework with zero agent overhead
+- Phase gates for TDD and séance workflows
+- Delegation protocol for orchestrators
+- React and Python development standards
+- Skill refactoring pattern (reference files + consultation gates)
+- Quiet mode as default with verbose override
+- Optional Playwright MCP installation
+
+**Tasks:**
+
+- [ ] Review all recent changes (commits since 2025-12-20)
+- [ ] Audit current wrapper scripts in Haunt/scripts/
+- [ ] Update WHITE-PAPER.md with current architecture and workflows
+- [ ] Rewrite README.md as concise overview:
+  - What Haunt is and core principles
+  - Séance workflow explanation
+  - Installation instructions
+  - Quick examples
+  - Links to detailed docs
+- [ ] Ensure documentation cross-references are accurate
+- [ ] Verify installation instructions work
+
+**Files:**
+
+- `Haunt/docs/WHITE-PAPER.md` (modify)
+- `Haunt/README.md` (modify)
+
+**Effort:** M (2-4 hours)
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:**
+
+- WHITE-PAPER.md reflects current framework state
+- README.md is concise (<400 lines) with clear structure
+- All wrapper scripts documented
+- Installation instructions verified
+- Cross-references accurate
+
+**Blocked by:** None
 
 ---
 
