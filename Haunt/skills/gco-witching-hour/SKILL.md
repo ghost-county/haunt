@@ -21,7 +21,7 @@ The "witching hour" is that dark time when bugs reveal themselves - usually late
 
 ## The Witching Hour Protocol
 
-A systematic five-phase approach to intensive debugging:
+A systematic five-phase approach to intensive debugging with explicit phase gates to ensure thorough investigation.
 
 ### Phase 1: Shadow Gathering (Evidence Collection)
 
@@ -52,6 +52,18 @@ git diff HEAD~10..HEAD path/to/suspect/area
 
 **Output:** Create `.haunt/progress/witching-hour-YYYY-MM-DD-DESCRIPTION.md` with evidence log.
 
+**GATE (complete ALL before proceeding to SPECTRAL ANALYSIS):**
+- [ ] Witching hour report file created
+- [ ] Full error messages and stack traces collected (not just summaries)
+- [ ] User reproduction steps documented with exact sequence
+- [ ] System state at failure time recorded (memory, CPU, network)
+- [ ] Recent code changes reviewed (git log for relevant areas)
+- [ ] Similar past issues searched (codebase, tickets, memory)
+
+⛔ **STOP:** Do NOT proceed to analysis until all evidence is collected. Incomplete evidence leads to wrong conclusions.
+
+---
+
 ### Phase 2: Spectral Analysis (Pattern Correlation)
 
 Analyze collected evidence for patterns and correlations.
@@ -74,6 +86,18 @@ Analyze collected evidence for patterns and correlations.
 - **High confidence**: Strong correlation with evidence
 - **Medium confidence**: Plausible but needs verification
 - **Low confidence**: Speculation worth investigating
+
+**GATE (complete ALL before proceeding to ILLUMINATION):**
+- [ ] All 5 correlation questions answered (changed/common/different/missing/unexpected)
+- [ ] Temporal patterns analyzed (timing, load conditions)
+- [ ] Environmental patterns analyzed (servers, regions, user types)
+- [ ] Code patterns analyzed (recent changes, similar bugs)
+- [ ] At least 2 hypotheses formulated with confidence levels
+- [ ] Correlations documented in witching-hour report
+
+⛔ **STOP:** Do NOT proceed to adding instrumentation until patterns are analyzed. Random logging wastes time without targeted hypotheses.
+
+---
 
 ### Phase 3: Illumination (Enhanced Instrumentation)
 
@@ -116,6 +140,18 @@ logger.info(
 - Log trace_id in every witching hour log entry
 - Grep logs by trace_id to see full execution path
 
+**GATE (complete ALL before proceeding to THE HUNT):**
+- [ ] Enhanced logging added to suspect code paths
+- [ ] Logging includes context (user_id, operation, state, trace_id)
+- [ ] Instrumentation at all critical points (entry, exit, transitions, decisions)
+- [ ] Trace ID system implemented for correlation
+- [ ] Test execution with new logging produces useful output
+- [ ] Log grep command documented for finding traces
+
+⛔ **STOP:** Do NOT proceed to hypothesis testing until instrumentation is in place and verified. Testing without logs is flying blind.
+
+---
+
 ### Phase 4: The Hunt (Systematic Elimination)
 
 Test hypotheses systematically, eliminating possibilities.
@@ -157,6 +193,18 @@ done
 # Compare environments
 diff <(pip freeze) <(pip freeze -r production-requirements.txt)
 ```
+
+**GATE (complete ALL before proceeding to BANISHMENT):**
+- [ ] At least 2 hypotheses tested systematically
+- [ ] Test results documented in witching-hour report
+- [ ] Root cause identified with high confidence
+- [ ] Root cause explains ALL observed symptoms
+- [ ] Root cause reproducible (can trigger bug deliberately)
+- [ ] No contradictory evidence remains unexplained
+
+⛔ **STOP:** Do NOT proceed to fix until root cause is confirmed. Fixing symptoms without understanding cause creates new bugs.
+
+---
 
 ### Phase 5: Banishment (Fix & Prevent)
 
@@ -202,6 +250,39 @@ Fix: [How was it resolved?]
 Prevention: [What safeguards were added?]
 Lesson: [What did we learn?]
 ```
+
+**GATE (complete ALL before closing investigation):**
+- [ ] Fix implemented and addresses root cause (not just symptoms)
+- [ ] Regression test added that fails before fix, passes after
+- [ ] Fix tested in environment where bug originally occurred
+- [ ] Related code audited for same pattern
+- [ ] Prevention measures in place (defensive code, monitoring, alerts)
+- [ ] Agent memory updated with pattern and solution
+- [ ] Witching hour report completed with lessons learned
+
+⛔ **STOP:** Do NOT close investigation until all prevention measures are in place. Without safeguards, the bug will return.
+
+---
+
+## Phase Gate Summary
+
+**SHADOW GATHERING → SPECTRAL ANALYSIS → ILLUMINATION → THE HUNT → BANISHMENT flow:**
+1. ⛔ SHADOW GATHERING gate: All evidence collected before analysis
+2. ⛔ SPECTRAL ANALYSIS gate: Patterns analyzed and hypotheses formed before instrumentation
+3. ⛔ ILLUMINATION gate: Logging in place and verified before testing
+4. ⛔ THE HUNT gate: Root cause confirmed before fixing
+5. ⛔ BANISHMENT gate: Prevention measures in place before closing
+
+**Skipping gates leads to:**
+- Incomplete evidence → Wrong conclusions (skip SHADOW gate)
+- Random logging → Wasted time (skip SPECTRAL gate)
+- Testing without data → No insights (skip ILLUMINATION gate)
+- Fixing symptoms → New bugs (skip HUNT gate)
+- Missing safeguards → Bug recurrence (skip BANISHMENT gate)
+
+**Follow the gates strictly** to ensure systematic investigation and permanent resolution.
+
+---
 
 ## Enhanced Debugging Techniques
 

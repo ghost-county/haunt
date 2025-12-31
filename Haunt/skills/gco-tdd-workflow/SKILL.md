@@ -18,7 +18,7 @@ This skill provides guidance for following test-driven development (TDD) practic
 
 ## The Red-Green-Refactor Cycle
 
-TDD follows a simple three-step cycle:
+TDD follows a simple three-step cycle with explicit phase gates to ensure proper workflow.
 
 ### 1. RED - Write a Failing Test
 
@@ -38,6 +38,17 @@ def test_add_two_numbers():
 pytest test_calculator.py -v
 ```
 
+**GATE (complete ALL before proceeding to GREEN):**
+- [ ] Test file exists and is saved
+- [ ] Test runs without syntax/import errors
+- [ ] Test FAILS with clear assertion error (not crash, not skip)
+- [ ] Failure message describes expected behavior
+- [ ] Test is independent (doesn't rely on other tests or shared state)
+
+⛔ **STOP:** Do NOT proceed to GREEN phase until all gate items are checked. The test must fail for the right reason (assertion), not crash or error.
+
+---
+
 ### 2. GREEN - Write Minimal Code to Pass
 
 Implement the simplest code that makes the test pass.
@@ -54,6 +65,17 @@ class Calculator:
 ```bash
 pytest test_calculator.py -v
 ```
+
+**GATE (complete ALL before proceeding to REFACTOR):**
+- [ ] Implementation code written
+- [ ] Test that failed in RED now PASSES
+- [ ] ALL existing tests still pass (no regressions)
+- [ ] Implementation is minimal (simplest code that works)
+- [ ] No debugging code left (console.log, print statements)
+
+⛔ **STOP:** Do NOT proceed to REFACTOR phase until all gate items are checked. If tests don't pass, fix the implementation, don't skip to refactoring.
+
+---
 
 ### 3. REFACTOR - Improve Code While Keeping Tests Green
 
@@ -72,6 +94,33 @@ class Calculator:
 ```bash
 pytest test_calculator.py -v
 ```
+
+**GATE (complete ALL before marking feature complete):**
+- [ ] Code refactored for clarity (descriptive names, focused functions)
+- [ ] Code refactored for quality (type hints, docstrings, error handling)
+- [ ] ALL tests still pass after refactoring
+- [ ] No new functionality added (refactoring only improves existing code)
+- [ ] Code follows project style guidelines
+
+⛔ **STOP:** Do NOT mark feature complete until all gate items are checked. Refactoring should improve code structure without changing behavior.
+
+---
+
+## Phase Gate Summary
+
+**RED → GREEN → REFACTOR flow:**
+1. ⛔ RED gate: Test must fail with clear assertion
+2. ⛔ GREEN gate: Test must pass, no regressions
+3. ⛔ REFACTOR gate: All tests pass after improvements
+
+**Skipping gates leads to:**
+- Tests that don't actually test behavior (skip RED gate)
+- Untested or broken code (skip GREEN gate)
+- Technical debt and messy code (skip REFACTOR gate)
+
+**Follow the gates strictly** to ensure deterministic workflow and high-quality code.
+
+---
 
 ## Testing Commands by Language
 

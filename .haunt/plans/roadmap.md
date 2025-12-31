@@ -411,12 +411,12 @@ Create a metrics extraction system that derives measurements from existing artif
 | Completion Rate | Roadmap archive | Requirements completed vs abandoned |
 
 **Tasks:**
-- [ ] Create `haunt-metrics` script that extracts from existing artifacts
-- [ ] Parse git log for requirement commits (REQ-XXX pattern)
-- [ ] Parse roadmap status change timestamps (⚪→🟡→🟢)
-- [ ] Generate summary report (JSON + human-readable)
-- [ ] Add `/haunt metrics` command to invoke script
-- [ ] Document metric definitions
+- [x] Create `haunt-metrics` script that extracts from existing artifacts
+- [x] Parse git log for requirement commits (REQ-XXX pattern)
+- [x] Parse roadmap status change timestamps (⚪→🟡→🟢)
+- [x] Generate summary report (JSON + human-readable)
+- [x] Add `/haunt metrics` command to invoke script
+- [x] Document metric definitions
 
 **Non-Goals:**
 - No per-action logging by agents
@@ -435,7 +435,7 @@ Create a metrics extraction system that derives measurements from existing artif
 
 ---
 
-### {🟡} REQ-270: Structured Git Operations Wrapper
+### {🟢} REQ-270: Structured Git Operations Wrapper
 
 **Type:** Enhancement
 **Reported:** 2025-12-30
@@ -459,7 +459,7 @@ Create wrapper scripts for common git operations that return structured JSON ins
 - [x] Implement `haunt-git log` → JSON output (configurable count)
 - [x] Handle edge cases (detached HEAD, merge conflicts, empty repo)
 - [x] Add `--raw` flag to pass through to regular git when needed
-- [ ] Document usage in agent rules
+- [x] Document usage in agent rules
 
 **Files:**
 - `Haunt/scripts/haunt-git.sh` (create)
