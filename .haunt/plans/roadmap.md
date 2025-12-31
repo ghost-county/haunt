@@ -93,14 +93,14 @@ Create wrapper script for `.haunt/docs/lessons-learned.md` (752 lines) to provid
 Create wrapper script for story files in `.haunt/docs/stories/` directory. Story files average 300 lines each. Agents often only need existence check or specific sections (Problem/Solution/Impact), not full content.
 
 **Tasks:**
-- [ ] Create `Haunt/scripts/haunt-story.sh` with JSON output
-- [ ] Implement `haunt-story check REQ-XXX` command (existence + metadata)
-- [ ] Implement `haunt-story get REQ-XXX` command (full story as JSON)
-- [ ] Implement `haunt-story section REQ-XXX "Heading"` command (extract section)
-- [ ] Implement `haunt-story list` command (list all story files)
-- [ ] Add error handling for missing stories/sections
-- [ ] Add usage help text (`--help` flag)
-- [ ] Test with actual story files (verify section parsing)
+- [x] Create `Haunt/scripts/haunt-story.sh` with JSON output
+- [x] Implement `haunt-story check REQ-XXX` command (existence + metadata)
+- [x] Implement `haunt-story get REQ-XXX` command (full story as JSON)
+- [x] Implement `haunt-story section REQ-XXX "Heading"` command (extract section)
+- [x] Implement `haunt-story list` command (list all story files)
+- [x] Add error handling for missing stories/sections
+- [x] Add usage help text (`--help` flag)
+- [x] Test with actual story files (verify section parsing)
 
 **Files:**
 - `Haunt/scripts/haunt-story.sh` (create)
@@ -120,7 +120,7 @@ Create wrapper script for story files in `.haunt/docs/stories/` directory. Story
 
 ---
 
-### 🟡 REQ-277: Implement haunt-read.sh General Wrapper
+### 🟢 REQ-277: Implement haunt-read.sh General Wrapper
 
 **Type:** Enhancement
 **Reported:** 2025-12-31
@@ -130,16 +130,16 @@ Create wrapper script for story files in `.haunt/docs/stories/` directory. Story
 Create general-purpose file reading wrapper with multiple access modes (head, tail, section, grep). Provides JSON output for any file type, reducing token usage when agents need small portions of large files.
 
 **Tasks:**
-- [ ] Create `Haunt/scripts/haunt-read.sh` with JSON output
-- [ ] Implement `haunt-read check <file>` command (existence + metadata)
-- [ ] Implement `haunt-read head <file> [--lines=N]` command (first N lines)
-- [ ] Implement `haunt-read tail <file> [--lines=N]` command (last N lines)
-- [ ] Implement `haunt-read section <file> "Heading"` command (markdown section extraction)
-- [ ] Implement `haunt-read grep <file> <pattern> [--context=N]` command (grep with context)
-- [ ] Add error handling for missing files/invalid ranges
-- [ ] Add usage help text (`--help` flag)
-- [ ] Test with various file types (markdown, code, config)
-- [ ] Test edge cases (empty files, missing sections, invalid patterns)
+- [x] Create `Haunt/scripts/haunt-read.sh` with JSON output
+- [x] Implement `haunt-read check <file>` command (existence + metadata)
+- [x] Implement `haunt-read head <file> [--lines=N]` command (first N lines)
+- [x] Implement `haunt-read tail <file> [--lines=N]` command (last N lines)
+- [x] Implement `haunt-read section <file> "Heading"` command (markdown section extraction)
+- [x] Implement `haunt-read grep <file> <pattern> [--context=N]` command (grep with context)
+- [x] Add error handling for missing files/invalid ranges
+- [x] Add usage help text (`--help` flag)
+- [x] Test with various file types (markdown, code, config)
+- [x] Test edge cases (empty files, missing sections, invalid patterns)
 
 **Files:**
 - `Haunt/scripts/haunt-read.sh` (create)
