@@ -237,7 +237,7 @@ ensure_resources() {
 }
 
 # Scope configuration (will be set based on --scope or --user flag)
-SCOPE="project"  # Default: project-local (.claude/)
+SCOPE="global"  # Default: global (~/.claude/) - Haunt is a global framework
 GLOBAL_AGENTS_DIR="${HOME}/.claude/agents"
 GLOBAL_AGENTS_BACKUP_DIR="${HOME}/.claude/agents.backup"
 GLOBAL_SKILLS_DIR="${HOME}/.claude/skills"
