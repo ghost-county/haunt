@@ -5,7 +5,10 @@
 Run through this checklist:
 
 1. **All Tasks Checked Off** - Every `- [ ]` is now `- [x]`
-2. **Completion Criteria Met** - Verify "Completion:" field criteria satisfied
+2. **Completion Criteria Met** - For EACH criterion in "Completion:" field:
+   - Check the criterion is satisfied
+   - Output: "✓ [criterion text] - VERIFIED"
+   - If ANY criterion unclear or unmet → NOT complete
 3. **Tests Passing (NON-NEGOTIABLE):**
    - **Option 1 (Recommended):** Run `bash Haunt/scripts/haunt-run.sh test` for structured JSON output
    - **Option 2:** Run `bash Haunt/scripts/verify-tests.sh REQ-XXX <frontend|backend|infrastructure>`
@@ -20,7 +23,12 @@ Run through this checklist:
    - XS: 1-pass acceptable
    - S: 2-pass minimum (Initial → Refinement)
    - M: 3-pass required (Initial → Refinement → Enhancement)
-8. **Self-Validation Done** - Code reviewed for obvious issues, tests actually test the feature
+8. **Self-Assessment Questions** (answer before marking 🟢):
+   - Did I run the tests and see them pass? (not assumed - actually ran)
+   - Did I verify EACH completion criterion? (not skimmed - verified)
+   - Did I check for obvious issues? (security, edge cases, error handling)
+   - Would I mass-produce this for production use?
+   - If ANY answer is NO or uncertain → NOT complete
 9. **Code Review Decision:**
    - XS/S: Self-validation sufficient, mark 🟢 directly
    - M/SPLIT: Spawn Code Reviewer, wait for verdict before marking 🟢
@@ -49,3 +57,4 @@ The skill contains:
 - NEVER skip verification script for Frontend/Backend work
 - NEVER mark M/SPLIT 🟢 without Code Reviewer approval
 - NEVER mark 🟢 if you wouldn't confidently demo it to your CTO
+- NEVER mark 🟢 without explicit criterion-by-criterion verification (Step 2)

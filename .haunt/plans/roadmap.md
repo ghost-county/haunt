@@ -10,6 +10,7 @@
 - None (all current work complete!)
 
 **Recently Added (2025-12-31):**
+- ⚪ REQ-279-281: Agent Iteration & Verification (Ralph Wiggum-inspired improvements)
 - ⚪ REQ-275-278: Deterministic Wrapper Scripts (haunt-lessons, haunt-story, haunt-read, haunt-archive)
 
 **Recently Archived (2025-12-30):**
@@ -192,6 +193,145 @@ Create wrapper script for `.haunt/completed/roadmap-archive.md` (grows to 1,000+
 - `haunt-archive list` returns array of {req_id, title, completed_date, agent}
 - `haunt-archive list --since=DATE` filters by completion date
 - `haunt-archive get REQ-XXX` returns full requirement content + metadata
+- Script executable and works on macOS/Linux
+
+**Blocked by:** None
+
+---
+
+## Backlog: Agent Iteration & Verification
+
+**Goal:** Add Ralph Wiggum-inspired iteration patterns with smart exit detection for genuine blockers.
+
+**Research:** See `.haunt/docs/research/ralph-wiggum-analysis.md` for full analysis.
+
+### 🟢 REQ-279: Add TDD Iteration Loop with Smart Exit to Dev Agents
+
+**Type:** Enhancement
+**Reported:** 2025-12-31
+**Source:** Ralph Wiggum pattern analysis - extract iteration benefits without token waste
+
+**Description:**
+Add structured TDD iteration loop to dev agent character sheets that allows multiple retry attempts before escalating, with smart exit detection for genuine blockers requiring user intervention (missing API keys, env vars, permissions, external service issues).
+
+Key principles:
+- Allow 5-10 iteration attempts before escalating (not 3)
+- Detect "user intervention required" patterns and exit early with clear instructions
+- Token-efficient: Don't re-read entire codebase each iteration, just relevant error context
+- Track what was tried to avoid repeating failed approaches
+
+**Tasks:**
+- [x] Define smart exit patterns (missing env vars, auth failures, external service down, permission denied)
+- [x] Create iteration loop section for unified `Haunt/agents/gco-dev.md` (Note: single file covers all modes)
+- [x] Add "attempts tracking" format to prevent repeating failed approaches
+- [x] Add escalation criteria (when to give up vs when to request user intervention)
+- [x] Document smart exit patterns in agent character sheet
+- [ ] Test with simulated failure scenarios (deferred - requires actual dev work to validate)
+
+**Files:**
+- `Haunt/agents/gco-dev.md` (modified - unified dev agent for all modes)
+
+**Implementation Notes:**
+- Discovered single unified `gco-dev.md` instead of separate backend/frontend/infrastructure files
+- Added comprehensive "TDD Iteration Loop (Smart Exit Detection)" section with:
+  - Smart exit pattern table (6 patterns: env file, API key, permissions, external service, auth, rate limits)
+  - 5-step implementation loop protocol
+  - Attempt tracking format with examples
+  - Token-efficient iteration guidelines
+  - Example scenarios (API key missing, async validation challenge)
+  - Integration with completion checklist
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:**
+- All dev agent character sheets include "Implementation Loop" section
+- Smart exit patterns documented (env vars, auth, permissions, external services)
+- Iteration allows 5-10 attempts before human escalation
+- Early exit triggers for user-intervention-required scenarios
+- Attempts tracking format prevents repeating same failed approach
+- Token-efficient: Only reads error context, not full codebase per iteration
+
+**Blocked by:** None
+
+---
+
+### 🟢 REQ-281: Enhance Completion Checklist with Explicit Verification Patterns
+
+**Type:** Enhancement
+**Reported:** 2025-12-31
+**Source:** Ralph Wiggum pattern analysis - explicit confirmation and self-assessment
+
+**Description:**
+Enhance the `gco-completion-checklist.md` rule with Ralph-inspired explicit verification patterns. Currently Steps 2 and 8 are vague; this adds structured confirmation output and specific self-assessment questions.
+
+**Tasks:**
+
+- [x] Update Step 2 to require per-criterion confirmation output format
+- [x] Replace Step 8 with specific self-assessment questions
+- [x] Add to Non-Negotiable section
+- [x] Update source file in `Haunt/rules/gco-completion-checklist.md`
+- [x] Re-run setup script to deploy to `~/.claude/rules/`
+
+**Files:**
+
+- `Haunt/rules/gco-completion-checklist.md` (modify)
+
+**Effort:** XS
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:**
+
+- Step 2 requires explicit "✓ [criterion] - VERIFIED" output for each criterion
+- Step 8 contains 4-5 specific yes/no self-assessment questions
+- Non-Negotiable includes "NEVER mark 🟢 without explicit criterion-by-criterion verification"
+- Rule deployed to `~/.claude/rules/` via setup script
+
+**Blocked by:** None
+
+---
+
+### ⚪ REQ-280: Create haunt-verify.sh Completion Verification Script
+
+**Type:** Enhancement
+**Reported:** 2025-12-31
+**Source:** Ralph Wiggum pattern analysis - programmatic completion verification
+
+**Description:**
+Create wrapper script that programmatically verifies requirement completion criteria. Agents run this before marking requirements 🟢 to ensure all criteria are objectively met. Returns JSON with pass/fail for each criterion.
+
+Verification types:
+- Test results (parse test output for pass/fail counts)
+- Coverage thresholds (parse coverage reports)
+- Lint/type errors (run linters and check exit codes)
+- File existence (verify expected files created)
+- Task checkboxes (parse requirement for unchecked tasks)
+
+**Tasks:**
+- [ ] Create `Haunt/scripts/haunt-verify.sh` with JSON output
+- [ ] Implement `haunt-verify REQ-XXX` command (full verification)
+- [ ] Add test result verification (detect test framework, parse output)
+- [ ] Add coverage verification (parse coverage report if available)
+- [ ] Add lint verification (run project linter, check exit code)
+- [ ] Add task checkbox verification (parse requirement, count checked/unchecked)
+- [ ] Add file existence verification (check files listed in requirement exist)
+- [ ] Return structured JSON with pass/fail per criterion
+- [ ] Add usage help text (`--help` flag)
+- [ ] Test with sample requirements
+
+**Files:**
+- `Haunt/scripts/haunt-verify.sh` (create)
+
+**Effort:** S
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:**
+- `haunt-verify REQ-XXX` returns JSON with verification results
+- Output format: `{success: bool, requirement: "REQ-XXX", criteria: [{name, status, evidence}]}`
+- Detects common test frameworks (pytest, jest, vitest, go test)
+- Parses task checkboxes from requirement in roadmap
+- Verifies files listed in requirement exist
+- Returns overall pass/fail plus per-criterion breakdown
 - Script executable and works on macOS/Linux
 
 **Blocked by:** None
