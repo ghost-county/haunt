@@ -383,121 +383,17 @@ Quick wins from token analysis: merge duplicate content and convert reference ma
 
 ## Batch: Coding Standards Integration
 
-**Context:** Research on external style guides (Bulletproof React, Python Hitchhiker's Guide) identified gaps in Haunt's coding standards. This batch creates slim rules for React (merged architecture + security) and Python standards.
+**Context:** Research on external style guides (Bulletproof React, Python Hitchhiker's Guide) identified gaps in Haunt's coding standards. Created slim rules for React and Python standards.
 
-**Research Documents:**
-- `.haunt/docs/research/bulletproof-react-analysis.md`
-- `.haunt/docs/research/python-hitchhiker-analysis.md`
-- `.haunt/docs/research/react-security-patterns.md`
-- `.haunt/docs/research/msw-testing-patterns.md`
-- `.haunt/docs/research/python-type-hints.md`
-- `.haunt/docs/research/pytest-patterns.md`
+**Research Documents:** `.haunt/docs/research/` (6 analysis files)
+**Rule Drafts:** `.haunt/docs/research/RULE-DRAFTS-v2.md`
 
-**Rule Drafts:** `.haunt/docs/research/RULE-DRAFTS-v2.md` (optimized)
+**Status:** ✅ All 3 requirements completed and archived (2025-12-30). See `.haunt/completed/roadmap-archive.md`.
 
-**Optimization Notes:**
-- Merged React architecture + security into single rule (saves ~45 lines)
-- Removed premature "When to Invoke Full Skill" sections
-- Removed config code blocks (move to skills later)
-- Total: 2 new rules + 1 skill addition = ~1,880 tokens (21% reduction from original)
-
----
-
-### 🟢 REQ-266: Create gco-react-standards Rule
-
-**Type:** Enhancement
-**Reported:** 2025-12-30
-**Source:** Bulletproof React + security patterns research
-
-**Description:**
-Create unified slim rule for React development standards. Combines architecture (feature-based organization, state management, API patterns) with security (token storage, authorization, XSS prevention). Single rule = single mental model for React work.
-
-**Tasks:**
-- [x] Create `Haunt/rules/gco-react-standards.md` from v2 draft
-- [x] Add cross-reference to gco-ui-design-standards.md See Also
-- [x] Add cross-reference to gco-ui-testing.md See Also
-- [x] Run setup-haunt.sh to deploy
-- [x] Verify rule loads correctly in new session
-
-**Files:**
-- `Haunt/rules/gco-react-standards.md` (create)
-- `Haunt/rules/gco-ui-design-standards.md` (modify - add See Also)
-- `Haunt/rules/gco-ui-testing.md` (modify - add See Also)
-
-**Effort:** S
-**Complexity:** SIMPLE
-**Agent:** Dev-Infrastructure
-**Completion:** Rule deployed (~110 lines), cross-references added, validates in new session
-**Blocked by:** None
-
-**Implementation Notes:**
-- Rule deployed to `~/.claude/rules/gco-react-standards.md` (119 lines, ~2,999 bytes)
-- Cross-references added to both UI rules creating unified frontend guidance
-- All 11 GCO rules now deployed globally
-- Rule combines architecture + security patterns from RULE-DRAFTS-v2.md
-
----
-
-### 🟢 REQ-267: Create gco-python-standards Rule
-
-**Type:** Enhancement
-**Reported:** 2025-12-30
-**Source:** Python Hitchhiker's Guide, type hints, and pytest research
-
-**Description:**
-Create slim rule for Python development standards. Covers anti-patterns, PEP 8 essentials, type hints (Python 3.10+ syntax), pytest patterns. Config code blocks removed (add to skill later).
-
-**Tasks:**
-- [x] Create `Haunt/rules/gco-python-standards.md` from v2 draft
-- [x] Run setup-haunt.sh to deploy
-- [x] Verify rule loads correctly in new session
-
-**Files:**
-- `Haunt/rules/gco-python-standards.md` (create)
-
-**Effort:** S
-**Complexity:** SIMPLE
-**Agent:** Dev-Infrastructure
-**Completion:** Rule deployed (~85 lines), validates in new session
-**Blocked by:** None
-
-**Completion Notes:**
-- Rule created with 76 lines (under estimated 85)
-- Successfully deployed to `~/.claude/rules/gco-python-standards.md`
-- Covers: Anti-patterns, PEP 8 essentials, type hints (Python 3.10+), pytest patterns
-- Verified deployment via setup-haunt.sh
-
----
-
-### 🟢 REQ-268: Add MSW Integration to UI Testing Skill
-
-**Type:** Enhancement
-**Reported:** 2025-12-30
-**Source:** MSW testing patterns research
-
-**Description:**
-Add MSW (Mock Service Worker) integration guidance to the gco-ui-testing skill. Covers setup pattern, handler organization, test integration (Vitest + Playwright + Storybook), and best practices.
-
-**Tasks:**
-- [x] Add MSW section to `Haunt/skills/gco-ui-testing/SKILL.md`
-- [x] Include setup pattern, handler organization, test integration
-- [x] Add non-negotiable rules for MSW usage
-- [x] Test skill invocation shows MSW content
-
-**Files:**
-- `Haunt/skills/gco-ui-testing/SKILL.md` (modify - add MSW section)
-
-**Effort:** XS
-**Complexity:** SIMPLE
-**Agent:** Dev-Infrastructure
-**Completion:** MSW section added, skill invocation shows new content
-**Blocked by:** None
-
-**Completion Notes:**
-- Added ~40-line MSW section to gco-ui-testing skill
-- Section includes: When to Use, Setup Pattern, Handler Organization, Test Integration, Non-Negotiables
-- Placed before "See Also" section for logical flow
-- Verified content shows in skill invocation
+**Deliverables:**
+- `gco-react-standards.md` - Architecture + security patterns (119 lines)
+- `gco-python-standards.md` - Anti-patterns, PEP 8, type hints, pytest (76 lines)
+- MSW section added to `gco-ui-testing` skill (~40 lines)
 
 ---
 
