@@ -35,19 +35,27 @@ globs:
 | Commands | `Haunt/commands/` | `gco-*.md` |
 | Scripts | `Haunt/scripts/` | `*.sh` |
 
-## Deployment Targets (These Get Overwritten)
+## Deployment Target: GLOBAL ONLY
 
-| Asset Type | Global Deploy | Project Deploy |
-|------------|---------------|----------------|
-| Agents | `~/.claude/agents/` | `.claude/agents/` |
-| Skills | `~/.claude/skills/` | `.claude/skills/` |
-| Rules | `~/.claude/rules/` | `.claude/rules/` |
-| Commands | `~/.claude/commands/` | `.claude/commands/` |
+**Haunt is a GLOBAL framework. Deploy ONLY to `~/.claude/`, NEVER to project `.claude/`.**
+
+| Asset Type | Deploy To | NEVER Deploy To |
+|------------|-----------|-----------------|
+| Agents | `~/.claude/agents/` | ~~`.claude/agents/`~~ |
+| Skills | `~/.claude/skills/` | ~~`.claude/skills/`~~ |
+| Rules | `~/.claude/rules/` | ~~`.claude/rules/`~~ |
+| Commands | `~/.claude/commands/` | ~~`.claude/commands/`~~ |
+
+⛔ **PROHIBITION:** NEVER deploy GCO assets to project-level `.claude/` directories. This causes:
+- Stale versions that override global updates
+- Duplicate context loading (wasted tokens)
+- Framework improvements not taking effect
 
 ## Checklist for Framework Changes
 
 - [ ] Did I edit the file in `Haunt/` (not `~/.claude/` or `.claude/`)?
 - [ ] Does the filename have `gco-` prefix?
+- [ ] Am I deploying to GLOBAL `~/.claude/` only (NOT project `.claude/`)?
 - [ ] Is it referenced correctly in `setup-haunt.sh` if it's a new asset type?
 - [ ] Did I update any cross-references (agent skills lists, etc.)?
 
