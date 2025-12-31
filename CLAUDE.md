@@ -49,7 +49,7 @@ Phase 3 - High Impact (3 requirements, ~14 hours):
 ⚪ REQ-206: Create /bind Command (Dev-Infrastructure)
 🟢 REQ-243: Fix Windows slash commands bug (S) - COMPLETE
 🟢 REQ-244: Frontend-design plugin installation (M) - COMPLETE
-🟡 REQ-245: Interactive dependency prompts - bash complete, PowerShell pending (M)
+🟢 REQ-245: Interactive dependency prompts - COMPLETE (M)
 
 **Token Efficiency Optimizations:**
 🟢 REQ-246: Edit Retry Detection (S) - COMPLETE - saves 100K tokens/task
