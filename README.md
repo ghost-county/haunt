@@ -50,8 +50,9 @@ curl -fsSL -H "Accept: application/vnd.github.v3.raw" \
 
 ```bash
 /cleanse              # Interactive mode - guides you through removal
-/cleanse --partial    # Remove global ~/.claude artifacts only
-/cleanse --full       # Remove global AND project .haunt/ artifacts
+/cleanse --global     # Remove global ~/.claude artifacts only
+/cleanse --project    # Remove project .claude/ and .haunt/ artifacts only
+/cleanse --full       # Remove global AND project artifacts
 /cleanse --backup     # Create backup before deletion
 ```
 

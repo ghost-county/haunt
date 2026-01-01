@@ -5,16 +5,52 @@ Manage your Haunt framework installation with repair, uninstall, or purge modes.
 ## Usage
 
 ```
-/cleanse [mode] [options]
+/cleanse                # Interactive mode (recommended)
+/cleanse [mode] [options]  # Advanced flag-based mode
 ```
 
-## Modes
+## Interactive Mode (Recommended)
+
+Run `/cleanse` with no arguments for a guided menu-driven experience:
+
+1. **Choose scope**: Global, Project, or All
+2. **Preview changes**: See what will be removed before confirmation
+3. **Confirm explicitly**: Type "yes" to proceed
+4. **View summary**: See count of removed artifacts
+
+**Example:**
+```bash
+/cleanse
+
+# Interactive menu appears:
+# [G] Global artifacts only
+# [P] Project artifacts only
+# [A] All (Global + Project)
+# [Q] Quit
+```
+
+## Advanced Modes (Flag-Based)
 
 | Mode | Flag | Description |
 |------|------|-------------|
 | **Repair** | `--repair` | Detect stale files, remove them, re-sync from Haunt/ source |
 | **Uninstall** | `--uninstall` | Remove gco-* artifacts (default) |
 | **Purge** | `--purge` | Full removal: uninstall + remove .haunt/ directory |
+
+## Quick Cleanse Flags (REQ-288)
+
+**Power-user shortcuts for common operations:**
+
+| Flag | What It Does | Equivalent To |
+|------|--------------|---------------|
+| `--global` | Remove only global `~/.claude/gco-*` artifacts | `--uninstall --scope=user` |
+| `--project` | Remove only `.claude/` and `.haunt/` from current directory | `--purge --scope=project` |
+| `--full` | Remove both global and project artifacts | `--purge --scope=both` |
+
+**Benefits:**
+- **Shorter commands**: `--global` vs `--uninstall --scope=user`
+- **Clear intent**: Names match what you want to remove
+- **Non-interactive**: Skip the menu, execute directly
 
 ## Scope Options
 
@@ -36,13 +72,21 @@ Manage your Haunt framework installation with repair, uninstall, or purge modes.
 ## Examples
 
 ```bash
-# Fix stale files in global installation (most common use)
+# Quick removal - power user shortcuts (REQ-288)
+/cleanse --global              # Remove ~/.claude/gco-* only
+/cleanse --project             # Remove .claude/ and .haunt/ only
+/cleanse --full --backup       # Remove everything with backup
+
+# Preview before removing
+/cleanse --global --dry-run    # See what would be removed
+
+# Fix stale files in global installation
 /cleanse --repair --scope=user
 
 # Preview what repair would do
 /cleanse --repair --dry-run
 
-# Uninstall from project only
+# Uninstall from project only (detailed control)
 /cleanse --uninstall --scope=project
 
 # Full removal with backup

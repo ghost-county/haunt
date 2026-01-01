@@ -60,6 +60,16 @@ section() {
 }
 
 # ============================================================================
+# EXIT CODES
+# ============================================================================
+
+readonly EXIT_SUCCESS=0
+readonly EXIT_CANCELLED=1
+readonly EXIT_PERMISSION_DENIED=2
+readonly EXIT_BACKUP_FAILED=3
+readonly EXIT_NOTHING_TO_CLEAN=4
+
+# ============================================================================
 # CONFIGURATION
 # ============================================================================
 
@@ -85,9 +95,9 @@ SOURCE_RULES_DIR="${HAUNT_SOURCE_DIR}/rules"
 SOURCE_SKILLS_DIR="${HAUNT_SOURCE_DIR}/skills"
 SOURCE_COMMANDS_DIR="${HAUNT_SOURCE_DIR}/commands"
 
-# Backup configuration
-BACKUP_DIR="${HOME}"
-BACKUP_TIMESTAMP=$(date +%Y-%m-%d-%H%M%S)
+# Backup configuration (REQ-289)
+BACKUP_DIR="${HOME}/haunt-backups"
+BACKUP_TIMESTAMP=$(date +%Y%m%d-%H%M%S)
 BACKUP_FILE="${BACKUP_DIR}/haunt-backup-${BACKUP_TIMESTAMP}.tar.gz"
 
 # Default options
@@ -115,12 +125,25 @@ ${BOLD}${MAGENTA}Cleanse - Haunt Environment Management${NC}
 Manage Ghost County (Haunt) framework installation with repair, uninstall, or purge modes.
 
 ${BOLD}Usage:${NC}
-  bash cleanse.sh [mode] [options]
+  bash cleanse.sh                      # Interactive mode (recommended)
+  bash cleanse.sh [mode] [options]     # Advanced flag-based mode
 
-${BOLD}Modes:${NC}
+${BOLD}Interactive Mode:${NC}
+  Run with no arguments for a guided menu:
+  - Choose scope (Global, Project, or All)
+  - Preview what will be removed
+  - Confirm with "yes" before deletion
+  - View removal summary
+
+${BOLD}Advanced Modes:${NC}
   --repair       Detect stale files, remove them, re-sync from Haunt/ source
   --uninstall    Remove gco-* artifacts (default mode)
   --purge        Full removal: uninstall + remove .haunt/ directory
+
+${BOLD}Quick Cleanse Flags (REQ-288):${NC}
+  --global       Remove only global ~/.claude/gco-* artifacts
+  --project      Remove only .claude/ and .haunt/ from current directory
+  --full         Remove both global and project artifacts
 
 ${BOLD}Scope Options:${NC}
   --scope=project   Only .claude/ in current project directory
@@ -141,7 +164,16 @@ ${BOLD}Examples:${NC}
   # Preview repair without making changes
   bash cleanse.sh --repair --scope=both --dry-run
 
-  # Uninstall from project only
+  # Quick removal - global only (new in REQ-288)
+  bash cleanse.sh --global
+
+  # Quick removal - project only (new in REQ-288)
+  bash cleanse.sh --project
+
+  # Quick removal - everything (new in REQ-288)
+  bash cleanse.sh --full --backup
+
+  # Uninstall from project only (detailed control)
   bash cleanse.sh --uninstall --scope=project
 
   # Full removal with backup
@@ -158,9 +190,169 @@ ${BOLD}Repair Mode Details:${NC}
 
 ${BOLD}Restore from Backup:${NC}
   cd ~
-  tar -xzf ~/haunt-backup-YYYY-MM-DD-HHMMSS.tar.gz
+  tar -xzf ~/haunt-backups/haunt-backup-YYYYMMDD-HHMMSS.tar.gz
+
+${BOLD}Exit Codes:${NC}
+  0 - Success (operation completed successfully)
+  1 - Cancelled (user aborted operation)
+  2 - Permission denied (cannot write to target directories)
+  3 - Backup failed (backup creation error)
+  4 - Nothing to clean (no artifacts found)
+
+${BOLD}Dry-Run Mode:${NC}
+  Use --dry-run to preview what would be deleted without making changes:
+  - Shows all files/directories that would be removed
+  - Checks permissions without deleting
+  - Displays summary counts
+  - Exits with code 0 (no actual changes made)
 
 EOF
+}
+
+# ============================================================================
+# INTERACTIVE MODE
+# ============================================================================
+
+show_interactive_menu() {
+    section "Interactive Cleanse Mode"
+
+    cat << "EOF"
+What would you like to remove?
+
+  [G] Global artifacts only      (~/.claude/gco-* files)
+  [P] Project artifacts only     (.claude/ and .haunt/ in current directory)
+  [A] All (Global + Project)     Remove from both locations
+  [Q] Quit                       Exit without changes
+
+EOF
+
+    echo -ne "${YELLOW}Choose an option [G/P/A/Q]: ${NC}"
+    read -r choice
+
+    # Convert to uppercase (bash 3.2 compatible)
+    choice=$(echo "$choice" | tr '[:lower:]' '[:upper:]')
+
+    case "$choice" in
+        G)
+            MODE="uninstall"
+            SCOPE="user"
+            info "Selected: Remove global artifacts only"
+            return 0
+            ;;
+        P)
+            MODE="purge"
+            SCOPE="project"
+            info "Selected: Remove project artifacts only"
+            return 0
+            ;;
+        A)
+            MODE="purge"
+            SCOPE="both"
+            info "Selected: Remove all artifacts (global + project)"
+            return 0
+            ;;
+        Q)
+            info "Cleanse cancelled by user"
+            exit "$EXIT_CANCELLED"
+            ;;
+        *)
+            error "Invalid choice: $choice"
+            return 1
+            ;;
+    esac
+}
+
+interactive_mode() {
+    # Keep showing menu until valid choice
+    while ! show_interactive_menu; do
+        echo ""
+    done
+
+    # Preview what will be removed
+    echo ""
+    preview_uninstall
+
+    # Ask for explicit confirmation
+    echo ""
+    echo -e "${YELLOW}${BOLD}Proceed with removal?${NC}"
+    echo -ne "${YELLOW}Type 'yes' to confirm: ${NC}"
+    read -r confirm
+
+    if [[ "$confirm" != "yes" ]]; then
+        info "Cleanse cancelled - no changes made"
+        exit "$EXIT_CANCELLED"
+    fi
+
+    # Execute based on selected mode
+    case "$MODE" in
+        uninstall)
+            section "Performing Removal"
+            local failed=false
+
+            if [[ "$SCOPE" == "user" || "$SCOPE" == "both" ]]; then
+                info "Removing global artifacts (~/.claude/)..."
+                remove_gco_files "$GLOBAL_AGENTS_DIR" "gco-*.md" "global agents" || failed=true
+                remove_gco_files "$GLOBAL_RULES_DIR" "gco-*.md" "global rules" || failed=true
+                remove_gco_dirs "$GLOBAL_SKILLS_DIR" "gco-*" "global skills" || failed=true
+                remove_gco_files "$GLOBAL_COMMANDS_DIR" "gco-*.md" "global commands" || failed=true
+                echo ""
+            fi
+
+            if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
+                info "Removing project artifacts (.claude/)..."
+                remove_gco_files "$PROJECT_AGENTS_DIR" "gco-*.md" "project agents" || failed=true
+                remove_gco_files "$PROJECT_RULES_DIR" "gco-*.md" "project rules" || failed=true
+                remove_gco_dirs "$PROJECT_SKILLS_DIR" "gco-*" "project skills" || failed=true
+                remove_gco_files "$PROJECT_COMMANDS_DIR" "gco-*.md" "project commands" || failed=true
+                echo ""
+            fi
+
+            [[ "$failed" == "true" ]] && warning "Some items could not be removed"
+            ;;
+        purge)
+            perform_purge_silent
+            ;;
+    esac
+
+    # Show summary
+    echo ""
+    section "Removal Complete"
+    echo ""
+    success "Removed ${REMOVED_COUNT} artifact(s)"
+    echo ""
+    echo "To reinstall Haunt, run: bash Haunt/scripts/setup-haunt.sh"
+    echo ""
+}
+
+perform_purge_silent() {
+    section "Performing Removal"
+
+    local failed=false
+
+    if [[ "$SCOPE" == "user" || "$SCOPE" == "both" ]]; then
+        info "Removing global artifacts (~/.claude/)..."
+        remove_gco_files "$GLOBAL_AGENTS_DIR" "gco-*.md" "global agents" || failed=true
+        remove_gco_files "$GLOBAL_RULES_DIR" "gco-*.md" "global rules" || failed=true
+        remove_gco_dirs "$GLOBAL_SKILLS_DIR" "gco-*" "global skills" || failed=true
+        remove_gco_files "$GLOBAL_COMMANDS_DIR" "gco-*.md" "global commands" || failed=true
+        echo ""
+    fi
+
+    if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
+        info "Removing project artifacts (.claude/)..."
+        remove_gco_files "$PROJECT_AGENTS_DIR" "gco-*.md" "project agents" || failed=true
+        remove_gco_files "$PROJECT_RULES_DIR" "gco-*.md" "project rules" || failed=true
+        remove_gco_dirs "$PROJECT_SKILLS_DIR" "gco-*" "project skills" || failed=true
+        remove_gco_files "$PROJECT_COMMANDS_DIR" "gco-*.md" "project commands" || failed=true
+        echo ""
+
+        # Remove .haunt/ directory
+        info "Removing project planning artifacts (.haunt/)..."
+        remove_haunt_dir || failed=true
+        echo ""
+    fi
+
+    [[ "$failed" == "true" ]] && warning "Some items could not be removed"
 }
 
 # ============================================================================
@@ -211,16 +403,27 @@ parse_arguments() {
                 show_help
                 exit 0
                 ;;
-            # Legacy support for old flags
-            --partial)
+            # REQ-288: Flag-based cleanse modes (non-interactive)
+            --global)
                 MODE="uninstall"
                 SCOPE="user"
-                warning "Deprecated: --partial is now --uninstall --scope=user"
+                shift
+                ;;
+            --project)
+                MODE="purge"
+                SCOPE="project"
                 shift
                 ;;
             --full)
                 MODE="purge"
-                warning "Deprecated: --full is now --purge"
+                SCOPE="both"
+                shift
+                ;;
+            # Legacy support for old flags
+            --partial)
+                MODE="uninstall"
+                SCOPE="user"
+                warning "Deprecated: --partial is now --uninstall --scope=user or --global"
                 shift
                 ;;
             *)
@@ -231,6 +434,63 @@ parse_arguments() {
                 ;;
         esac
     done
+}
+
+# ============================================================================
+# PERMISSION CHECK FUNCTIONS
+# ============================================================================
+
+# Check if directory is writable
+check_directory_writable() {
+    local dir="$1"
+    local description="$2"
+
+    [[ ! -d "$dir" ]] && return 0  # Doesn't exist, no permission needed
+
+    if [[ ! -w "$dir" ]]; then
+        error "Permission denied: Cannot write to $description"
+        error "Directory: $dir"
+        warning "Try running with appropriate permissions or check directory ownership"
+        return 1
+    fi
+    return 0
+}
+
+# Check write permissions for all target directories
+check_permissions() {
+    local failed=false
+
+    section "Checking Permissions"
+
+    if [[ "$SCOPE" == "user" || "$SCOPE" == "both" ]]; then
+        info "Checking global directories (~/.claude/)..."
+        check_directory_writable "$GLOBAL_AGENTS_DIR" "global agents directory" || failed=true
+        check_directory_writable "$GLOBAL_RULES_DIR" "global rules directory" || failed=true
+        check_directory_writable "$GLOBAL_SKILLS_DIR" "global skills directory" || failed=true
+        check_directory_writable "$GLOBAL_COMMANDS_DIR" "global commands directory" || failed=true
+    fi
+
+    if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
+        info "Checking project directories (.claude/ and .haunt/)..."
+        check_directory_writable "$PROJECT_AGENTS_DIR" "project agents directory" || failed=true
+        check_directory_writable "$PROJECT_RULES_DIR" "project rules directory" || failed=true
+        check_directory_writable "$PROJECT_SKILLS_DIR" "project skills directory" || failed=true
+        check_directory_writable "$PROJECT_COMMANDS_DIR" "project commands directory" || failed=true
+
+        if [[ "$MODE" == "purge" ]]; then
+            check_directory_writable "$PROJECT_HAUNT_DIR" "project .haunt directory" || failed=true
+        fi
+    fi
+
+    echo ""
+
+    if [[ "$failed" == "true" ]]; then
+        error "Permission checks failed - cannot proceed with deletion"
+        return 1
+    fi
+
+    success "All permission checks passed"
+    return 0
 }
 
 # ============================================================================
@@ -530,10 +790,16 @@ create_backup() {
         return 0
     fi
 
+    # Create backup directory if it doesn't exist
+    mkdir -p "$BACKUP_DIR" 2>/dev/null || {
+        error "Cannot create backup directory: $BACKUP_DIR"
+        exit "$EXIT_BACKUP_FAILED"
+    }
+
     # Create backup
     (cd "$HOME" && tar -czf "$BACKUP_FILE" "${backup_paths[@]}" 2>/dev/null) || {
         error "Backup creation failed"
-        return 1
+        exit "$EXIT_BACKUP_FAILED"
     }
 
     if [[ -f "$BACKUP_FILE" ]]; then
@@ -542,7 +808,7 @@ create_backup() {
         return 0
     else
         error "Backup file not created"
-        return 1
+        exit "$EXIT_BACKUP_FAILED"
     fi
 }
 
@@ -682,7 +948,12 @@ confirm_action() {
 
     echo -e "${YELLOW}$1${NC}"
     read -r response
-    [[ "$response" =~ ^[Yy]([Ee][Ss])?$ ]]
+    if [[ "$response" =~ ^[Yy]([Ee][Ss])?$ ]]; then
+        return 0
+    else
+        info "Operation cancelled by user"
+        exit "$EXIT_CANCELLED"
+    fi
 }
 
 final_confirmation() {
@@ -714,14 +985,39 @@ final_confirmation() {
     read -r response
 
     [[ "$response" == "CLEANSE" ]] || {
-        info "Cleanse aborted"
-        exit 0
+        info "Cleanse aborted by user"
+        exit "$EXIT_CANCELLED"
     }
 }
 
 # ============================================================================
 # CHECK FUNCTIONS
 # ============================================================================
+
+# Check if there's anything to clean
+check_has_artifacts() {
+    local has_artifacts=false
+
+    if [[ "$SCOPE" == "user" || "$SCOPE" == "both" ]]; then
+        [[ $(count_files "gco-*.md" "$GLOBAL_AGENTS_DIR") -gt 0 ]] && has_artifacts=true
+        [[ $(count_files "gco-*.md" "$GLOBAL_RULES_DIR") -gt 0 ]] && has_artifacts=true
+        [[ $(count_dirs "gco-*" "$GLOBAL_SKILLS_DIR") -gt 0 ]] && has_artifacts=true
+        [[ $(count_files "gco-*.md" "$GLOBAL_COMMANDS_DIR") -gt 0 ]] && has_artifacts=true
+    fi
+
+    if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
+        [[ $(count_files "gco-*.md" "$PROJECT_AGENTS_DIR") -gt 0 ]] && has_artifacts=true
+        [[ $(count_files "gco-*.md" "$PROJECT_RULES_DIR") -gt 0 ]] && has_artifacts=true
+        [[ $(count_dirs "gco-*" "$PROJECT_SKILLS_DIR") -gt 0 ]] && has_artifacts=true
+        [[ $(count_files "gco-*.md" "$PROJECT_COMMANDS_DIR") -gt 0 ]] && has_artifacts=true
+
+        if [[ "$MODE" == "purge" && -d "$PROJECT_HAUNT_DIR" ]]; then
+            has_artifacts=true
+        fi
+    fi
+
+    [[ "$has_artifacts" == "true" ]]
+}
 
 check_uncommitted_work() {
     [[ ! -f "${PROJECT_HAUNT_DIR}/plans/roadmap.md" ]] && return 0
@@ -792,6 +1088,17 @@ perform_repair() {
 }
 
 perform_uninstall() {
+    # Check if there's anything to clean
+    if ! check_has_artifacts; then
+        info "No Haunt artifacts found - nothing to clean"
+        exit "$EXIT_NOTHING_TO_CLEAN"
+    fi
+
+    # Check permissions (skip in dry-run mode)
+    if [[ "$DRY_RUN" == "false" ]]; then
+        check_permissions || exit "$EXIT_PERMISSION_DENIED"
+    fi
+
     # Preview
     preview_uninstall
 
@@ -800,9 +1107,7 @@ perform_uninstall() {
 
     # Backup if requested
     if [[ "$CREATE_BACKUP" == "true" ]]; then
-        create_backup || {
-            confirm_action "Backup failed. Continue anyway? (yes/no): " || exit 1
-        }
+        create_backup
     fi
 
     section "Performing Uninstall"
@@ -834,10 +1139,21 @@ perform_uninstall() {
 }
 
 perform_purge() {
+    # Check if there's anything to clean
+    if ! check_has_artifacts; then
+        info "No Haunt artifacts found - nothing to clean"
+        exit "$EXIT_NOTHING_TO_CLEAN"
+    fi
+
+    # Check permissions (skip in dry-run mode)
+    if [[ "$DRY_RUN" == "false" ]]; then
+        check_permissions || exit "$EXIT_PERMISSION_DENIED"
+    fi
+
     # Check for uncommitted work (purge is destructive)
     if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
         if ! check_uncommitted_work; then
-            confirm_action "Continue anyway? (yes/no): " || exit 0
+            confirm_action "Continue anyway? (yes/no): "
         fi
     fi
 
@@ -849,9 +1165,7 @@ perform_purge() {
 
     # Backup if requested
     if [[ "$CREATE_BACKUP" == "true" ]]; then
-        create_backup || {
-            confirm_action "Backup failed. Continue anyway? (yes/no): " || exit 1
-        }
+        create_backup
     fi
 
     section "Performing Purge"
@@ -891,6 +1205,12 @@ perform_purge() {
 # ============================================================================
 
 main() {
+    # Check if no arguments provided - trigger interactive mode
+    if [[ $# -eq 0 ]]; then
+        interactive_mode
+        exit 0
+    fi
+
     parse_arguments "$@"
 
     # Show banner
