@@ -270,6 +270,147 @@ EOF
     rm -f "$temp_env"
 }
 
+# Test: fetch_secret with missing OP_SERVICE_ACCOUNT_TOKEN
+test_fetch_secret_missing_token() {
+    echo "TEST: fetch_secret without OP_SERVICE_ACCOUNT_TOKEN"
+
+    # Unset token if it exists
+    unset OP_SERVICE_ACCOUNT_TOKEN || true
+
+    # Attempt to fetch secret
+    local output=$(fetch_secret "ghost-county" "api-keys" "github-token" 2>&1 || true)
+
+    assert_contains "$output" "error" "Should contain error message"
+    assert_contains "$output" "OP_SERVICE_ACCOUNT_TOKEN" "Should mention missing token"
+}
+
+# Test: fetch_secret when op CLI not installed
+test_fetch_secret_op_not_installed() {
+    echo "TEST: fetch_secret when op CLI not installed"
+
+    # Mock 'op' command to simulate not found
+    # We'll override PATH to prevent finding real 'op'
+    local temp_bin=$(mktemp -d)
+    export PATH="$temp_bin:$PATH"
+
+    export OP_SERVICE_ACCOUNT_TOKEN="test-token"
+
+    # Attempt to fetch secret
+    local output=$(fetch_secret "ghost-county" "api-keys" "github-token" 2>&1 || true)
+
+    assert_contains "$output" "error" "Should contain error message"
+    assert_contains "$output" "op" "Should mention op CLI"
+
+    # Cleanup
+    rm -rf "$temp_bin"
+    unset OP_SERVICE_ACCOUNT_TOKEN
+}
+
+# Test: fetch_secret success
+test_fetch_secret_success() {
+    echo "TEST: fetch_secret success"
+
+    # Mock successful 'op' command
+    local temp_bin=$(mktemp -d)
+    cat > "$temp_bin/op" <<'EOF'
+#!/usr/bin/env bash
+# Mock op CLI that returns test secret
+if [[ "$1" == "read" && "$2" =~ ^op://(.+)/(.+)/(.+)$ ]]; then
+    echo "test-secret-value-12345"
+    exit 0
+fi
+exit 1
+EOF
+    chmod +x "$temp_bin/op"
+    export PATH="$temp_bin:$PATH"
+    export OP_SERVICE_ACCOUNT_TOKEN="test-token"
+
+    # Fetch secret
+    local output=$(fetch_secret "ghost-county" "api-keys" "github-token" 2>&1)
+
+    assert_equals "test-secret-value-12345" "$output" "Should return secret value"
+
+    # Cleanup
+    rm -rf "$temp_bin"
+    unset OP_SERVICE_ACCOUNT_TOKEN
+}
+
+# Test: fetch_secret authentication failure
+test_fetch_secret_auth_failure() {
+    echo "TEST: fetch_secret authentication failure"
+
+    # Mock 'op' command that fails with auth error
+    local temp_bin=$(mktemp -d)
+    cat > "$temp_bin/op" <<'EOF'
+#!/usr/bin/env bash
+echo "ERROR: Authentication failed" >&2
+exit 1
+EOF
+    chmod +x "$temp_bin/op"
+    export PATH="$temp_bin:$PATH"
+    export OP_SERVICE_ACCOUNT_TOKEN="invalid-token"
+
+    # Attempt to fetch secret
+    local output=$(fetch_secret "ghost-county" "api-keys" "github-token" 2>&1 || true)
+
+    assert_contains "$output" "error" "Should contain error message"
+    assert_contains "$output" "auth" "Should mention authentication failure"
+
+    # Cleanup
+    rm -rf "$temp_bin"
+    unset OP_SERVICE_ACCOUNT_TOKEN
+}
+
+# Test: fetch_secret network timeout
+test_fetch_secret_network_timeout() {
+    echo "TEST: fetch_secret network timeout"
+
+    # Mock 'op' command that simulates timeout
+    local temp_bin=$(mktemp -d)
+    cat > "$temp_bin/op" <<'EOF'
+#!/usr/bin/env bash
+echo "ERROR: Network timeout" >&2
+exit 1
+EOF
+    chmod +x "$temp_bin/op"
+    export PATH="$temp_bin:$PATH"
+    export OP_SERVICE_ACCOUNT_TOKEN="test-token"
+
+    # Attempt to fetch secret
+    local output=$(fetch_secret "ghost-county" "api-keys" "github-token" 2>&1 || true)
+
+    assert_contains "$output" "error" "Should contain error message"
+
+    # Cleanup
+    rm -rf "$temp_bin"
+    unset OP_SERVICE_ACCOUNT_TOKEN
+}
+
+# Test: fetch_secret item not found
+test_fetch_secret_item_not_found() {
+    echo "TEST: fetch_secret item not found"
+
+    # Mock 'op' command that returns item not found
+    local temp_bin=$(mktemp -d)
+    cat > "$temp_bin/op" <<'EOF'
+#!/usr/bin/env bash
+echo "ERROR: Item not found" >&2
+exit 1
+EOF
+    chmod +x "$temp_bin/op"
+    export PATH="$temp_bin:$PATH"
+    export OP_SERVICE_ACCOUNT_TOKEN="test-token"
+
+    # Attempt to fetch secret
+    local output=$(fetch_secret "ghost-county" "api-keys" "github-token" 2>&1 || true)
+
+    assert_contains "$output" "error" "Should contain error message"
+
+    # Cleanup
+    rm -rf "$temp_bin"
+    unset OP_SERVICE_ACCOUNT_TOKEN
+}
+
 # Run all tests
 main() {
     echo "========================================"
@@ -296,6 +437,18 @@ main() {
     test_malformed_tag_wrong_prefix
     echo ""
     test_special_characters
+    echo ""
+    test_fetch_secret_missing_token
+    echo ""
+    test_fetch_secret_op_not_installed
+    echo ""
+    test_fetch_secret_success
+    echo ""
+    test_fetch_secret_auth_failure
+    echo ""
+    test_fetch_secret_network_timeout
+    echo ""
+    test_fetch_secret_item_not_found
     echo ""
 
     echo "========================================"
