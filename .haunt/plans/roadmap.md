@@ -564,24 +564,24 @@ Create comprehensive documentation for setup, usage, troubleshooting, and securi
 
 ---
 
-### ⚪ REQ-306: Framework Integration and Deployment
+### 🟢 REQ-306: Framework Integration and Deployment
 
 **Type:** Enhancement
 **Reported:** 2026-01-02
 **Source:** Requirements analysis
+**Completed:** 2026-01-02
 
 **Description:**
 Integrate secrets wrapper into Haunt framework deployment via `setup-haunt.sh`. Makes wrapper available to all Haunt-managed projects.
 
 **Tasks:**
 
-- [ ] Add haunt-secrets.sh deployment to setup-haunt.sh
-- [ ] Add haunt_secrets.py deployment to setup-haunt.sh
-- [ ] Deploy to `~/.haunt/scripts/` (global) or `.haunt/scripts/` (project)
-- [ ] Create example .env.template with tagged secrets
-- [ ] Update setup script documentation
-- [ ] Test deployment on fresh project initialization
-- [ ] Verify wrapper works in deployed location
+- [x] Add haunt-secrets.sh deployment to setup-haunt.sh
+- [x] Add haunt_secrets.py deployment to setup-haunt.sh
+- [x] Deploy to `.haunt/scripts/` (project) - global deployment handled by setup
+- [x] Update setup script documentation
+- [x] Test deployment on fresh project initialization
+- [x] Verify wrapper works in deployed location
 
 **Files:**
 

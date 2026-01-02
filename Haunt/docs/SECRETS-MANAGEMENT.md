@@ -57,8 +57,15 @@ APP_ENV=development
 
 ### 4. Load Secrets
 
+> **Note:** After running `setup-haunt.sh`, the secrets wrapper scripts are automatically deployed to `.haunt/scripts/` in your project.
+
 **Shell:**
 ```bash
+# From deployed location (after setup)
+source .haunt/scripts/haunt-secrets.sh
+load_secrets .env
+
+# Or from source (during development)
 source Haunt/scripts/haunt-secrets.sh
 load_secrets .env
 
@@ -67,6 +74,10 @@ echo $GITHUB_TOKEN  # Actual secret from 1Password
 
 **Python:**
 ```python
+# Add .haunt/scripts to path (after setup)
+import sys
+sys.path.insert(0, '.haunt/scripts')
+
 from haunt_secrets import load_secrets
 
 load_secrets(".env")

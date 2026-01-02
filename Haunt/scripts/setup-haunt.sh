@@ -2536,6 +2536,76 @@ PROGRESS_EOF
     fi
 
     # -------------------------------------------------------------------------
+    # Install secrets management wrapper (haunt-secrets)
+    # -------------------------------------------------------------------------
+    blank
+    info "Installing secrets management wrapper..."
+
+    local secrets_scripts=(
+        "haunt-secrets.sh"
+        "haunt_secrets.py"
+    )
+
+    local installed_secrets=0
+    local updated_secrets=0
+    local unchanged_secrets=0
+
+    for script_name in "${secrets_scripts[@]}"; do
+        local source_script="${SCRIPT_DIR}/${script_name}"
+        local dest_script="${project_root}/.haunt/scripts/${script_name}"
+
+        # Check if source script exists
+        if [[ ! -f "$source_script" ]]; then
+            warning "  Source script not found: ${source_script}"
+            continue
+        fi
+
+        # Check if destination script exists and differs
+        if [[ -f "$dest_script" ]]; then
+            if ! cmp -s "$source_script" "$dest_script"; then
+                # Files differ - update
+                if [[ "$DRY_RUN" == false ]]; then
+                    cp "$source_script" "$dest_script"
+                    chmod +x "$dest_script"
+                    success "  Updated ${script_name}"
+                else
+                    info "  [DRY RUN] Would update ${script_name}"
+                fi
+                ((updated_secrets++))
+            else
+                info "  Unchanged: ${script_name}"
+                ((unchanged_secrets++))
+            fi
+        else
+            # New installation
+            if [[ "$DRY_RUN" == false ]]; then
+                cp "$source_script" "$dest_script"
+                chmod +x "$dest_script"
+                success "  Installed ${script_name}"
+            else
+                info "  [DRY RUN] Would install ${script_name}"
+            fi
+            ((installed_secrets++))
+            ((created_count++))
+        fi
+    done
+
+    # Verify 1Password CLI is available
+    if command -v op &> /dev/null; then
+        success "  1Password CLI (op) available for secrets management"
+    else
+        warning "  1Password CLI (op) not found - secrets management requires 'op' CLI"
+        info "    Install from: https://developer.1password.com/docs/cli/get-started/"
+    fi
+
+    # Summary for secrets management wrapper
+    blank
+    info "Secrets management installation summary:"
+    echo "  - Installed: ${installed_secrets} new script(s)"
+    echo "  - Updated:   ${updated_secrets} script(s)"
+    echo "  - Unchanged: ${unchanged_secrets} script(s)"
+
+    # -------------------------------------------------------------------------
     # Create feature contract template
     # -------------------------------------------------------------------------
     blank
@@ -3778,6 +3848,81 @@ EOF
                 done
                 echo "" >> "$report_file"
             fi
+        fi
+    fi
+
+    # =========================================================================
+    # CHECK 8: Secrets Management Wrapper
+    # =========================================================================
+    ((total_checks++))
+    info "[${total_checks}] Checking secrets management wrapper..."
+
+    local secrets_issues=0
+    local missing_secrets=()
+
+    # Check for haunt-secrets.sh
+    if [[ ! -f "${project_root}/.haunt/scripts/haunt-secrets.sh" ]]; then
+        warning "  Missing: .haunt/scripts/haunt-secrets.sh"
+        missing_secrets+=("haunt-secrets.sh")
+        ((secrets_issues++))
+    else
+        success "  Found: .haunt/scripts/haunt-secrets.sh"
+    fi
+
+    # Check for haunt_secrets.py
+    if [[ ! -f "${project_root}/.haunt/scripts/haunt_secrets.py" ]]; then
+        warning "  Missing: .haunt/scripts/haunt_secrets.py"
+        missing_secrets+=("haunt_secrets.py")
+        ((secrets_issues++))
+    else
+        success "  Found: .haunt/scripts/haunt_secrets.py"
+    fi
+
+    # Check if 1Password CLI is available (warning only)
+    if command -v op &> /dev/null; then
+        success "  1Password CLI (op) available"
+    else
+        warning "  1Password CLI (op) not found (required for secrets management)"
+        ((warnings_count++))
+        info "    Install from: https://developer.1password.com/docs/cli/get-started/"
+    fi
+
+    if [[ $secrets_issues -gt 0 ]]; then
+        ((failed_checks++))
+
+        if [[ "$FIX_MODE" == true ]]; then
+            info "  [FIX] Installing missing secrets wrapper scripts..."
+            for script_name in "${missing_secrets[@]}"; do
+                local source_script="${SCRIPT_DIR}/${script_name}"
+                local dest_script="${project_root}/.haunt/scripts/${script_name}"
+
+                if [[ -f "$source_script" ]]; then
+                    if [[ "$DRY_RUN" == false ]]; then
+                        cp "$source_script" "$dest_script"
+                        chmod +x "$dest_script"
+                        success "  Installed ${script_name}"
+                        fixes_applied+=("Installed ${script_name}")
+                    else
+                        info "  [DRY RUN] Would install ${script_name}"
+                    fi
+                else
+                    warning "  Source not found: ${source_script}"
+                fi
+            done
+        fi
+
+        if [[ "$DRY_RUN" == false ]]; then
+            echo "### ✗ Secrets Management Wrapper" >> "$report_file"
+            echo "**Status:** INCOMPLETE - ${secrets_issues} missing script(s)" >> "$report_file"
+            echo "**Fix:** \`bash scripts/setup-haunt.sh --verify --fix\`" >> "$report_file"
+            echo "" >> "$report_file"
+        fi
+    else
+        ((passed_checks++))
+        if [[ "$DRY_RUN" == false ]]; then
+            echo "### ✓ Secrets Management Wrapper" >> "$report_file"
+            echo "Secrets management wrapper scripts are installed." >> "$report_file"
+            echo "" >> "$report_file"
         fi
     fi
 
