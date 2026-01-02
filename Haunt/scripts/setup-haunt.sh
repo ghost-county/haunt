@@ -699,6 +699,8 @@ remove_stale_items() {
             info "[DRY RUN] Would remove: $item"
         else
             if [[ -d "$item" ]]; then
+                # Fix permissions before removal (handles broken execute bits)
+                chmod -R +rwx "$item" 2>/dev/null || true
                 rm -rf "$item" && success "Removed: $item/" || warning "Failed: $item/"
             else
                 rm -f "$item" && success "Removed: $item" || warning "Failed: $item"
@@ -1770,10 +1772,13 @@ setup_skills_to_directory() {
                 if ! cmp -s "${skill_src_dir}/SKILL.md" "${dest_skill_dir}/SKILL.md"; then
                     # Files differ - update the skill
                     if [[ "$DRY_RUN" == false ]]; then
+                        # Fix permissions before removal (handles broken execute bits)
+                        chmod -R +rwx "$dest_skill_dir" 2>/dev/null || true
                         rm -rf "$dest_skill_dir"
                         cp -r "$skill_src_dir" "$dest_skill_dir"
-                        chmod -R 644 "$dest_skill_dir"/* 2>/dev/null || true
-                        chmod 755 "$dest_skill_dir"
+                        # Set files to 644 and directories to 755 (preserves execute bit)
+                        find "$dest_skill_dir" -type f -exec chmod 644 {} \; 2>/dev/null || true
+                        find "$dest_skill_dir" -type d -exec chmod 755 {} \; 2>/dev/null || true
                         success "Updated ${skill_name}"
                     else
                         info "[DRY RUN] Would update ${skill_name}"
@@ -1786,10 +1791,13 @@ setup_skills_to_directory() {
             else
                 # SKILL.md missing in destination - reinstall
                 if [[ "$DRY_RUN" == false ]]; then
+                    # Fix permissions before removal (handles broken execute bits)
+                    chmod -R +rwx "$dest_skill_dir" 2>/dev/null || true
                     rm -rf "$dest_skill_dir"
                     cp -r "$skill_src_dir" "$dest_skill_dir"
-                    chmod -R 644 "$dest_skill_dir"/* 2>/dev/null || true
-                    chmod 755 "$dest_skill_dir"
+                    # Set files to 644 and directories to 755 (preserves execute bit)
+                    find "$dest_skill_dir" -type f -exec chmod 644 {} \; 2>/dev/null || true
+                    find "$dest_skill_dir" -type d -exec chmod 755 {} \; 2>/dev/null || true
                     success "Reinstalled ${skill_name} (missing SKILL.md)"
                 else
                     info "[DRY RUN] Would reinstall ${skill_name}"
@@ -1800,8 +1808,9 @@ setup_skills_to_directory() {
             # New skill
             if [[ "$DRY_RUN" == false ]]; then
                 cp -r "$skill_src_dir" "$dest_skill_dir"
-                chmod -R 644 "$dest_skill_dir"/* 2>/dev/null || true
-                chmod 755 "$dest_skill_dir"
+                # Set files to 644 and directories to 755 (preserves execute bit)
+                find "$dest_skill_dir" -type f -exec chmod 644 {} \; 2>/dev/null || true
+                find "$dest_skill_dir" -type d -exec chmod 755 {} \; 2>/dev/null || true
                 success "Installed ${skill_name}"
             else
                 info "[DRY RUN] Would install ${skill_name}"
