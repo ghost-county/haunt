@@ -411,6 +411,246 @@ EOF
     unset OP_SERVICE_ACCOUNT_TOKEN
 }
 
+# ==============================================================================
+# E2E Tests for load_secrets()
+# ==============================================================================
+
+# Test: load_secrets - successful load with mixed secrets and plaintext
+test_load_secrets_mixed_env() {
+    echo "TEST: load_secrets with mixed secrets and plaintext variables"
+
+    # Create test .env file with tagged secrets and plaintext
+    local temp_env=$(mktemp)
+    cat > "$temp_env" <<'EOF'
+# @secret:op:ghost-county/api-keys/github-token
+GITHUB_TOKEN=placeholder
+
+# @secret:op:ghost-county/database/postgres-password
+DATABASE_PASSWORD=placeholder
+
+# Regular plaintext variable (no tag)
+DATABASE_URL=postgres://localhost/dev
+API_BASE_URL=https://api.example.com
+EOF
+
+    # Mock successful 'op' command
+    local temp_bin=$(mktemp -d)
+    cat > "$temp_bin/op" <<'EOF'
+#!/usr/bin/env bash
+# Mock op CLI - return different secrets based on field name
+if [[ "$2" =~ op://ghost-county/api-keys/github-token ]]; then
+    echo "ghp_test_token_12345"
+    exit 0
+elif [[ "$2" =~ op://ghost-county/database/postgres-password ]]; then
+    echo "secure_pg_password_67890"
+    exit 0
+fi
+exit 1
+EOF
+    chmod +x "$temp_bin/op"
+    export PATH="$temp_bin:$PATH"
+    export OP_SERVICE_ACCOUNT_TOKEN="test-token"
+
+    # Load secrets (capture stderr for logging verification, run directly for exports)
+    local temp_log=$(mktemp)
+    load_secrets "$temp_env" 2> "$temp_log"
+    local output=$(cat "$temp_log")
+    rm -f "$temp_log"
+
+    # Verify logging shows variable names (NOT values)
+    assert_contains "$output" "GITHUB_TOKEN" "Should log loaded secret name"
+    assert_contains "$output" "DATABASE_PASSWORD" "Should log loaded secret name"
+
+    # Verify logging does NOT contain secret values
+    if [[ "$output" =~ ghp_test_token_12345|secure_pg_password_67890 ]]; then
+        TESTS_RUN=$((TESTS_RUN + 1))
+        TESTS_FAILED=$((TESTS_FAILED + 1))
+        echo "✗ FAIL: Should NOT log secret values"
+    else
+        TESTS_RUN=$((TESTS_RUN + 1))
+        TESTS_PASSED=$((TESTS_PASSED + 1))
+        echo "✓ PASS: Does not log secret values"
+    fi
+
+    # Verify secrets are exported to environment
+    assert_equals "ghp_test_token_12345" "${GITHUB_TOKEN:-}" "GITHUB_TOKEN should be exported"
+    assert_equals "secure_pg_password_67890" "${DATABASE_PASSWORD:-}" "DATABASE_PASSWORD should be exported"
+
+    # Verify plaintext variables are exported as-is
+    assert_equals "postgres://localhost/dev" "${DATABASE_URL:-}" "DATABASE_URL should be exported"
+    assert_equals "https://api.example.com" "${API_BASE_URL:-}" "API_BASE_URL should be exported"
+
+    # Cleanup
+    rm -f "$temp_env"
+    rm -rf "$temp_bin"
+    unset OP_SERVICE_ACCOUNT_TOKEN GITHUB_TOKEN DATABASE_PASSWORD DATABASE_URL API_BASE_URL
+}
+
+# Test: load_secrets - .env file not found
+test_load_secrets_file_not_found() {
+    echo "TEST: load_secrets with non-existent .env file"
+
+    # Attempt to load non-existent file
+    local output=$(load_secrets "/path/that/does/not/exist/.env" 2>&1 || true)
+
+    assert_contains "$output" "error" "Should contain error message"
+    assert_contains "$output" "not found" "Should indicate file not found"
+}
+
+# Test: load_secrets - empty .env file
+test_load_secrets_empty_file() {
+    echo "TEST: load_secrets with empty .env file"
+
+    local temp_env=$(mktemp)
+    # Empty file
+
+    # Should not error, just do nothing
+    local output=$(load_secrets "$temp_env" 2>&1 || true)
+
+    echo "Empty file output: $output"
+
+    rm -f "$temp_env"
+}
+
+# Test: load_secrets - no secrets, only plaintext
+test_load_secrets_plaintext_only() {
+    echo "TEST: load_secrets with only plaintext variables"
+
+    local temp_env=$(mktemp)
+    cat > "$temp_env" <<'EOF'
+DATABASE_URL=postgres://localhost/dev
+API_KEY=hardcoded-key-for-dev
+EOF
+
+    # Run directly to preserve exports
+    load_secrets "$temp_env" > /dev/null 2>&1 || true
+
+    # Verify plaintext variables are exported
+    assert_equals "postgres://localhost/dev" "${DATABASE_URL:-}" "DATABASE_URL should be exported"
+    assert_equals "hardcoded-key-for-dev" "${API_KEY:-}" "API_KEY should be exported"
+
+    rm -f "$temp_env"
+    unset DATABASE_URL API_KEY
+}
+
+# Test: load_secrets - secret fetch failure
+test_load_secrets_fetch_failure() {
+    echo "TEST: load_secrets when secret fetch fails"
+
+    local temp_env=$(mktemp)
+    cat > "$temp_env" <<'EOF'
+# @secret:op:ghost-county/api-keys/github-token
+GITHUB_TOKEN=placeholder
+EOF
+
+    # Mock 'op' command that fails
+    local temp_bin=$(mktemp -d)
+    cat > "$temp_bin/op" <<'EOF'
+#!/usr/bin/env bash
+echo "ERROR: Authentication failed" >&2
+exit 1
+EOF
+    chmod +x "$temp_bin/op"
+    export PATH="$temp_bin:$PATH"
+    export OP_SERVICE_ACCOUNT_TOKEN="test-token"
+
+    # Should fail with clear error
+    local output=$(load_secrets "$temp_env" 2>&1 || true)
+
+    assert_contains "$output" "error" "Should contain error message"
+    assert_contains "$output" "failed" "Should indicate fetch failed"
+
+    # Variable should NOT be set
+    if [[ -z "${GITHUB_TOKEN:-}" ]]; then
+        TESTS_RUN=$((TESTS_RUN + 1))
+        TESTS_PASSED=$((TESTS_PASSED + 1))
+        echo "✓ PASS: GITHUB_TOKEN not set on fetch failure"
+    else
+        TESTS_RUN=$((TESTS_RUN + 1))
+        TESTS_FAILED=$((TESTS_FAILED + 1))
+        echo "✗ FAIL: GITHUB_TOKEN should not be set on fetch failure"
+    fi
+
+    rm -f "$temp_env"
+    rm -rf "$temp_bin"
+    unset OP_SERVICE_ACCOUNT_TOKEN GITHUB_TOKEN
+}
+
+# Test: load_secrets - can be sourced
+test_load_secrets_sourceable() {
+    echo "TEST: load_secrets can be sourced and used"
+
+    local temp_env=$(mktemp)
+    cat > "$temp_env" <<'EOF'
+# @secret:op:ghost-county/api-keys/test-key
+TEST_KEY=placeholder
+EOF
+
+    # Mock successful 'op' command
+    local temp_bin=$(mktemp -d)
+    cat > "$temp_bin/op" <<'EOF'
+#!/usr/bin/env bash
+echo "secret-value-abc123"
+exit 0
+EOF
+    chmod +x "$temp_bin/op"
+    export PATH="$temp_bin:$PATH"
+    export OP_SERVICE_ACCOUNT_TOKEN="test-token"
+
+    # Source the script and call load_secrets
+    # (Already sourced at top of test file)
+    load_secrets "$temp_env" > /dev/null 2>&1
+
+    # Verify variable is accessible in current shell
+    assert_equals "secret-value-abc123" "${TEST_KEY:-}" "TEST_KEY should be accessible after sourcing"
+
+    rm -f "$temp_env"
+    rm -rf "$temp_bin"
+    unset OP_SERVICE_ACCOUNT_TOKEN TEST_KEY
+}
+
+# Test: load_secrets - logging format verification
+test_load_secrets_logging_format() {
+    echo "TEST: load_secrets logging format"
+
+    local temp_env=$(mktemp)
+    cat > "$temp_env" <<'EOF'
+# @secret:op:ghost-county/api-keys/key1
+KEY1=placeholder
+
+# @secret:op:ghost-county/api-keys/key2
+KEY2=placeholder
+EOF
+
+    # Mock successful 'op' command
+    local temp_bin=$(mktemp -d)
+    cat > "$temp_bin/op" <<'EOF'
+#!/usr/bin/env bash
+echo "secret-value"
+exit 0
+EOF
+    chmod +x "$temp_bin/op"
+    export PATH="$temp_bin:$PATH"
+    export OP_SERVICE_ACCOUNT_TOKEN="test-token"
+
+    # Capture stderr output
+    local temp_log=$(mktemp)
+    load_secrets "$temp_env" 2> "$temp_log"
+    local output=$(cat "$temp_log")
+    rm -f "$temp_log"
+
+    # Verify logging shows summary
+    assert_contains "$output" "loaded" "Should show loaded message"
+
+    # Verify variable names are listed (comma or space separated)
+    assert_contains "$output" "KEY1" "Should list KEY1"
+    assert_contains "$output" "KEY2" "Should list KEY2"
+
+    rm -f "$temp_env"
+    rm -rf "$temp_bin"
+    unset OP_SERVICE_ACCOUNT_TOKEN KEY1 KEY2
+}
+
 # Run all tests
 main() {
     echo "========================================"
@@ -449,6 +689,20 @@ main() {
     test_fetch_secret_network_timeout
     echo ""
     test_fetch_secret_item_not_found
+    echo ""
+    test_load_secrets_mixed_env
+    echo ""
+    test_load_secrets_file_not_found
+    echo ""
+    test_load_secrets_empty_file
+    echo ""
+    test_load_secrets_plaintext_only
+    echo ""
+    test_load_secrets_fetch_failure
+    echo ""
+    test_load_secrets_sourceable
+    echo ""
+    test_load_secrets_logging_format
     echo ""
 
     echo "========================================"

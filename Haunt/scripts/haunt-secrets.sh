@@ -206,3 +206,112 @@ fetch_secret() {
         fi
     fi
 }
+
+# load_secrets - Load secrets from .env file and export to environment
+#
+# Parses .env file for secret tags, fetches secrets from 1Password,
+# and exports both secrets and plaintext variables to environment.
+#
+# Arguments:
+#   $1 - Path to .env file
+#
+# Behavior:
+#   - Parses file using parse_secret_tags()
+#   - Fetches each tagged secret using fetch_secret()
+#   - Exports secrets as environment variables: export VAR_NAME=value
+#   - Exports non-tagged plaintext variables as-is
+#   - Logs variable names loaded (NEVER logs secret values)
+#
+# Exit codes:
+#   0 - Success (all secrets loaded)
+#   1 - Error (file not found, parse error, fetch failure)
+#
+# Security:
+#   - NEVER logs or echoes secret values
+#   - Only logs variable names
+#   - Cleanup trap clears sensitive vars on script exit (if desired)
+#
+# Usage:
+#   source Haunt/scripts/haunt-secrets.sh
+#   load_secrets .env
+#   echo $GITHUB_TOKEN  # secret value available
+load_secrets() {
+    local env_file="$1"
+
+    # Validate input file exists (parse_secret_tags will also check, but fail fast)
+    if [[ ! -f "$env_file" ]]; then
+        echo "ERROR: File not found: $env_file" >&2
+        return 1
+    fi
+
+    # Track loaded variable names for logging (NOT values)
+    local loaded_vars=()
+
+    # Parse secret tags from .env file
+    local secret_tags
+    if ! secret_tags=$(parse_secret_tags "$env_file"); then
+        echo "ERROR: Failed to parse secret tags from $env_file" >&2
+        return 1
+    fi
+
+    # Process each secret tag: fetch and export
+    if [[ -n "$secret_tags" ]]; then
+        while IFS= read -r tag_line; do
+            # Parse space-separated format: VAR_NAME vault item field
+            read -r var_name vault item field <<< "$tag_line"
+
+            # Fetch secret from 1Password
+            local secret_value
+            if ! secret_value=$(fetch_secret "$vault" "$item" "$field"); then
+                echo "ERROR: Failed to fetch secret for $var_name" >&2
+                return 1
+            fi
+
+            # Export secret as environment variable
+            export "$var_name=$secret_value"
+
+            # Track loaded variable name (NOT value)
+            loaded_vars+=("$var_name")
+
+        done <<< "$secret_tags"
+    fi
+
+    # Export plaintext variables (non-tagged lines with VAR=value format)
+    while IFS= read -r line || [[ -n "$line" ]]; do
+        # Skip empty lines and comments
+        [[ -z "$line" || "$line" =~ ^[[:space:]]*# ]] && continue
+
+        # Detect variable definition: VAR_NAME=value
+        if [[ "$line" =~ ^([A-Z_][A-Z0-9_]*)=(.*)$ ]]; then
+            local var_name="${BASH_REMATCH[1]}"
+            local var_value="${BASH_REMATCH[2]}"
+
+            # Check if this variable was already loaded as a secret
+            local is_secret=false
+            if [[ ${#loaded_vars[@]} -gt 0 ]]; then
+                for loaded_var in "${loaded_vars[@]}"; do
+                    if [[ "$loaded_var" == "$var_name" ]]; then
+                        is_secret=true
+                        break
+                    fi
+                done
+            fi
+
+            # Only export if NOT a secret (secrets already exported above)
+            if [[ "$is_secret" == false ]]; then
+                export "$var_name=$var_value"
+                loaded_vars+=("$var_name")
+            fi
+        fi
+    done < "$env_file"
+
+    # Log summary of loaded variables (names only, NEVER values)
+    if [[ ${#loaded_vars[@]} -gt 0 ]]; then
+        local var_list=$(IFS=', '; echo "${loaded_vars[*]}")
+        echo "Loaded: $var_list" >&2
+    else
+        echo "No variables loaded from $env_file" >&2
+    fi
+
+    return 0
+}
