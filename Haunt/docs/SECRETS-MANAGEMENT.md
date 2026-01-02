@@ -7,15 +7,61 @@
 
 ## Table of Contents
 
-1. [Quick Start](#quick-start)
-2. [Prerequisites](#prerequisites)
-3. [Tag Format Specification](#tag-format-specification)
-4. [Usage Guide](#usage-guide)
+1. [Two Approaches](#two-approaches)
+2. [Quick Start](#quick-start)
+3. [Prerequisites](#prerequisites)
+4. [Pattern 1: Native op run](#pattern-1-native-op-run)
+5. [Pattern 2: Haunt Secrets Wrapper](#pattern-2-haunt-secrets-wrapper)
+6. [Tag Format Specification](#tag-format-specification)
+7. [Usage Guide](#usage-guide)
    - [Shell (Bash)](#shell-bash)
    - [Python](#python)
-5. [Security Model](#security-model)
-6. [Troubleshooting](#troubleshooting)
-7. [Migration Guide](#migration-guide)
+8. [Security Model](#security-model)
+9. [Troubleshooting](#troubleshooting)
+10. [Migration Guide](#migration-guide)
+
+---
+
+## Two Approaches
+
+Haunt supports **two patterns** for 1Password secret management. Choose based on your use case:
+
+| Aspect | Pattern 1: Native `op run` | Pattern 2: Haunt Wrapper |
+|--------|---------------------------|--------------------------|
+| **Syntax** | `VAR=op://vault/item/field` | `# @secret:op:vault/item/field`<br>`VAR=placeholder` |
+| **Execution** | `op run --env-file=.env -- cmd` | `source haunt-secrets.sh && load_secrets .env` |
+| **Complexity** | Zero custom code | Custom wrapper (~900 lines) |
+| **Best For** | npm scripts, quick commands | Shell scripts, Python apps |
+
+### When to Use Each
+
+| Use Case | Recommended Pattern |
+|----------|---------------------|
+| npm/yarn scripts (`npm run dev`) | **Pattern 1** - `op run` |
+| One-off CLI commands | **Pattern 1** - `op run` |
+| Shell scripts sourcing .env | **Pattern 2** - Haunt wrapper |
+| Python applications | **Pattern 2** - Haunt wrapper |
+| CI validation (check secrets exist) | **Pattern 2** - `--validate` mode |
+| Need programmatic secret access | **Pattern 2** - Python API |
+
+### Can I Use Both?
+
+**Yes!** Both patterns can coexist in the same project:
+
+```bash
+# .env file works with BOTH patterns
+# @secret:op:my-vault/api-keys/github-token
+GITHUB_TOKEN=op://my-vault/api-keys/github-token
+
+# Pattern 1: Use with op run
+op run --env-file=.env -- npm test
+
+# Pattern 2: Use with haunt-secrets
+source .haunt/scripts/haunt-secrets.sh
+load_secrets .env
+```
+
+**Note:** When using both, the `.env` value (`op://...`) is the native format. The comment tag (`# @secret:op:...`) is parsed by the Haunt wrapper.
 
 ---
 
@@ -159,6 +205,151 @@ op vault list
 
 # Should output vault names/IDs
 ```
+
+---
+
+## Pattern 1: Native op run
+
+The simplest approach uses 1Password's built-in `op run` command. **Zero custom code required.**
+
+### .env Format
+
+Put `op://` references directly as values:
+
+```bash
+# .env (safe to commit - no actual secrets)
+GITHUB_TOKEN=op://my-vault/api-keys/github-token
+STRIPE_SECRET_KEY=op://my-vault/api-keys/stripe-key
+DATABASE_URL=op://my-vault/database/connection-string
+
+# Plaintext values work alongside secrets
+APP_ENV=development
+LOG_LEVEL=info
+```
+
+### Usage
+
+Wrap any command with `op run`:
+
+```bash
+# Run a command with secrets injected
+op run --env-file=.env -- npm test
+
+# Run development server
+op run --env-file=.env -- npm run dev
+
+# Run any script
+op run --env-file=.env -- python script.py
+```
+
+### Package.json Integration
+
+```json
+{
+  "scripts": {
+    "dev": "op run --env-file=.env -- next dev",
+    "dev:local": "next dev",
+    "build": "op run --env-file=.env -- next build",
+    "test": "op run --env-file=.env -- vitest run",
+    "test:local": "vitest run"
+  }
+}
+```
+
+**Pattern:**
+- Primary scripts use `op run` for production-like behavior
+- `:local` variants skip secrets (for quick iteration)
+
+### Item Naming Convention
+
+Use consistent naming for 1Password items:
+
+```
+{Project} - {Service} - {Type}
+```
+
+**Examples:**
+- `Familiar - Jira - API Token`
+- `Familiar - Notion - OAuth`
+- `Familiar - Google - OAuth`
+
+**Field names within items:**
+- `credential` - For single-value secrets (API tokens, keys)
+- `client_id` / `client_secret` - For OAuth
+- `password` / `username` - For credentials
+
+### When to Use Pattern 1
+
+✅ **Ideal for:**
+- npm/yarn scripts
+- One-off CLI commands
+- Simple projects without Python
+- When you want zero custom code
+
+❌ **Not ideal for:**
+- Shell scripts that source .env
+- Python applications needing programmatic access
+- CI validation (checking secrets exist without loading)
+
+---
+
+## Pattern 2: Haunt Secrets Wrapper
+
+The Haunt wrapper provides additional features: Python API, validation mode, and shell script compatibility.
+
+### .env Format
+
+Use comment tags above variables:
+
+```bash
+# .env (safe to commit - no actual secrets)
+
+# @secret:op:my-vault/api-keys/github-token
+GITHUB_TOKEN=placeholder
+
+# @secret:op:my-vault/api-keys/stripe-key
+STRIPE_SECRET_KEY=placeholder
+
+# Plaintext values (no tags needed)
+APP_ENV=development
+LOG_LEVEL=info
+```
+
+### Usage
+
+**Shell:**
+```bash
+source .haunt/scripts/haunt-secrets.sh
+load_secrets .env
+echo $GITHUB_TOKEN  # Actual secret from 1Password
+```
+
+**Python:**
+```python
+from haunt_secrets import load_secrets
+load_secrets(".env")
+import os
+print(os.environ["GITHUB_TOKEN"])  # Actual secret
+```
+
+**Validation Mode:**
+```bash
+# Check all secrets are resolvable WITHOUT loading them
+bash .haunt/scripts/haunt-secrets.sh --validate .env
+```
+
+### When to Use Pattern 2
+
+✅ **Ideal for:**
+- Shell scripts sourcing .env
+- Python applications
+- CI validation pipelines
+- Programmatic secret access
+- Debug/diagnostics (`--debug` flag)
+
+❌ **Not ideal for:**
+- Simple npm scripts (Pattern 1 is simpler)
+- When you want zero custom dependencies
 
 ---
 
