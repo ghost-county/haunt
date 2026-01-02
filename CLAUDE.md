@@ -25,7 +25,19 @@ See `~/.claude/rules/gco-roadmap-format.md` for status update protocol (global r
 
 **Active Work:** None (all current work complete!)
 
-**Backlog (10 requirements):**
+**Backlog (20 requirements):**
+
+Env Secrets Wrapper (1Password Integration) - NEW:
+⚪ REQ-297: Tag Parser Implementation (Shell) (Dev-Infrastructure, S)
+⚪ REQ-298: Tag Parser Implementation (Python) (Dev-Infrastructure, S)
+⚪ REQ-299: 1Password CLI Wrapper (Shell) (Dev-Infrastructure, M)
+⚪ REQ-300: 1Password CLI Wrapper (Python) (Dev-Infrastructure, M)
+⚪ REQ-301: Secrets Export to Environment (Shell) (Dev-Infrastructure, S)
+⚪ REQ-302: Secrets API for Python (Dev-Infrastructure, S)
+⚪ REQ-303: Secret Exposure Prevention (Dev-Infrastructure, M)
+⚪ REQ-304: Validation Mode and Diagnostics (Dev-Infrastructure, S)
+⚪ REQ-305: Documentation and Setup Guide (Dev-Infrastructure, M)
+⚪ REQ-306: Framework Integration and Deployment (Dev-Infrastructure, S)
 
 Skill Token Optimization (>600 lines):
 ⚪ REQ-283: Refactor gco-requirements-analysis (824 lines → <500, M)
