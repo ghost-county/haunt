@@ -1477,6 +1477,27 @@ setup_agents_to_directory() {
         fi
     done
 
+    # Copy agent reference directories (e.g., gco-dev/references/)
+    for agent_dir in "$PROJECT_AGENTS_DIR"/*/; do
+        if [[ -d "$agent_dir" ]]; then
+            local agent_dirname=$(basename "$agent_dir")
+            local source_refs="${agent_dir}references"
+            local dest_agent_dir="${target_dir}/${agent_dirname}"
+            local dest_refs="${dest_agent_dir}/references"
+
+            if [[ -d "$source_refs" ]]; then
+                if [[ "$DRY_RUN" == false ]]; then
+                    mkdir -p "$dest_agent_dir"
+                    cp -r "$source_refs" "$dest_agent_dir/"
+                    chmod -R 644 "$dest_refs"/*.md 2>/dev/null || true
+                    success "Copied references for ${agent_dirname}"
+                else
+                    info "[DRY RUN] Would copy references for ${agent_dirname}"
+                fi
+            fi
+        fi
+    done
+
     # Summary
     blank
     info "Agent installation summary for ${scope_name}:"

@@ -367,7 +367,7 @@ End-to-end testing of the complete Seer workflow. Verify phase transitions, memo
 
 ## Backlog: Built-in Subagent Integration
 
-### 🟡 REQ-309: Document Explore Agent Integration Patterns
+### 🟢 REQ-309: Document Explore Agent Integration Patterns
 
 **Type:** Documentation
 **Reported:** 2026-01-02
@@ -377,11 +377,11 @@ End-to-end testing of the complete Seer workflow. Verify phase transitions, memo
 
 **Tasks:**
 
-- [ ] Add "Built-in Subagents" section to `Haunt/docs/INTEGRATION-PATTERNS.md` documenting Explore capabilities and limits
-- [ ] Update `gco-session-startup` skill with Explore decision gate (use for quick recon before deep research)
-- [ ] Update `gco-orchestration.md` rule with codebase reconnaissance delegation pattern
-- [ ] Update `gco-model-selection.md` rule with Explore guidance (when to use vs Haiku vs Sonnet)
-- [ ] Archive research findings to `.haunt/docs/research/explore-agent-integration.md`
+- [x] Add "Built-in Subagents" section to `Haunt/docs/INTEGRATION-PATTERNS.md` documenting Explore capabilities and limits
+- [x] Update `gco-session-startup` skill with Explore decision gate (use for quick recon before deep research)
+- [x] Update `gco-orchestration.md` rule with codebase reconnaissance delegation pattern
+- [x] Update `gco-model-selection.md` rule with Explore guidance (when to use vs Haiku vs Sonnet)
+- [x] Archive research findings to `.haunt/docs/research/explore-agent-integration.md`
 
 **Files:**
 
