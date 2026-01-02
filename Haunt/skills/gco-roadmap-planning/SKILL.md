@@ -7,7 +7,20 @@ description: Structured roadmap format for coordinating agent teams with batches
 
 Structure and manage work for agent teams.
 
-## Roadmap Format
+## Purpose
+
+This skill provides guidance for creating and managing project roadmaps with batch organization, dependency tracking, and progress monitoring. Use this when organizing work for multi-agent teams or planning complex features with interdependent requirements.
+
+## When to Invoke
+
+- Creating new project roadmaps
+- Planning sprints or work phases
+- Organizing requirements into batches
+- Managing dependencies between requirements
+- Tracking multi-agent team progress
+- Sharding large roadmaps for token efficiency
+
+## Roadmap Format (Quick Reference)
 
 ```markdown
 # Project Roadmap
@@ -37,15 +50,9 @@ Structure and manage work for agent teams.
    Agent: [Name]
    Completion: [Criteria]
    Blocked by: None
-
----
-
-## Batch 2: [Name]
-
-⚪ REQ-010: [Title]
-   ...
-   Blocked by: REQ-001, REQ-002
 ```
+
+**For full format specification, see:** `.claude/rules/gco-roadmap-format.md`
 
 ## Status Icons
 
@@ -56,103 +63,68 @@ Structure and manage work for agent teams.
 | 🟢 | Complete | All criteria met, archived |
 | 🔴 | Blocked | Cannot proceed, dependency unmet |
 
-## Batch Organization Rules
+## Batch Organization (Quick Guide)
 
-### What Goes in Same Batch
-- Requirements with **no dependencies** between them
-- Work that can run **in parallel**
-- Items assigned to **different agents**
+**Same batch = parallel work possible:**
+- No dependencies between requirements
+- Different agents working simultaneously
+- Different files or non-overlapping sections
 
-### What Goes in Separate Batches
-- Anything with `Blocked by:` pointing to another item
-- Sequential work (API before UI)
-- Same-file modifications
+**Separate batches = must run sequentially:**
+- Requirements with `Blocked by:` dependencies
+- Same-file modifications that could conflict
+- Infrastructure changes other work depends on
 
-### Example: Good Batching
+⛔ **CONSULTATION GATE:** For detailed batch organization patterns, dependency visualization, and anti-patterns, READ `references/batch-organization.md`.
 
-```markdown
-## Batch 1: Foundation (Parallel OK)
-⚪ REQ-001: Database schema (Dev-Infrastructure)
-⚪ REQ-002: Config management (Dev-Infrastructure)
-⚪ REQ-003: Logging setup (Dev-Infrastructure)
+## Roadmap Sharding (Performance Optimization)
 
-## Batch 2: Core Backend (Depends on Batch 1)
-⚪ REQ-010: User model (Dev-Backend) - Blocked by: REQ-001
-⚪ REQ-011: Auth service (Dev-Backend) - Blocked by: REQ-001
+**When to shard:**
+- Roadmap exceeds 500 lines
+- 10+ requirements across multiple batches
+- Token usage >2,000 tokens per request
 
-## Batch 3: API Layer (Depends on Batch 2)
-⚪ REQ-020: User endpoints (Dev-Backend) - Blocked by: REQ-010
-⚪ REQ-021: Auth endpoints (Dev-Backend) - Blocked by: REQ-011
+**Token savings:** 60-80% reduction for projects with 10+ requirements.
 
-## Batch 4: Frontend (Depends on Batch 3)
-⚪ REQ-030: Login page (Dev-Frontend) - Blocked by: REQ-021
-⚪ REQ-031: User profile (Dev-Frontend) - Blocked by: REQ-020
-```
+**Commands:**
+- `/roadmap shard` - Split roadmap into batch files
+- `/roadmap unshard` - Restore monolithic format
+- `/roadmap activate "Batch Name"` - Switch active batch
 
-## Priority Order
+⛔ **CONSULTATION GATE:** For sharding implementation details, batch file naming, effort estimation, and token savings calculations, READ `references/roadmap-sharding.md`.
 
-Within same batch, sequence by:
+## Core Workflow
 
-1. **Infrastructure** first (affects everything)
-2. **Backend** second (APIs that frontend needs)
-3. **Frontend** last (depends on backend)
-4. **Same layer**: smaller (S) before larger (M)
+### 1. Create Roadmap
 
-## Archiving Completed Work
+1. **Identify all requirements**
+   - List all features, bugs, enhancements
+   - Extract from user requests, backlog, issues
 
-When requirement is done:
+2. **Map dependencies**
+   - What must be done first?
+   - What can be done in parallel?
+   - What blocks other work?
 
-1. Change status to 🟢
-2. Add completion date
-3. Move to `.haunt/completed/roadmap-archive.md`
-4. Keep active roadmap clean
+3. **Organize into batches**
+   - Group independent work into same batch
+   - Create sequential batches for dependent work
+   - Number batches in execution order
 
-### Archive Format
+4. **Assign agents**
+   - Match work to agent type (Dev-Backend, Dev-Frontend, etc.)
+   - Distribute load across team
+   - Consider agent availability
 
-```markdown
-# Roadmap Archive
+### 2. Track Progress
 
-## 2024-12
+**Update status in real-time:**
+- Starting work: ⚪ → 🟡
+- Blocking issue: 🟡 → 🔴 (update "Blocked by:" field)
+- Task complete: `- [ ]` → `- [x]`
+- Requirement complete: 🟡 → 🟢
 
-### REQ-001: Database schema
-- Completed: 2024-12-05
-- Agent: Dev-Infrastructure
-- Tasks: 3/3
-- Notes: Added index on email column for performance
-```
-
-## Dispatch Protocol
-
-When assigning work:
-
-```markdown
-## Assignment: REQ-XXX
-
-**Agent:** [Name]
-**Branch:** feature/REQ-XXX
-**Goal:** [One sentence]
-
-### Tasks
-1. [ ] First task
-2. [ ] Second task
-
-### Files to Modify
-- `src/path/to/file.py`
-- `tests/path/to/test.py`
-
-### Constraints
-- Must maintain backward compatibility
-- Use existing patterns from src/utils/
-
-### Completion Criteria
-- [ ] All tasks checked
-- [ ] Tests passing
-- [ ] Code reviewed
-```
-
-## Progress Tracking
-
-### Daily Check
+**Monitor metrics:**
 ```bash
 # Count by status
 grep -c "⚪" .haunt/plans/roadmap.md  # Not started
@@ -161,34 +133,119 @@ grep -c "🟢" .haunt/plans/roadmap.md  # Complete
 grep -c "🔴" .haunt/plans/roadmap.md  # Blocked
 ```
 
-### Velocity Metrics
-| Metric | How to Calculate |
-|--------|-----------------|
-| Phases/day | Completed items ÷ days |
-| Avg time/phase | Total hours ÷ completed items |
-| Block rate | Blocked items ÷ total items |
+### 3. Archive Completed Work
 
-## Dependency Visualization
+When requirement is 🟢:
+1. Verify completion criteria met
+2. Add completion date
+3. Move to `.haunt/completed/roadmap-archive.md`
+4. Update `Blocked by: None` for newly unblocked requirements
 
-For complex projects, create dependency graph:
+⛔ **CONSULTATION GATE:** For archiving format, dispatch protocol, and velocity metrics, READ `references/roadmap-templates.md`.
 
+## Priority Sequencing
+
+Within same batch, prioritize:
+
+1. **Infrastructure** first (affects everything)
+2. **Backend** second (APIs that frontend needs)
+3. **Frontend** last (depends on backend)
+4. **Same layer**: smaller (S) before larger (M)
+
+## Multi-Agent Coordination
+
+**Coordinating parallel work:**
+- Assign different agents to same batch requirements
+- Use `Agent:` field to track assignments
+- Communicate file conflicts before they happen
+- PM tracks overall batch completion
+
+**Handoff between agents:**
+- Completing agent: Mark 🟢, add implementation notes
+- Next agent: Read implementation notes before starting
+- Update `Blocked by:` field when dependency met
+
+## Sharding Workflow
+
+### When Roadmap Grows Large (>500 lines)
+
+**Step 1: Shard the roadmap**
+```bash
+/roadmap shard
+# OR specify active batch
+/roadmap shard --active "Setup Improvements"
 ```
-REQ-001 (DB Schema)
-    │
-    ├──► REQ-010 (User Model)
-    │        │
-    │        └──► REQ-020 (User API)
-    │                 │
-    │                 └──► REQ-030 (User UI)
-    │
-    └──► REQ-011 (Auth Service)
-             │
-             └──► REQ-021 (Auth API)
-                      │
-                      └──► REQ-031 (Login UI)
+
+**Step 2: Work with active batch**
+- Overview roadmap contains active batch
+- Other batches in `.haunt/plans/batches/`
+- Load only what you need
+
+**Step 3: Switch batches as work progresses**
+```bash
+/roadmap activate "Next Batch Name"
 ```
 
-## Anti-Patterns
+**Step 4: Unshard when needed**
+```bash
+/roadmap unshard
+# Restores monolithic format
+```
+
+**Token efficiency:**
+- Before: 2,550+ tokens per request
+- After: ~450 tokens per request
+- Savings: 82% reduction
+
+## Common Patterns
+
+### Pattern 1: Foundation → Features → Integration
+
+```markdown
+## Batch 1: Foundation
+⚪ REQ-001: Database setup
+⚪ REQ-002: Config management
+⚪ REQ-003: Logging
+
+## Batch 2: Core Features
+⚪ REQ-010: User model (Blocked by: REQ-001)
+⚪ REQ-011: Auth service (Blocked by: REQ-001)
+
+## Batch 3: Integration
+⚪ REQ-020: API endpoints (Blocked by: REQ-010, REQ-011)
+```
+
+### Pattern 2: Parallel Streams by Agent Type
+
+```markdown
+## Batch 1: Backend Stream
+⚪ REQ-001: User API (Dev-Backend)
+⚪ REQ-002: Product API (Dev-Backend)
+
+## Batch 1: Frontend Stream (Parallel OK)
+⚪ REQ-010: Navigation (Dev-Frontend)
+⚪ REQ-011: Layout (Dev-Frontend)
+
+## Batch 2: Integration (Depends on Batch 1)
+⚪ REQ-020: User profile page (Blocked by: REQ-001, REQ-010)
+```
+
+### Pattern 3: Infrastructure → Implementation → Testing
+
+```markdown
+## Batch 1: Infrastructure
+⚪ REQ-001: CI/CD pipeline (Dev-Infrastructure)
+⚪ REQ-002: Test framework (Dev-Infrastructure)
+
+## Batch 2: Implementation
+⚪ REQ-010: Feature A (Dev-Backend) (Blocked by: REQ-002)
+⚪ REQ-011: Feature B (Dev-Frontend) (Blocked by: REQ-002)
+
+## Batch 3: E2E Testing
+⚪ REQ-020: Test suite (Dev-Frontend) (Blocked by: REQ-010, REQ-011)
+```
+
+## Anti-Patterns to Avoid
 
 | Anti-Pattern | Problem | Fix |
 |--------------|---------|-----|
@@ -196,359 +253,37 @@ REQ-001 (DB Schema)
 | Missing `Blocked by` | Hidden dependencies | Always state or "None" |
 | Stale roadmap | Trust erosion | Update daily |
 | No archive | Lost history | Archive completed items |
-| Vague completion | Endless "in progress" | Testable criteria |
+| Vague completion criteria | Endless "in progress" | Testable criteria |
 
----
+## Reference Index
 
-## Roadmap Sharding (Performance Optimization)
+⛔ **CONSULTATION GATES:** When you need detailed guidance, READ the appropriate reference file:
 
-**Purpose:** Reduce token usage by splitting large roadmaps into batch-specific files, loading only active context.
+| When You Need | Read This |
+|---------------|-----------|
+| **Batch organization rules, dependency visualization, priority sequencing** | `references/batch-organization.md` |
+| **Roadmap sharding details, token savings, batch file structure** | `references/roadmap-sharding.md` |
+| **Roadmap templates, archive format, dispatch protocol** | `references/roadmap-templates.md` |
 
-**Token Savings:** 60-80% reduction for projects with 10+ requirements (based on BMAD framework analysis).
+## Integration with Other Skills
 
-### When to Shard
+**Works with:**
+- `gco-roadmap-workflow` - Multi-requirement coordination and archiving
+- `gco-session-startup` - Assignment lookup from roadmap
+- `gco-roadmap-format` (rule) - Requirement format specification
 
-**Shard when:**
-- Roadmap exceeds 500 lines
-- 10+ requirements across multiple batches
-- Token usage noticeable (>2,000 tokens per request)
-- Multiple agents working on different batches
+## Success Criteria
 
-**Keep monolithic when:**
-- Roadmap under 300 lines
-- Fewer than 8 requirements
-- Single batch in progress
-- Early project phase with high churn
+Effective roadmap planning when:
+1. All requirements organized into logical batches
+2. Dependencies clearly marked with `Blocked by:`
+3. Agents assigned based on specialization
+4. Progress tracked with real-time status updates
+5. Completed work archived regularly
+6. Token efficiency maintained (shard if >500 lines)
 
-### Shard Operation
+## See Also
 
-**Command:** `/roadmap shard` or `/roadmap shard --active "Batch Name"`
-
-**Implementation Steps:**
-
-1. **Parse Roadmap Structure**
-   ```python
-   # Regex patterns for parsing
-   batch_header = r'^## Batch: (.+)$'
-   requirement_header = r'^### ([⚪🟡🟢🔴]) (REQ-\d+): (.+)$'
-
-   # Structure
-   roadmap = {
-       'header': '',        # Everything before first ## Batch
-       'batches': [
-           {
-               'name': 'Batch Name',
-               'goal': 'Batch goal from description',
-               'requirements': [...],
-               'status_counts': {'⚪': 0, '🟡': 0, '🟢': 0, '🔴': 0},
-               'estimated_effort': 0.0
-           }
-       ]
-   }
-   ```
-
-2. **Extract Batches**
-   - Read `.haunt/plans/roadmap.md`
-   - Identify header (everything before first `## Batch:`)
-   - Split content by `## Batch:` headers
-   - For each batch:
-     - Extract batch name from header
-     - Extract all requirements until next `##` or EOF
-     - Parse requirement status, effort, agent
-     - Calculate batch metrics
-
-3. **Generate Batch Files**
-   ```markdown
-   # Batch: [Name]
-
-   > Sharded from roadmap on YYYY-MM-DD
-   > Contains requirements from original Batch [N]
-
-   **Status:** [Active / Archived]
-   **Requirements:** X total (Y complete, Z in progress, W not started)
-   **Estimated Effort:** XX hours remaining
-
-   **Goal:** [Batch goal from original roadmap]
-
-   ---
-
-   ## Requirements
-
-   ### 🟡 REQ-001: [Title]
-
-   [Full requirement content...]
-
-   ---
-
-   ### ⚪ REQ-002: [Title]
-
-   [Full requirement content...]
-   ```
-
-4. **Create Overview Roadmap**
-   ```markdown
-   # Haunt Framework Roadmap
-
-   > Roadmap is **sharded** for token efficiency. Full batches in `.haunt/plans/batches/`.
-
-   ---
-
-   ## Sharding Info
-
-   **Status:** Sharded on YYYY-MM-DD
-   **Active Batch:** [Batch Name]
-   **Total Batches:** X
-   **Load Location:** `.haunt/plans/batches/`
-
-   ---
-
-   ## Current Focus: [Active Batch Name]
-
-   **Goal:** [Active batch goal]
-
-   **Active Work:**
-   - 🟡 REQ-XXX: [Title] (from active batch)
-
-   **Recently Completed:**
-   - 🟢 REQ-XXX: [Title] (from active batch)
-
-   ---
-
-   ## Active Batch: [Batch Name]
-
-   [Full content of active batch with all requirements]
-
-   ---
-
-   ## Other Batches (See .haunt/plans/batches/)
-
-   ### Batch: Command Improvements
-   - **File:** `batches/batch-1-command-improvements.md`
-   - **Progress:** 5/5 Complete (100%)
-   - **Status:** 🟢 COMPLETE
-
-   ### Batch: Setup Improvements
-   - **File:** `batches/batch-2-setup-improvements.md`
-   - **Progress:** 2/3 Complete (67%)
-   - **Status:** 🟡 IN PROGRESS
-   ```
-
-5. **Determine Active Batch**
-   - If `--active "Batch Name"` provided, use that
-   - Else, use first batch with 🟡 In Progress items
-   - Else, use first batch with ⚪ Not Started items
-   - Else (all complete), use last batch
-
-6. **Write Files**
-   - Create `.haunt/plans/batches/` directory if missing
-   - Write each batch to `batch-N-[slug].md`
-   - Overwrite `roadmap.md` with overview
-
-### Unshard Operation
-
-**Command:** `/roadmap unshard`
-
-**Implementation Steps:**
-
-1. **Verify Sharded State**
-   - Read `.haunt/plans/roadmap.md`
-   - Check for "Sharding Info" section or "Other Batches" heading
-   - If not sharded, error: "Roadmap is not sharded"
-
-2. **Read Batch Files**
-   - List files: `ls .haunt/plans/batches/batch-*.md`
-   - Sort by batch number (batch-1, batch-2, ...)
-   - Read each file content
-
-3. **Extract Batch Content**
-   - Skip metadata header (lines before first `##`)
-   - Extract `## Requirements` section and all following content
-   - Reconstruct as `## Batch: [Name]` section
-
-4. **Build Merged Roadmap**
-   - Start with original header (from overview roadmap)
-   - Add "Current Focus" section (from overview)
-   - Append each batch in order
-   - Remove "Sharding Info" section
-   - Remove "Other Batches" summary
-
-5. **Write Monolithic Roadmap**
-   - Overwrite `.haunt/plans/roadmap.md`
-   - Keep batch files for reference (don't delete)
-
-### Activate Operation
-
-**Command:** `/roadmap activate "Batch Name"`
-
-**Implementation Steps:**
-
-1. **Validate Sharded State**
-   - Read `.haunt/plans/roadmap.md`
-   - Verify "Sharding Info" section exists
-   - If not sharded, error: "Roadmap is not sharded"
-
-2. **Find Matching Batch**
-   - Extract batch name from command args
-   - Search "Other Batches" section for matching name
-   - Find corresponding file path
-   - If not found, list available batches and error
-
-3. **Read New Batch**
-   - Read content from `batches/batch-N-[slug].md`
-   - Extract requirements section
-   - Parse batch goal/metadata
-
-4. **Update Overview Roadmap**
-   - Replace "Active Batch:" field in "Sharding Info"
-   - Replace entire "## Active Batch:" section with new batch
-   - Update "Current Focus:" section with new batch goal
-   - Update batch status in "Other Batches" overview
-
-5. **Write Updated Roadmap**
-   - Overwrite `.haunt/plans/roadmap.md`
-   - Keep all batch files unchanged
-
-### Batch File Naming Convention
-
-**Pattern:** `batch-N-[slug].md`
-
-Where:
-- `N` = Batch number (1, 2, 3, ...)
-- `[slug]` = Lowercase, hyphenated batch name
-
-**Examples:**
-- `batch-1-command-improvements.md`
-- `batch-2-setup-improvements.md`
-- `batch-3-bmad-phase-1.md`
-- `batch-4-bmad-phase-2.md`
-
-**Slug generation:**
-```python
-def generate_slug(batch_name: str) -> str:
-    """Convert batch name to filename slug."""
-    # Remove special chars, lowercase, replace spaces with hyphens
-    slug = batch_name.lower()
-    slug = re.sub(r'[^a-z0-9\s-]', '', slug)  # Remove non-alphanumeric
-    slug = re.sub(r'\s+', '-', slug)          # Spaces to hyphens
-    slug = re.sub(r'-+', '-', slug)           # Collapse multiple hyphens
-    slug = slug.strip('-')                    # Remove leading/trailing
-    return slug
-
-# Examples:
-# "Command Improvements" → "command-improvements"
-# "BMAD Enhancements - Phase 1" → "bmad-enhancements-phase-1"
-# "Setup & Config" → "setup-config"
-```
-
-### Effort Estimation in Batch Files
-
-**Effort Mapping:**
-- XS = 0.5 hours
-- S = 2 hours
-- M = 6 hours
-- SPLIT = N/A (skip in calculations)
-
-**Calculation Logic:**
-```python
-def calculate_batch_effort(requirements: list) -> float:
-    """Sum effort for incomplete requirements."""
-    effort_map = {'XS': 0.5, 'S': 2, 'M': 6}
-    total_hours = 0.0
-
-    for req in requirements:
-        # Only count ⚪ Not Started and 🟡 In Progress
-        if req['status'] in ['⚪', '🟡']:
-            effort = req.get('effort', 'S')  # Default to S if missing
-            if effort in effort_map:
-                total_hours += effort_map[effort]
-
-    return total_hours
-```
-
-**Display Format:**
-```markdown
-**Estimated Effort:** 12.5 hours remaining
-
-Requirements:
-  ✅ REQ-001: [Title] (Agent: Dev) [S: 2hr]
-  🟡 REQ-002: [Title] (Agent: Dev) [M: 6hr]
-  ⚪ REQ-003: [Title] (Agent: Research) [XS: 0.5hr]
-```
-
-### Sharding Detection
-
-**How to detect if roadmap is sharded:**
-
-1. Check for "Sharding Info" section
-2. Check for "Other Batches" heading
-3. Check if `.haunt/plans/batches/` directory exists
-
-**Code example:**
-```python
-def is_roadmap_sharded(roadmap_content: str) -> bool:
-    """Detect if roadmap is sharded."""
-    return (
-        '## Sharding Info' in roadmap_content or
-        '## Other Batches' in roadmap_content or
-        os.path.exists('.haunt/plans/batches/')
-    )
-```
-
-### Token Savings Calculation
-
-**Before sharding (monolithic roadmap):**
-- 850 lines × ~3 tokens/line = ~2,550 tokens
-- Loaded on every assignment lookup
-
-**After sharding (overview + active batch):**
-- Overview: 50 lines × ~3 tokens/line = ~150 tokens
-- Active batch: 100 lines × ~3 tokens/line = ~300 tokens
-- Total: ~450 tokens per request
-
-**Savings:**
-- Absolute: 2,550 - 450 = 2,100 tokens saved
-- Percentage: (2,100 / 2,550) × 100 = 82% reduction
-
-**For large projects (50+ requirements):**
-- Before: ~5,000+ tokens
-- After: ~500 tokens
-- Savings: 90%+ reduction
-
-### Integration with Session Startup
-
-**REQ-221 (future work):** Update assignment lookup to load active batch only.
-
-**Current behavior (pre-sharding):**
-```python
-# Read full roadmap
-roadmap = read_file('.haunt/plans/roadmap.md')
-assignment = find_assignment(roadmap, agent_type)
-```
-
-**Future behavior (post-sharding aware):**
-```python
-# Check if sharded
-roadmap = read_file('.haunt/plans/roadmap.md')
-
-if is_sharded(roadmap):
-    # Load only active batch
-    active_batch = extract_active_batch(roadmap)
-    assignment = find_assignment(active_batch, agent_type)
-else:
-    # Use full roadmap (backward compatible)
-    assignment = find_assignment(roadmap, agent_type)
-```
-
-### Backward Compatibility
-
-**Sharding is optional and reversible:**
-- Roadmap works in both sharded and monolithic forms
-- `/roadmap unshard` restores original format
-- Batch files preserved as backup/reference
-- No breaking changes to existing workflows
-
-**Migration path:**
-1. Start with monolithic roadmap (current state)
-2. Shard when roadmap exceeds 500 lines
-3. Unshard if needed (debugging, refactoring)
-4. Re-shard when cleanup complete
+- `.claude/rules/gco-roadmap-format.md` - Requirement format and status protocol
+- `.claude/rules/gco-session-startup.md` - Assignment lookup workflow
+- `Haunt/skills/gco-roadmap-workflow/SKILL.md` - Multi-session coordination
