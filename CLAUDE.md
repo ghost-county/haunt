@@ -25,24 +25,7 @@ See `~/.claude/rules/gco-roadmap-format.md` for status update protocol (global r
 
 **Active Work:** None (all current work complete!)
 
-**Backlog (20 requirements):**
-
-Env Secrets Wrapper (1Password Integration) - NEW:
-⚪ REQ-297: Tag Parser Implementation (Shell) (Dev-Infrastructure, S)
-⚪ REQ-298: Tag Parser Implementation (Python) (Dev-Infrastructure, S)
-⚪ REQ-299: 1Password CLI Wrapper (Shell) (Dev-Infrastructure, M)
-⚪ REQ-300: 1Password CLI Wrapper (Python) (Dev-Infrastructure, M)
-⚪ REQ-301: Secrets Export to Environment (Shell) (Dev-Infrastructure, S)
-⚪ REQ-302: Secrets API for Python (Dev-Infrastructure, S)
-⚪ REQ-303: Secret Exposure Prevention (Dev-Infrastructure, M)
-⚪ REQ-304: Validation Mode and Diagnostics (Dev-Infrastructure, S)
-⚪ REQ-305: Documentation and Setup Guide (Dev-Infrastructure, M)
-⚪ REQ-306: Framework Integration and Deployment (Dev-Infrastructure, S)
-
-Skill Token Optimization (>600 lines):
-⚪ REQ-283: Refactor gco-requirements-analysis (824 lines → <500, M)
-⚪ REQ-284: Refactor gco-code-patterns (658 lines → <500, S)
-⚪ REQ-285: Refactor gco-task-decomposition (600 lines → <500, S)
+**Backlog (7 requirements):**
 
 Visual Documentation:
 ⚪ REQ-228: Create Séance Workflow Infographic (S)
@@ -57,7 +40,7 @@ GitHub Integration:
 ⚪ REQ-205: GitHub Issues Integration (Research-Analyst → Dev-Infrastructure)
 ⚪ REQ-206: Create /bind Command (Dev-Infrastructure)
 
-**Recently Archived (2025-12-31):** REQ-287-290 (/cleanse Command), REQ-282 (gco-orchestrator refactored), REQ-279-281 (Agent Iteration)
+**Recently Archived (2026-01-02):** REQ-307 (Model Selection), REQ-297-306 (Env Secrets Wrapper), REQ-283-285 (Skill Token Optimization)
 
 See `.haunt/plans/roadmap.md` for full details.
 
