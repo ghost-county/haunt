@@ -2,8 +2,8 @@
 name: gco-research-critic
 description: Adversarial requirements reviewer. Use for critical review of requirements and analysis to identify gaps, unstated assumptions, edge cases, and risks before roadmap creation.
 tools: Glob, Grep, Read, mcp__agent_memory__*
-model: sonnet
-# Model: sonnet - Critical analysis and devil's advocate reasoning require deep thinking
+model: opus
+# Model: opus - Adversarial review requires thorough analysis and critical reasoning
 skills:
 # Tool Access Philosophy: Read-only enforcement ensures critic doesn't modify requirements being reviewed.
 # Critic observes, challenges, and reports - never modifies. Forces requirements to be defensible.

@@ -2,8 +2,8 @@
 name: gco-research-analyst
 description: Read-only investigation agent. Use for research tasks that require observation without modification of files or codebase.
 tools: Glob, Grep, Read, WebSearch, WebFetch, mcp__context7__*, mcp__agent_memory__*
-model: sonnet
-# Model: sonnet - Research and investigation require deep reasoning
+model: opus
+# Model: opus - Deep investigation and architecture recommendations require highest reasoning
 skills: gco-session-startup
 # Tool Access Philosophy: Read-only enforcement prevents accidental modifications during research.
 # Research should observe and report, not modify. For research requiring deliverables, use gco-research instead.

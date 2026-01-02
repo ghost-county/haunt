@@ -137,15 +137,15 @@ Agents use models specified in their character sheets:
 
 | Agent | Model | Why |
 |-------|-------|-----|
-| Project Manager | Sonnet/Opus | Strategic analysis (JTBD, Kano, RICE) - high leverage |
-| Research | Sonnet | Deep investigation and architecture recommendations |
-| Research Analyst | Sonnet | Investigation and validation require thorough analysis |
-| Research Critic | Sonnet | Adversarial review and critical analysis require deep reasoning |
-| Dev | Sonnet | Implementation requires reasoning (TDD, patterns, edge cases) |
-| Code Reviewer | Sonnet | Quality gates and pattern detection |
-| Release Manager | Sonnet | Risk assessment and coordination |
+| Project Manager | Opus | Strategic analysis (JTBD, Kano, RICE) determines all downstream work |
+| Research | Opus | Deep investigation and architecture recommendations require highest reasoning |
+| Research Analyst | Opus | Deep investigation and architecture recommendations require highest reasoning |
+| Research Critic | Opus | Adversarial review requires thorough analysis and critical reasoning |
+| Dev (all types) | Sonnet | Implementation is well-scoped, Sonnet sufficient for TDD and patterns |
+| Code Reviewer | Sonnet | Pattern detection and quality gates, not strategic decisions |
+| Release Manager | Sonnet | Coordination and risk assessment, not deep strategic reasoning |
 
-**Rationale:** High-leverage activities (requirements, research, implementation, review) require high-capability models. The cost difference is negligible compared to the cost of poor decisions or wasted dev time.
+**Rationale:** Planning/research agents use Opus for higher reasoning quality in strategic work. Implementation agents use Sonnet for efficiency in well-scoped execution work. The cost difference is negligible compared to the cost of poor strategic decisions.
 
 See `~/.claude/rules/gco-model-selection.md` for detailed guidance (global rules location).
 

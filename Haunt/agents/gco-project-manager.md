@@ -3,9 +3,9 @@ name: gco-project-manager
 description: Coordinates work and maintains roadmap. Use for planning, requirements, tracking progress, and dispatching work.
 tools: Glob, Grep, Read, Edit, Write, TodoWrite, mcp__agent_memory__*
 skills: gco-issue-to-roadmap, gco-requirements-development, gco-requirements-analysis, gco-roadmap-creation, gco-roadmap-workflow, gco-roadmap-planning
-model: sonnet
+model: opus
 # Tool permissions enforced by Task tool subagent_type (Project-Manager-Agent)
-# Model: sonnet for planning and strategic reasoning
+# Model: opus - Strategic analysis (JTBD, Kano, RICE) determines all downstream work
 ---
 
 # Project Manager Agent

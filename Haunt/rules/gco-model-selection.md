@@ -8,19 +8,20 @@
 
 | Agent | Model | Rationale |
 |-------|-------|-----------|
-| **Project Manager** | Sonnet/Opus | Strategic analysis (JTBD, Kano, RICE) determines all downstream work |
-| **Research/Research Analyst** | Sonnet | Deep investigation, architecture recommendations |
-| **Dev (all types)** | Sonnet | TDD, patterns, edge cases, architecture require reasoning |
-| **Code Reviewer** | Sonnet | Quality gates and pattern detection require deep reasoning |
-| **Release Manager** | Sonnet | Risk assessment and coordination |
+| **Project Manager** | Opus | Strategic analysis (JTBD, Kano, RICE) determines all downstream work |
+| **Research-Analyst** | Opus | Deep investigation and architecture recommendations require highest reasoning |
+| **Research-Critic** | Opus | Adversarial review requires thorough analysis and critical reasoning |
+| **Dev (all types)** | Sonnet | Implementation is well-scoped, Sonnet sufficient for TDD and patterns |
+| **Code-Reviewer** | Sonnet | Pattern detection and quality gates, not strategic decisions |
+| **Release-Manager** | Sonnet | Coordination and risk assessment, not deep strategic reasoning |
 
 ## Quick Decision Tree
 
-**Use Sonnet (default):** Requirements analysis, research, code implementation, code review, architecture decisions
+**Use Opus (planning/research):** Requirements analysis, strategic planning, deep research, architecture recommendations, adversarial review
 
-**Use Opus:** Strategic planning, complex multi-requirement decomposition, high-stakes architecture
+**Use Sonnet (implementation):** Code implementation, code review, release coordination, pattern detection
 
-**Use Haiku:** Read-only exploration ONLY (file searches, structured data extraction)
+**Use Haiku:** Read-only exploration ONLY (file searches, structured data extraction) - rarely used
 
 ## When to Invoke Full Skill
 

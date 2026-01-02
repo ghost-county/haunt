@@ -626,3 +626,67 @@ Integrate secrets wrapper into Haunt framework deployment via `setup-haunt.sh`. 
 **Blocked by:** REQ-305
 
 ---
+
+## Backlog: Agent Model Configuration
+
+### 🟢 REQ-307: Configure Model Selection by Agent Type
+
+**Type:** Enhancement
+**Reported:** 2026-01-02
+**Source:** User request
+**Completed:** 2026-01-02
+
+**Description:**
+Standardize model selection across agent types: planning/research agents should use Opus for higher reasoning quality, while implementation (doing) agents should use Sonnet for efficiency.
+
+**Model Assignment:**
+| Agent Type | Model | Rationale |
+|------------|-------|-----------|
+| Project Manager | Opus | Strategic analysis, requirements, roadmap decisions |
+| Research / Research-Analyst | Opus | Deep investigation, architecture recommendations |
+| Research-Critic | Opus | Adversarial review requires thorough analysis |
+| Dev-* (all dev agents) | Sonnet | Implementation is well-scoped, Sonnet sufficient |
+| Code-Reviewer | Sonnet | Pattern detection, not strategic decisions |
+| Release-Manager | Sonnet | Coordination, not deep reasoning |
+
+**Tasks:**
+
+- [x] Update agent character sheets with explicit model specifications
+- [x] Update gco-model-selection rule to reflect Opus for planning/research
+- [x] Update Task tool spawning guidance in orchestrator skill (not needed - agents specify model in frontmatter)
+- [x] Document model selection rationale in Haunt docs (CLAUDE.md updated)
+- [x] Test spawning with correct models (verified via grep)
+
+**Files:**
+
+- `Haunt/agents/*.md` (modify - add model spec to each)
+- `Haunt/rules/gco-model-selection.md` (modify)
+- `Haunt/skills/gco-orchestrator/SKILL.md` (modify - spawning guidance)
+- `Haunt/docs/WHITE-PAPER.md` (update model selection section)
+
+**Effort:** S (1-2 hours)
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:**
+
+- ✅ Agent character sheets specify model (opus/sonnet)
+- ✅ Model selection rule updated
+- ✅ Orchestrator spawns with correct model parameter (agents specify in frontmatter)
+- ✅ Documentation reflects new model assignments
+
+**Implementation Notes:**
+
+Model assignments updated:
+- **Planning/Research agents → Opus:** gco-project-manager, gco-research, gco-research-analyst, gco-research-critic
+- **Implementation agents → Sonnet:** gco-dev, gco-code-reviewer, gco-release-manager
+
+Files modified:
+- Agent character sheets (5 files): Updated frontmatter `model:` field with rationale comments
+- gco-model-selection.md: Updated model assignments table and quick decision tree
+- CLAUDE.md: Updated Agent Architecture table with new model assignments
+
+Verification: All agent files confirmed to have correct model specifications via grep
+
+**Blocked by:** None
+
+---
