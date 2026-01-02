@@ -83,7 +83,7 @@ gco-requirements-analysis is 824 lines (65% over 500-line limit). This is a core
 
 ---
 
-### ⚪ REQ-284: Refactor gco-code-patterns Skill
+### 🟢 REQ-284: Refactor gco-code-patterns Skill
 
 **Type:** Enhancement
 **Reported:** 2025-12-31
@@ -94,12 +94,12 @@ gco-code-patterns is 658 lines (32% over limit). Used by code reviewer agent for
 
 **Tasks:**
 
-- [ ] Analyze skill structure
-- [ ] Create `references/` directory
-- [ ] Extract pattern examples to reference files (by language or category)
-- [ ] Slim SKILL.md to ~400 lines
-- [ ] Add consultation gates
-- [ ] Test code review workflow
+- [x] Analyze skill structure
+- [x] Create `references/` directory
+- [x] Extract pattern examples to reference files (by language or category)
+- [x] Slim SKILL.md to ~400 lines
+- [x] Add consultation gates
+- [x] Test code review workflow
 
 **Files:**
 
@@ -111,9 +111,16 @@ gco-code-patterns is 658 lines (32% over limit). Used by code reviewer agent for
 **Agent:** Dev-Infrastructure
 **Completion:**
 
-- SKILL.md under 500 lines
-- Pattern examples in reference files
-- Code review workflow functions correctly
+- ✓ SKILL.md under 500 lines (211 lines, 68% reduction from 658)
+- ✓ Pattern examples in reference files (language-patterns.md, ai-antipatterns.md)
+- ✓ Code review workflow functions correctly (consultation gates tested)
+
+**Implementation Notes:**
+- Reduced SKILL.md from 658 → 211 lines (68% reduction)
+- Created `references/language-patterns.md` (192 lines) with Python/JS/TS/Go error handling examples
+- Created `references/ai-antipatterns.md` (425 lines) with top 10 AI anti-patterns and detection triggers
+- Added 3 consultation gates pointing to reference files
+- Reference index table provides clear navigation
 
 **Blocked by:** None
 
