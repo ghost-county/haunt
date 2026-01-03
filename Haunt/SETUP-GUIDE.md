@@ -252,6 +252,195 @@ op --version
 
 ---
 
+## MCP (Model Context Protocol) Setup
+
+MCP servers provide persistent memory and context to Claude Code agents. The setup script automatically configures the Agent Memory MCP server.
+
+### What is Agent Memory?
+
+Agent Memory provides a 5-layer memory hierarchy for persistent context across sessions:
+
+| Layer | Retention | What to Store |
+|-------|-----------|---------------|
+| Core | Forever | Agent identity, role, relationships |
+| Long-term | Forever | Major insights, project milestones |
+| Medium-term | 7 days | Patterns from this week |
+| Recent | 24 hours | Today's tasks and learnings |
+| Compost | 30 days | Failed/rejected ideas |
+
+### Automatic MCP Setup
+
+The setup script handles MCP configuration automatically:
+
+```bash
+# Full setup includes MCP configuration
+bash Haunt/scripts/setup-haunt.sh
+
+# Or MCP-only setup
+bash Haunt/scripts/setup-haunt.sh --mcp-only
+
+# Skip MCP setup
+bash Haunt/scripts/setup-haunt.sh --no-mcp
+```
+
+**What the script does:**
+1. Creates `~/.claude/mcp-servers/` directory
+2. Deploys `agent-memory-server.py`
+3. Creates `~/.agent-memory/` data directory
+4. Updates `~/.claude/settings.json` with MCP configuration
+5. Checks for `mcp` Python package installation
+6. Tests that server starts without errors
+
+### Manual MCP Setup (if needed)
+
+If automatic setup fails or you prefer manual configuration:
+
+#### Step 1: Install MCP Python Package
+
+```bash
+# With pip
+pip install mcp
+
+# Or with uv (faster)
+uv pip install mcp
+```
+
+#### Step 2: Deploy Server File
+
+```bash
+# Copy server to MCP directory
+mkdir -p ~/.claude/mcp-servers
+cp Haunt/scripts/utils/agent-memory-server.py ~/.claude/mcp-servers/
+
+# Make executable
+chmod +x ~/.claude/mcp-servers/agent-memory-server.py
+```
+
+#### Step 3: Configure settings.json
+
+Edit `~/.claude/settings.json` and add:
+
+```json
+{
+  "mcpServers": {
+    "agent-memory": {
+      "command": "python3",
+      "args": ["/Users/YOUR_USERNAME/.claude/mcp-servers/agent-memory-server.py"]
+    }
+  }
+}
+```
+
+**Note:** Replace `YOUR_USERNAME` with your actual username.
+
+#### Step 4: Create Memory Directory
+
+```bash
+mkdir -p ~/.agent-memory
+```
+
+#### Step 5: Restart Claude Code
+
+MCP servers are loaded on startup. Restart Claude Code to activate the memory tools.
+
+### Verifying MCP Setup
+
+Check that the MCP server is working:
+
+```bash
+# Test server startup
+python3 ~/.claude/mcp-servers/agent-memory-server.py --test
+
+# Or use the verification script
+python3 Haunt/scripts/utils/test-mcp-server.py
+
+# Check settings.json configuration
+jq '.mcpServers["agent-memory"]' ~/.claude/settings.json
+
+# Verify memory directory exists
+test -d ~/.agent-memory && echo "Memory directory OK"
+```
+
+Expected output from test:
+```
+Testing MCP server at: /Users/username/.claude/mcp-servers/agent-memory-server.py
+✓ Dependencies check passed
+✓ MCP server test passed - server starts successfully
+```
+
+### Using Agent Memory
+
+Once configured, agents can use memory tools:
+
+```python
+# At session startup (for multi-session features)
+recall_context("dev-backend")  # Retrieve previous context
+
+# During work
+add_recent_task("Implemented JWT authentication")
+add_recent_learning("N+1 queries prevented with eager loading")
+add_long_term_insight("Always version APIs - prevents breaking changes")
+
+# Weekly consolidation
+run_rem_sleep()  # Compress recent → patterns → insights
+```
+
+### MCP Best Practices
+
+**What to store:**
+- Architectural decisions and their rationale
+- Learned patterns and anti-patterns
+- Edge cases discovered during development
+- Project conventions and standards
+- Cross-session context for M-sized features
+
+**What NOT to store:**
+- Implementation details (code is in git)
+- Full file contents (git has history)
+- Obvious facts or verbose explanations
+- Temporary debugging information
+
+**Compression test:** Can you express this insight in 1-2 sentences? If not, it's too verbose.
+
+### Troubleshooting MCP
+
+**Issue: "Python 'mcp' package not found"**
+```bash
+# Install with pip
+pip install mcp
+
+# Or with uv
+uv pip install mcp
+
+# Verify installation
+python3 -c "import mcp; print('MCP installed')"
+```
+
+**Issue: "Server starts but memory tools not available"**
+- Restart Claude Code to reload MCP configuration
+- Check settings.json has correct server path
+- Verify server path uses absolute path (not ~)
+
+**Issue: "jq not found" during setup**
+```bash
+# Install jq for settings.json editing
+brew install jq  # macOS
+apt-get install jq  # Ubuntu/Debian
+```
+
+**Issue: settings.json is corrupt after setup**
+- Backup is automatically created at `~/.claude/settings.json.backup`
+- Restore with: `cp ~/.claude/settings.json.backup ~/.claude/settings.json`
+- Re-run setup: `bash Haunt/scripts/setup-haunt.sh`
+
+### MCP Resources
+
+- **Agent Memory Server Source:** `Haunt/scripts/utils/agent-memory-server.py`
+- **Best Practices:** `.haunt/docs/research/agent-memory-best-practices.md`
+- **MCP Specification:** https://modelcontextprotocol.io
+
+---
+
 ## Installation
 
 ### Windows Installation

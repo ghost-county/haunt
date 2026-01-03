@@ -37,6 +37,7 @@ NC='\033[0m' # No Color
 FORMAT="text"
 SPECIFIC_REQ=""
 SINCE_DATE=""
+SHOW_CONTEXT=false
 
 # Helper functions
 info() {
@@ -52,7 +53,10 @@ error() {
 }
 
 warning() {
-    echo -e "${YELLOW}⚠${NC} $1"
+    # Suppress warnings in JSON format
+    if [ "$FORMAT" != "json" ]; then
+        echo -e "${YELLOW}⚠${NC} $1"
+    fi
 }
 
 section() {
@@ -71,6 +75,9 @@ parse_args() {
                 ;;
             --since=*)
                 SINCE_DATE="${arg#*=}"
+                ;;
+            --context)
+                SHOW_CONTEXT=true
                 ;;
             --help|-h)
                 show_help
@@ -96,24 +103,28 @@ Options:
   --format=json|text    Output format (default: text)
   --req=REQ-XXX         Filter to specific requirement
   --since=YYYY-MM-DD    Only include data since date
+  --context             Include context overhead metrics
   --help, -h            Show this help message
 
 Metrics Extracted:
-  1. Cycle Time        - Time from first commit to 🟢 completion
-  2. Effort Accuracy   - Estimated vs actual time (XS<1hr, S<2hr, M<4hr)
+  1. Cycle Time         - Time from first commit to 🟢 completion
+  2. Effort Accuracy    - Estimated vs actual time (XS<1hr, S<2hr, M<4hr)
   3. First-Pass Success - Commits without "fix", "revert", "oops"
-  4. Completion Rate   - Requirements completed vs abandoned
+  4. Completion Rate    - Requirements completed vs abandoned
+  5. Context Overhead   - Token/context consumption (with --context flag)
 
 Examples:
   haunt-metrics                    # All metrics, text format
   haunt-metrics --format=json      # JSON output
   haunt-metrics --req=REQ-123      # Specific requirement only
   haunt-metrics --since=2025-12-01 # Since specific date
+  haunt-metrics --context          # Include context overhead metrics
 
 Data Sources:
   - Git commit history (REQ-XXX patterns)
   - Roadmap status changes (⚪→🟡→🟢)
   - Archived completions
+  - Agent character sheets, rules, CLAUDE.md (for context overhead)
 EOF
 }
 
@@ -346,6 +357,116 @@ JSON
     fi
 }
 
+# Count lines in file (excluding blank and comment lines)
+count_effective_lines() {
+    local file="$1"
+    if [ ! -f "$file" ]; then
+        echo "0"
+        return
+    fi
+    # Count lines, excluding blank lines and lines starting with # (after trimming whitespace)
+    grep -v '^\s*$' "$file" | grep -v '^\s*#' | wc -l | tr -d ' '
+}
+
+# Measure context overhead (agent + rules + CLAUDE.md + skills)
+measure_context_overhead() {
+    local agent_lines=0
+    local rules_lines=0
+    local claude_md_lines=0
+    local skill_lines=0
+
+    # Count agent character sheet lines (use largest as representative)
+    local max_agent=0
+    if [ -d "$PROJECT_ROOT/Haunt/agents" ]; then
+        for agent_file in "$PROJECT_ROOT/Haunt/agents"/*.md; do
+            if [ -f "$agent_file" ]; then
+                local lines=$(count_effective_lines "$agent_file")
+                if [ "$lines" -gt "$max_agent" ]; then
+                    max_agent=$lines
+                fi
+            fi
+        done
+    fi
+    agent_lines=$max_agent
+
+    # Count rules lines (sum of all rules)
+    if [ -d "$PROJECT_ROOT/Haunt/rules" ]; then
+        for rule_file in "$PROJECT_ROOT/Haunt/rules"/*.md; do
+            if [ -f "$rule_file" ]; then
+                local lines=$(count_effective_lines "$rule_file")
+                rules_lines=$((rules_lines + lines))
+            fi
+        done
+    fi
+
+    # Count CLAUDE.md lines
+    if [ -f "$PROJECT_ROOT/CLAUDE.md" ]; then
+        claude_md_lines=$(count_effective_lines "$PROJECT_ROOT/CLAUDE.md")
+    fi
+
+    # Estimate skill overhead (top 5 most-used skills)
+    # For initial implementation, use average of all skills
+    local total_skill_lines=0
+    local skill_count=0
+    if [ -d "$PROJECT_ROOT/Haunt/skills" ]; then
+        for skill_dir in "$PROJECT_ROOT/Haunt/skills"/*/; do
+            if [ -d "$skill_dir" ]; then
+                local skill_file="$skill_dir/SKILL.md"
+                if [ -f "$skill_file" ]; then
+                    local lines=$(count_effective_lines "$skill_file")
+                    total_skill_lines=$((total_skill_lines + lines))
+                    ((skill_count++))
+                fi
+            fi
+        done
+    fi
+
+    # Estimate: assume 3 skills loaded on average per session
+    local avg_skills_loaded=3
+    local avg_skill_size=0
+    if [ $skill_count -gt 0 ]; then
+        avg_skill_size=$((total_skill_lines / skill_count))
+    fi
+    skill_lines=$((avg_skills_loaded * avg_skill_size))
+
+    # Calculate totals
+    local base_overhead=$((agent_lines + rules_lines + claude_md_lines))
+    local total_overhead=$((base_overhead + skill_lines))
+
+    if [ "$FORMAT" = "json" ]; then
+        cat << JSON
+"context_overhead": {
+  "agent_lines": $agent_lines,
+  "rules_lines": $rules_lines,
+  "claude_md_lines": $claude_md_lines,
+  "estimated_skill_lines": $skill_lines,
+  "base_overhead_lines": $base_overhead,
+  "total_overhead_lines": $total_overhead,
+  "avg_skills_loaded_estimate": $avg_skills_loaded,
+  "avg_skill_size_lines": $avg_skill_size,
+  "total_skills_available": $skill_count
+}
+JSON
+    else
+        section "Context Overhead"
+        echo ""
+        echo "  Base Context:"
+        echo "    Agent Character Sheet:  ${agent_lines} lines"
+        echo "    Rules (all):            ${rules_lines} lines"
+        echo "    CLAUDE.md:              ${claude_md_lines} lines"
+        echo "    Subtotal:               ${base_overhead} lines"
+        echo ""
+        echo "  Estimated Skill Overhead:"
+        echo "    Avg Skills Loaded:      ${avg_skills_loaded} skills/session"
+        echo "    Avg Skill Size:         ${avg_skill_size} lines"
+        echo "    Subtotal:               ${skill_lines} lines"
+        echo ""
+        echo "  Total Context Overhead:   ${total_overhead} lines"
+        echo ""
+        echo "  Skills Available:         ${skill_count} skills"
+    fi
+}
+
 # Calculate aggregate metrics
 calculate_aggregate_metrics() {
     local reqs=("$@")
@@ -400,15 +521,13 @@ calculate_aggregate_metrics() {
 
     if [ "$FORMAT" = "json" ]; then
         cat << JSON
-{
-  "aggregate_metrics": {
-    "total_requirements": $total_reqs,
-    "completed_requirements": $completed,
-    "completion_rate": $completion_rate,
-    "first_pass_successes": $first_pass_successes,
-    "first_pass_rate": $first_pass_rate,
-    "average_cycle_time_hours": $avg_cycle_time
-  }
+"aggregate_metrics": {
+  "total_requirements": $total_reqs,
+  "completed_requirements": $completed,
+  "completion_rate": $completion_rate,
+  "first_pass_successes": $first_pass_successes,
+  "first_pass_rate": $first_pass_rate,
+  "average_cycle_time_hours": $avg_cycle_time
 }
 JSON
     else
@@ -474,10 +593,24 @@ main() {
         echo ""
         echo "  ],"
         calculate_aggregate_metrics "${REQUIREMENTS[@]}" | sed 's/^/  /'
+
+        # Add context overhead if requested
+        if [ "$SHOW_CONTEXT" = true ]; then
+            echo ","
+            measure_context_overhead | sed 's/^/  /'
+        fi
+
         echo "}"
     else
         echo ""
         calculate_aggregate_metrics "${REQUIREMENTS[@]}"
+
+        # Add context overhead if requested
+        if [ "$SHOW_CONTEXT" = true ]; then
+            echo ""
+            measure_context_overhead
+        fi
+
         echo ""
     fi
 }

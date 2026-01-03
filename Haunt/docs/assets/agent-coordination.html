@@ -1,58 +1,586 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Agent Coordination</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Coordination - Haunt Framework</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: white;
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@400;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .mermaid {
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
             text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 4rem;
+            color: #9d4edd;
+            text-shadow: 0 0 30px rgba(157, 78, 221, 0.5);
+            letter-spacing: 6px;
+            margin-bottom: 10px;
+        }
+
+        .header .tagline {
+            font-size: 1.3rem;
+            color: #7b8794;
+            font-weight: 300;
+        }
+
+        /* Section */
+        .section {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #9d4edd, transparent);
+        }
+
+        .section h2 {
+            font-family: 'Creepster', cursive;
+            font-size: 2.5rem;
+            color: #c77dff;
+            margin-bottom: 30px;
+        }
+
+        .section p {
+            color: #b0b0b0;
+            line-height: 1.8;
+            margin-bottom: 20px;
+            font-size: 1.1rem;
+        }
+
+        /* Agent Type Grid */
+        .agent-types {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .agent-type-card {
+            background: rgba(0,0,0,0.4);
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid rgba(157, 78, 221, 0.3);
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .agent-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(157, 78, 221, 0.4);
+        }
+
+        .agent-type-card h3 {
+            font-size: 1.3rem;
+            color: #c77dff;
+            margin-bottom: 10px;
+        }
+
+        .agent-type-card .emoji {
+            font-size: 2.5rem;
+            display: block;
+            margin-bottom: 15px;
+        }
+
+        .agent-type-card p {
+            font-size: 0.95rem;
+            color: #7b8794;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .agent-list {
+            list-style: none;
+            margin-top: 10px;
+        }
+
+        .agent-list li {
+            padding: 8px 12px;
+            background: rgba(157, 78, 221, 0.1);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: #c77dff;
+            margin-bottom: 5px;
+        }
+
+        /* Coordinator */
+        .agent-type-card.coordinator { border-color: #ffc107; }
+        .agent-type-card.coordinator h3 { color: #ffd54f; }
+
+        /* Worker */
+        .agent-type-card.worker { border-color: #4caf50; }
+        .agent-type-card.worker h3 { color: #81c784; }
+
+        /* Researcher */
+        .agent-type-card.researcher { border-color: #2196f3; }
+        .agent-type-card.researcher h3 { color: #64b5f6; }
+
+        /* Quality */
+        .agent-type-card.quality { border-color: #f44336; }
+        .agent-type-card.quality h3 { color: #e57373; }
+
+        /* Coordination Flow */
+        .coordination-flow {
+            margin-top: 40px;
+        }
+
+        .flow-diagram {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            background: rgba(0,0,0,0.3);
+            padding: 30px;
+            border-radius: 15px;
+            border-left: 4px solid #9d4edd;
+        }
+
+        .step-number {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: #9d4edd;
+            min-width: 80px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+        }
+
+        .step-content {
+            flex: 1;
+        }
+
+        .step-content h4 {
+            font-size: 1.4rem;
+            color: #c77dff;
+            margin-bottom: 15px;
+        }
+
+        .step-content p {
+            color: #b0b0b0;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .step-agents {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+
+        .agent-badge {
+            background: rgba(157, 78, 221, 0.2);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            color: #c77dff;
+            border: 1px solid rgba(157, 78, 221, 0.4);
+        }
+
+        .agent-badge.coordinator { background: rgba(255, 193, 7, 0.2); border-color: rgba(255, 193, 7, 0.4); color: #ffd54f; }
+        .agent-badge.worker { background: rgba(76, 175, 80, 0.2); border-color: rgba(76, 175, 80, 0.4); color: #81c784; }
+        .agent-badge.researcher { background: rgba(33, 150, 243, 0.2); border-color: rgba(33, 150, 243, 0.4); color: #64b5f6; }
+        .agent-badge.quality { background: rgba(244, 67, 54, 0.2); border-color: rgba(244, 67, 54, 0.4); color: #e57373; }
+
+        /* Model Selection */
+        .model-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .model-card {
+            background: rgba(0,0,0,0.4);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid rgba(157, 78, 221, 0.3);
+        }
+
+        .model-card h3 {
+            font-size: 1.5rem;
+            color: #c77dff;
+            margin-bottom: 15px;
+        }
+
+        .model-card .model-name {
+            font-family: 'Creepster', cursive;
+            font-size: 2rem;
+            color: #9d4edd;
+            margin-bottom: 20px;
+        }
+
+        .model-card ul {
+            list-style: none;
+        }
+
+        .model-card ul li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(157, 78, 221, 0.1);
+            color: #b0b0b0;
+        }
+
+        .model-card ul li:last-child {
+            border-bottom: none;
+        }
+
+        .model-card .rationale {
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(157, 78, 221, 0.1);
+            border-radius: 10px;
+            font-size: 0.95rem;
+            color: #9d4edd;
+            font-style: italic;
+        }
+
+        /* Communication Layer */
+        .communication-layer {
+            background: rgba(157, 78, 221, 0.05);
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px dashed rgba(157, 78, 221, 0.3);
+            margin-top: 30px;
+        }
+
+        .communication-layer h3 {
+            font-size: 1.4rem;
+            color: #c77dff;
+            margin-bottom: 20px;
+        }
+
+        .communication-layer p {
+            color: #b0b0b0;
+            line-height: 1.8;
+            margin-bottom: 15px;
+        }
+
+        .roadmap-example {
+            background: rgba(0,0,0,0.5);
+            padding: 20px;
+            border-radius: 10px;
+            font-family: monospace;
+            font-size: 0.9rem;
+            color: #81c784;
+            margin-top: 15px;
+            overflow-x: auto;
+        }
+
+        .roadmap-example .status {
+            display: inline-block;
+            margin-right: 10px;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: #5a6670;
+        }
+
+        .footer .logo {
+            font-family: 'Creepster', cursive;
+            font-size: 2rem;
+            color: #9d4edd;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            .agent-types { grid-template-columns: repeat(2, 1fr); }
+            .model-selection { grid-template-columns: 1fr; }
+        }
+
+        @media (max-width: 600px) {
+            .header h1 { font-size: 2.5rem; }
+            .agent-types { grid-template-columns: 1fr; }
+            .flow-step { flex-direction: column; }
+            .step-number { min-width: auto; }
         }
     </style>
 </head>
 <body>
-    <div class="mermaid">
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-flowchart LR
-    subgraph Agents["Agent Types"]
-        PM[Project Manager<br/>Strategic Planning]
-        Dev[Dev Agent<br/>Implementation]
-        Review[Code Reviewer<br/>Quality Gates]
-        Release[Release Manager<br/>Deployment]
-    end
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>AGENT COORDINATION</h1>
+            <p class="tagline">How Ghost County Agents Orchestrate Development</p>
+        </header>
 
-    subgraph Roadmap["Roadmap - Communication Layer"]
-        Status["Status Transitions<br/>⚪ → 🟡 → 🟢"]
-        Tasks["Task Checkboxes<br/>- [ ] → - [x]"]
-        Notes["Implementation Notes<br/>Context & Decisions"]
-    end
+        <!-- Agent Types -->
+        <section class="section">
+            <h2>The Four Agent Types</h2>
+            <p>Each agent type has a specialized role in the development workflow. Agents communicate through the roadmap—no direct agent-to-agent interaction needed.</p>
 
-    PM -->|Creates Requirements| Status
-    Dev -->|Updates Progress| Tasks
-    Dev -->|Marks Complete| Status
-    Review -->|Approves/Rejects| Status
-    Release -->|Coordinates Merges| Status
-    
-    Status -->|Reads Assignment| Dev
-    Tasks -->|Tracks Progress| PM
-    Notes -->|Shares Context| Dev
+            <div class="agent-types">
+                <!-- Coordinator -->
+                <div class="agent-type-card coordinator">
+                    <span class="emoji">🗂️</span>
+                    <h3>Coordinator</h3>
+                    <p>Strategic planning, roadmap management, work dispatch</p>
+                    <ul class="agent-list">
+                        <li>👻 Project-Manager</li>
+                    </ul>
+                </div>
 
-    style PM fill:#e1f5ff
-    style Dev fill:#fff3cd
-    style Review fill:#f8d7da
-    style Release fill:#d1ecf1
-    style Roadmap fill:#e8f5e9
-    style Status fill:#ffe0b2
-    style Tasks fill:#fff9c4
-    style Notes fill:#f3e5f5
+                <!-- Worker -->
+                <div class="agent-type-card worker">
+                    <span class="emoji">⚙️</span>
+                    <h3>Worker</h3>
+                    <p>Feature implementation across backend, frontend, and infrastructure</p>
+                    <ul class="agent-list">
+                        <li>👻 Dev-Backend</li>
+                        <li>👻 Dev-Frontend</li>
+                        <li>👻 Dev-Infrastructure</li>
+                    </ul>
+                </div>
+
+                <!-- Researcher -->
+                <div class="agent-type-card researcher">
+                    <span class="emoji">🔍</span>
+                    <h3>Researcher</h3>
+                    <p>Technical investigation, library evaluation, validation</p>
+                    <ul class="agent-list">
+                        <li>👻 Research</li>
+                    </ul>
+                </div>
+
+                <!-- Quality -->
+                <div class="agent-type-card quality">
+                    <span class="emoji">✅</span>
+                    <h3>Quality</h3>
+                    <p>Code review, merge coordination, release management</p>
+                    <ul class="agent-list">
+                        <li>👻 Code-Reviewer</li>
+                        <li>👻 Release-Manager</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Coordination Flow -->
+        <section class="section">
+            <h2>How Orchestration Works</h2>
+            <p>The orchestrator delegates to specialists, who update status through the roadmap. No agent talks to another directly—all communication flows through roadmap updates.</p>
+
+            <div class="coordination-flow">
+                <div class="flow-diagram">
+                    <div class="flow-step">
+                        <span class="step-number">1</span>
+                        <div class="step-content">
+                            <h4>User Requests Work</h4>
+                            <p>User invokes <code>/seance "Add JWT authentication"</code> in the main Claude Code session.</p>
+                            <div class="step-agents">
+                                <span class="agent-badge">📋 Main Session (has Task tool)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <span class="step-number">2</span>
+                        <div class="step-content">
+                            <h4>Orchestrator Dispatches to PM</h4>
+                            <p>Main session spawns Project Manager (Opus) for strategic analysis. PM creates requirements, performs JTBD/Kano/RICE analysis, breaks work into sized batches (S/M only), and adds to roadmap.</p>
+                            <div class="step-agents">
+                                <span class="agent-badge coordinator">🗂️ Project-Manager (Opus)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <span class="step-number">3</span>
+                        <div class="step-content">
+                            <h4>Orchestrator Spawns Dev Agents</h4>
+                            <p>After user approves roadmap, orchestrator spawns Dev agents in parallel. Backend builds API endpoints, Frontend creates UI components, Infrastructure sets up deployment. Each agent updates their REQ-XXX status (⚪ → 🟡 → 🟢) in the roadmap.</p>
+                            <div class="step-agents">
+                                <span class="agent-badge worker">⚙️ Dev-Backend (Sonnet)</span>
+                                <span class="agent-badge worker">⚙️ Dev-Frontend (Sonnet)</span>
+                                <span class="agent-badge worker">⚙️ Dev-Infrastructure (Sonnet)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <span class="step-number">4</span>
+                        <div class="step-content">
+                            <h4>Research Agent (If Needed)</h4>
+                            <p>If any agent encounters uncertainty (library choice, architecture pattern, best practice), orchestrator spawns Research agent (Opus) to investigate. Research produces written deliverable, agent continues with findings.</p>
+                            <div class="step-agents">
+                                <span class="agent-badge researcher">🔍 Research (Opus)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <span class="step-number">5</span>
+                        <div class="step-content">
+                            <h4>Quality Gates Validate</h4>
+                            <p>Code Reviewer verifies tests pass, no anti-patterns, security reviewed. Release Manager coordinates deployment, generates changelogs, coordinates rollback if needed.</p>
+                            <div class="step-agents">
+                                <span class="agent-badge quality">✅ Code-Reviewer (Sonnet)</span>
+                                <span class="agent-badge quality">✅ Release-Manager (Sonnet)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flow-step">
+                        <span class="step-number">6</span>
+                        <div class="step-content">
+                            <h4>PM Archives Completed Work</h4>
+                            <p>Project Manager moves 🟢 Complete requirements to archive, unblocks dependent requirements (update "Blocked by: None"), activates next batch.</p>
+                            <div class="step-agents">
+                                <span class="agent-badge coordinator">🗂️ Project-Manager (Opus)</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Communication Layer -->
+        <section class="section">
+            <h2>The Roadmap Communication Layer</h2>
+
+            <div class="communication-layer">
+                <h3>Single Source of Truth: <code>.haunt/plans/roadmap.md</code></h3>
+                <p>Agents don't talk to each other. They update status in the roadmap. This prevents coordination overhead and ensures deterministic workflows.</p>
+
+                <div class="roadmap-example">
+<pre>### 🟡 REQ-042: Implement JWT authentication
+<strong>Agent:</strong> Dev-Backend | <strong>Effort:</strong> S (1-2hr) | <strong>Complexity:</strong> MODERATE
+
+<strong>Tasks:</strong>
+- [x] Create JWT generation utility
+- [x] Add login endpoint with JWT response
+- [ ] Add token refresh endpoint
+- [ ] Write integration tests
+
+<strong>Blocked by:</strong> None
+
+<strong>Implementation Notes:</strong>
+- Using HS256 algorithm with secret from env
+- Token expiry: 1 hour (access), 7 days (refresh)</pre>
+                </div>
+
+                <p style="margin-top: 20px;"><strong>How it works:</strong></p>
+                <ul style="list-style: disc; margin-left: 40px; color: #b0b0b0; line-height: 1.8;">
+                    <li>Dev-Backend marks tasks <code>- [x]</code> as they complete</li>
+                    <li>When ALL tasks done, Dev updates status ⚪ → 🟡 → 🟢</li>
+                    <li>If blocked, updates "Blocked by: REQ-XXX"</li>
+                    <li>PM reads roadmap, archives 🟢 items, unblocks dependencies</li>
+                    <li>No Slack, no meetings, no synchronous communication needed</li>
+                </ul>
+            </div>
+        </section>
+
+        <!-- Model Selection -->
+        <section class="section">
+            <h2>Model Selection Strategy</h2>
+            <p>Different agent types use different models based on their reasoning requirements.</p>
+
+            <div class="model-selection">
+                <!-- Opus -->
+                <div class="model-card">
+                    <div class="model-name">OPUS 4.5</div>
+                    <h3>Strategic Analysis Agents</h3>
+                    <ul>
+                        <li><strong>Project Manager:</strong> JTBD, Kano, RICE analysis determines all downstream work</li>
+                        <li><strong>Research:</strong> Deep investigation and architecture recommendations</li>
+                    </ul>
+                    <div class="rationale">
+                        <strong>Rationale:</strong> Planning and research mistakes cascade through entire project. Cost of poor strategic decisions >> cost of Opus usage.
+                    </div>
+                </div>
+
+                <!-- Sonnet -->
+                <div class="model-card">
+                    <div class="model-name">SONNET 4.5</div>
+                    <h3>Implementation & Quality Agents</h3>
+                    <ul>
+                        <li><strong>Dev (all types):</strong> Implementation is well-scoped, Sonnet sufficient for TDD and patterns</li>
+                        <li><strong>Code Reviewer:</strong> Pattern detection and quality gates, not strategic decisions</li>
+                        <li><strong>Release Manager:</strong> Coordination and risk assessment, not deep reasoning</li>
+                    </ul>
+                    <div class="rationale">
+                        <strong>Rationale:</strong> Once work is scoped, execution is deterministic. Sonnet handles TDD, patterns, and quality checks efficiently.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Key Principles -->
+        <section class="section">
+            <h2>Key Coordination Principles</h2>
+
+            <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-top: 20px;">
+                <div style="background: rgba(157, 78, 221, 0.1); padding: 20px; border-radius: 10px;">
+                    <h3 style="color: #c77dff; margin-bottom: 15px;">✅ DO</h3>
+                    <ul style="list-style: disc; margin-left: 20px; color: #b0b0b0; line-height: 1.8;">
+                        <li>Spawn specialist agents for specialized work</li>
+                        <li>Update roadmap status immediately after task completion</li>
+                        <li>Use Task tool to spawn agents (only main session has it)</li>
+                        <li>Check roadmap for assignments at session startup</li>
+                        <li>Archive completed work immediately (PM responsibility)</li>
+                    </ul>
+                </div>
+
+                <div style="background: rgba(244, 67, 54, 0.1); padding: 20px; border-radius: 10px;">
+                    <h3 style="color: #e57373; margin-bottom: 15px;">❌ DON'T</h3>
+                    <ul style="list-style: disc; margin-left: 20px; color: #b0b0b0; line-height: 1.8;">
+                        <li>Implement code from orchestrator (spawn Dev instead)</li>
+                        <li>Do deep research from orchestrator (spawn Research instead)</li>
+                        <li>Allow agents to communicate directly (use roadmap)</li>
+                        <li>Work on SPLIT-sized items (decompose first)</li>
+                        <li>Modify roadmap from non-PM agents (status updates only)</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="logo">GHOST COUNTY</div>
+            <p>Haunt v2.0 • Agent Coordination Reference</p>
+            <p style="margin-top: 10px;">github.com/ghost-county/ghost-county</p>
+        </footer>
     </div>
-    <script>
-        mermaid.initialize({ startOnLoad: true });
-    </script>
 </body>
 </html>

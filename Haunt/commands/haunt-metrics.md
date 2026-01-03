@@ -23,6 +23,7 @@ Extract performance metrics from existing artifacts WITHOUT requiring agents to 
 | **Effort Accuracy** | Roadmap sizing + git | Estimated vs actual time (XS<1hr, S<2hr, M<4hr) |
 | **First-Pass Success** | Git history | Commits without "fix", "revert", "oops" patterns |
 | **Completion Rate** | Roadmap + archive | Requirements completed (🟢) vs abandoned |
+| **Context Overhead** | Agent files, rules, CLAUDE.md, skills | Lines of context loaded before useful work (with --context) |
 
 ## Usage
 
@@ -39,8 +40,11 @@ Extract performance metrics from existing artifacts WITHOUT requiring agents to 
 # Metrics since specific date
 /haunt metrics --since=2025-12-01
 
+# Include context overhead metrics
+/haunt metrics --context
+
 # Combined filters
-/haunt metrics --format=json --since=2025-12-01
+/haunt metrics --format=json --since=2025-12-01 --context
 ```
 
 ## Output Formats
@@ -101,9 +105,22 @@ Machine-readable output for automation/dashboards:
     "first_pass_successes": 10,
     "first_pass_rate": 66.7,
     "average_cycle_time_hours": 2.5
+  },
+  "context_overhead": {
+    "agent_lines": 306,
+    "rules_lines": 514,
+    "claude_md_lines": 136,
+    "estimated_skill_lines": 567,
+    "base_overhead_lines": 956,
+    "total_overhead_lines": 1523,
+    "avg_skills_loaded_estimate": 3,
+    "avg_skill_size_lines": 189,
+    "total_skills_available": 29
   }
 }
 ```
+
+**Note:** `context_overhead` field only appears when `--context` flag is used.
 
 ## Metric Definitions
 
@@ -177,6 +194,46 @@ First-Pass Success: No
 - Started: 20 requirements (have commits)
 - Completed: 16 requirements (status 🟢)
 - Completion Rate: **80%** (4 abandoned)
+
+### Context Overhead
+
+**Definition:** Lines of context an agent consumes before doing useful work.
+
+**Purpose:** Measures token/context efficiency and identifies opportunities for optimization.
+
+**Calculation:**
+```text
+base_overhead = agent_lines + rules_lines + claude_md_lines
+skill_overhead = avg_skills_loaded × avg_skill_size
+total_context_overhead = base_overhead + skill_overhead
+```
+
+**Components:**
+- **Agent Character Sheet**: Largest agent file (e.g., gco-dev.md)
+- **Rules (all)**: Sum of all global rules (gco-*.md in Haunt/rules/)
+- **CLAUDE.md**: Project-specific context
+- **Estimated Skill Overhead**: Average skill size × estimated skills per session (default: 3)
+
+**Example:**
+```
+Base Context:
+  Agent Character Sheet:  306 lines
+  Rules (all):            514 lines
+  CLAUDE.md:              136 lines
+  Subtotal:               956 lines
+
+Estimated Skill Overhead:
+  Avg Skills Loaded:      3 skills/session
+  Avg Skill Size:         189 lines
+  Subtotal:               567 lines
+
+Total Context Overhead:   1523 lines
+```
+
+**Usage:**
+- Enable with `--context` flag
+- Track over time to detect context bloat
+- Compare before/after refactoring (e.g., REQ-310 reduced gco-dev from 1,110 → 128 lines)
 
 ## When to Use
 

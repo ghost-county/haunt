@@ -96,7 +96,7 @@ Claude Code provides built-in subagents optimized for specific tasks. Understand
 **Best Practices:**
 
 1. **Use for reconnaissance before spawning specialist agents**
-   - Explore scans codebase → Seer decides which specialist to spawn
+   - Explore scans codebase → Main session decides which specialist to spawn
    - Provides context for specialist agent spawn prompts
    - Avoids spawning heavy agents for simple searches
 

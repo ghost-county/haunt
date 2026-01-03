@@ -1,79 +1,428 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Session Startup Protocol</title>
-    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session Startup Protocol - Haunt Framework</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background: white;
+        @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Inter:wght@400;600;700&family=Fira+Code:wght@400;500&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        .mermaid {
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(180deg, #0a0a0f 0%, #1a1a2e 50%, #16213e 100%);
+            color: #e8e8e8;
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
             text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .header h1 {
+            font-family: 'Creepster', cursive;
+            font-size: 3.5rem;
+            color: #9d4edd;
+            text-shadow: 0 0 30px rgba(157, 78, 221, 0.5),
+                         0 0 60px rgba(157, 78, 221, 0.3);
+            letter-spacing: 6px;
+            margin-bottom: 10px;
+        }
+
+        .header .subtitle {
+            font-size: 1.3rem;
+            color: #7b8794;
+            font-weight: 300;
+        }
+
+        /* Flowchart Container */
+        .flowchart {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(157, 78, 221, 0.2);
+            border-radius: 20px;
+            padding: 40px;
+            position: relative;
+        }
+
+        .flowchart::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #9d4edd, transparent);
+        }
+
+        /* Step Container */
+        .step {
+            display: flex;
+            align-items: flex-start;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        /* Step Number */
+        .step-number {
+            font-family: 'Creepster', cursive;
+            font-size: 3rem;
+            color: #9d4edd;
+            min-width: 80px;
+            text-align: center;
+            text-shadow: 0 0 20px rgba(157, 78, 221, 0.5);
+            flex-shrink: 0;
+        }
+
+        /* Step Box */
+        .step-box {
+            flex: 1;
+            background: rgba(0,0,0,0.3);
+            border: 2px solid rgba(157, 78, 221, 0.4);
+            border-radius: 15px;
+            padding: 25px;
+            position: relative;
+        }
+
+        .step-box h3 {
+            font-size: 1.4rem;
+            color: #c77dff;
+            margin-bottom: 15px;
+        }
+
+        .step-box p {
+            color: #b0b0b0;
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+
+        .step-box .examples {
+            background: rgba(0,0,0,0.4);
+            border-left: 3px solid #9d4edd;
+            padding: 12px 15px;
+            margin-top: 15px;
+            border-radius: 0 8px 8px 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.9rem;
+            color: #c77dff;
+        }
+
+        .step-box .examples p {
+            margin: 5px 0;
+            color: #d0d0d0;
+        }
+
+        /* Decision Branches */
+        .decision-box {
+            background: linear-gradient(135deg, rgba(157, 78, 221, 0.2), rgba(58, 134, 255, 0.2));
+            border: 2px solid rgba(157, 78, 221, 0.5);
+            padding: 20px;
+            border-radius: 12px;
+            margin-top: 20px;
+        }
+
+        .decision-box h4 {
+            font-size: 1.1rem;
+            color: #ffc107;
+            margin-bottom: 10px;
+        }
+
+        .branches {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .branch {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            border: 2px solid transparent;
+        }
+
+        .branch.yes {
+            border-color: #4caf50;
+        }
+
+        .branch.no {
+            border-color: #ff6b6b;
+        }
+
+        .branch h5 {
+            font-size: 1rem;
+            margin-bottom: 8px;
+        }
+
+        .branch.yes h5 {
+            color: #4caf50;
+        }
+
+        .branch.no h5 {
+            color: #ff6b6b;
+        }
+
+        .branch p {
+            font-size: 0.9rem;
+            color: #b0b0b0;
+        }
+
+        /* Arrow Connector */
+        .arrow {
+            text-align: center;
+            margin: 15px 0;
+            font-size: 2rem;
+            color: #9d4edd;
+        }
+
+        /* Code Block */
+        code {
+            font-family: 'Fira Code', monospace;
+            background: rgba(157, 78, 221, 0.2);
+            padding: 2px 8px;
+            border-radius: 4px;
+            color: #c77dff;
+            font-size: 0.9em;
+        }
+
+        /* Key Principles Box */
+        .principles {
+            background: rgba(255, 193, 7, 0.1);
+            border: 2px solid rgba(255, 193, 7, 0.3);
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 40px;
+        }
+
+        .principles h3 {
+            font-family: 'Creepster', cursive;
+            font-size: 1.8rem;
+            color: #ffc107;
+            margin-bottom: 15px;
+        }
+
+        .principles ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .principles li {
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(255, 193, 7, 0.2);
+            color: #d0d0d0;
+            font-size: 1rem;
+        }
+
+        .principles li:before {
+            content: '⚠️ ';
+            margin-right: 10px;
+        }
+
+        .principles li:last-child {
+            border-bottom: none;
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            padding: 30px;
+            color: #5a6670;
+        }
+
+        .footer .logo {
+            font-family: 'Creepster', cursive;
+            font-size: 1.5rem;
+            color: #9d4edd;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2.5rem;
+            }
+
+            .step {
+                flex-direction: column;
+            }
+
+            .step-number {
+                margin-bottom: 15px;
+            }
+
+            .branches {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="mermaid">
-%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
-flowchart TD
-    Start([Session Startup]) --> Step1
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Session Startup</h1>
+            <p class="subtitle">4-Step Assignment Lookup Protocol</p>
+        </header>
 
-    subgraph Verification["Environment Verification"]
-        Step1[Run: pwd && git status]
-        Step2{Working Directory<br/>Correct?}
-        Step3[Check Git Status:<br/>Clean or Uncommitted?]
-        Step1 --> Step2
-        Step2 -->|No| Error1[ERROR: Wrong Directory]
-        Step2 -->|Yes| Step3
-    end
+        <!-- Flowchart -->
+        <div class="flowchart">
+            <!-- Step 1 -->
+            <div class="step">
+                <div class="step-number">1</div>
+                <div class="step-box">
+                    <h3>Check for Direct Assignment</h3>
+                    <p>Did the user <strong>explicitly assign you work</strong> in their message?</p>
 
-    subgraph Testing["Test Validation"]
-        Step4{Tests Required<br/>for Agent Type?}
-        Step5[Run Test Command:<br/>npm test / pytest]
-        Step6{Tests Pass?}
-        Step7[FIX TESTS FIRST]
-        Step4 -->|Yes| Step5
-        Step5 --> Step6
-        Step6 -->|No| Step7
-        Step7 --> Step5
-    end
+                    <div class="examples">
+                        <p>✅ "Implement REQ-109"</p>
+                        <p>✅ "Fix the authentication bug"</p>
+                        <p>✅ "You are a Dev-Infrastructure agent. Implement REQ-109."</p>
+                    </div>
 
-    subgraph Assignment["Assignment Lookup - Priority Order"]
-        Lookup1{Direct Assignment<br/>in User Message?}
-        Lookup2{Active Work Section<br/>in CLAUDE.md?}
-        Lookup3{⚪/🟡 in Roadmap<br/>for Agent Type?}
-        Lookup4[Ask PM:<br/>"What should I work on?"]
-        
-        Lookup1 -->|Yes| Found
-        Lookup1 -->|No| Lookup2
-        Lookup2 -->|Yes| Found
-        Lookup2 -->|No| Lookup3
-        Lookup3 -->|Yes| Found
-        Lookup3 -->|No| Lookup4
-    end
+                    <div class="decision-box">
+                        <h4>Decision Gate</h4>
+                        <div class="branches">
+                            <div class="branch yes">
+                                <h5>✅ YES</h5>
+                                <p>Proceed immediately with assigned work</p>
+                            </div>
+                            <div class="branch no">
+                                <h5>❌ NO</h5>
+                                <p>Continue to Step 2</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-    Step3 --> Step4
-    Step4 -->|No| Lookup1
-    Step6 -->|Yes| Lookup1
+            <div class="arrow">↓</div>
 
-    Found([Assignment Identified:<br/>REQ-XXX]) --> Ready([Ready to Work])
+            <!-- Step 2 -->
+            <div class="step">
+                <div class="step-number">2</div>
+                <div class="step-box">
+                    <h3>Check Active Work Section</h3>
+                    <p>Read <code>CLAUDE.md</code> Active Work section (already in context):</p>
 
-    Error1 --> Stop([STOP])
+                    <div class="examples">
+                        <p>Look for items with:</p>
+                        <p>• <code>Agent:</code> field matching your agent type</p>
+                        <p>• Status 🟡 In Progress assigned to you</p>
+                    </div>
 
-    style Start fill:#e1f5ff
-    style Ready fill:#d4edda
-    style Stop fill:#f8d7da
-    style Verification fill:#fff3cd
-    style Testing fill:#ffe0b2
-    style Assignment fill:#d1ecf1
-    style Error1 fill:#f8d7da
-    style Step7 fill:#fff3cd
+                    <div class="decision-box">
+                        <h4>Decision Gate</h4>
+                        <div class="branches">
+                            <div class="branch yes">
+                                <h5>✅ FOUND</h5>
+                                <p>Proceed with that work</p>
+                            </div>
+                            <div class="branch no">
+                                <h5>❌ EMPTY/NO MATCH</h5>
+                                <p>Continue to Step 3</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- Step 3 -->
+            <div class="step">
+                <div class="step-number">3</div>
+                <div class="step-box">
+                    <h3>Check Roadmap (Use Structured Wrapper)</h3>
+                    <p><strong>WRONG:</strong> Reading full roadmap (1,647+ lines)</p>
+
+                    <div class="examples">
+                        <p style="color: #ff6b6b;">❌ Read(.haunt/plans/roadmap.md)  # Too many tokens!</p>
+                    </div>
+
+                    <p style="margin-top: 20px;"><strong>RIGHT:</strong> Use haunt-roadmap.sh wrapper (returns JSON)</p>
+
+                    <div class="examples">
+                        <p style="color: #4caf50;">✅ bash Haunt/scripts/haunt-roadmap.sh list --agent=Dev-Backend</p>
+                        <p style="color: #4caf50;">✅ bash Haunt/scripts/haunt-roadmap.sh list --status=⚪</p>
+                        <p style="color: #4caf50;">✅ bash Haunt/scripts/haunt-roadmap.sh get REQ-XXX</p>
+                    </div>
+
+                    <p style="margin-top: 20px;"><strong>ALTERNATIVE:</strong> Direct grep (if wrapper unavailable)</p>
+
+                    <div class="examples">
+                        <p>grep -B 5 "Agent: Dev-Backend" .haunt/plans/roadmap.md</p>
+                        <p>grep -A 30 "REQ-XXX" .haunt/plans/roadmap.md</p>
+                    </div>
+
+                    <div class="decision-box">
+                        <h4>Decision Gate</h4>
+                        <div class="branches">
+                            <div class="branch yes">
+                                <h5>✅ FOUND</h5>
+                                <p>Update status to 🟡, proceed with work</p>
+                            </div>
+                            <div class="branch no">
+                                <h5>❌ NOTHING FOUND</h5>
+                                <p>Continue to Step 4</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="arrow">↓</div>
+
+            <!-- Step 4 -->
+            <div class="step">
+                <div class="step-number">4</div>
+                <div class="step-box">
+                    <h3>Ask Project Manager</h3>
+                    <p>Only reach this step if Steps 1-3 found <strong>nothing</strong>.</p>
+
+                    <div class="examples">
+                        <p>🛑 STOP and ask:</p>
+                        <p style="color: #ffc107;">"No assignment found. What should I work on?"</p>
+                    </div>
+
+                    <p style="margin-top: 15px; color: #ff6b6b;">
+                        <strong>Do NOT assume</strong> what work needs doing. PM coordinates priorities.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Principles -->
+        <div class="principles">
+            <h3>Non-Negotiable</h3>
+            <ul>
+                <li>NEVER ask PM for work if assignment exists in Steps 1-3</li>
+                <li>NEVER skip steps in the sequence</li>
+                <li>NEVER start work without identifying REQ-XXX</li>
+                <li>NEVER read full roadmap when targeted grep works</li>
+            </ul>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="logo">GHOST COUNTY</div>
+            <p>Haunt Framework v2.0</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">
+                Targeted file access saves 98% tokens vs full roadmap read
+            </p>
+        </footer>
     </div>
-    <script>
-        mermaid.initialize({ startOnLoad: true });
-    </script>
 </body>
 </html>

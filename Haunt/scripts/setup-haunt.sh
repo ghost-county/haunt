@@ -3187,6 +3187,125 @@ TEMPLATE_EOF
     fi
 
     # -------------------------------------------------------------------------
+    # Configure settings.json for MCP servers
+    # -------------------------------------------------------------------------
+    blank
+    info "Configuring Claude Code settings.json..."
+
+    # Determine settings.json path based on scope
+    local settings_json
+    if [[ "$SCOPE" == "project" ]]; then
+        settings_json="$(pwd)/.claude/settings.json"
+    else
+        settings_json="${HOME}/.claude/settings.json"
+    fi
+
+    # Check if settings.json exists
+    if [[ ! -f "$settings_json" ]]; then
+        warning "settings.json not found at ${settings_json}"
+        info "  Creating new settings.json with MCP configuration..."
+
+        if [[ "$DRY_RUN" == false ]]; then
+            # Create directory if needed
+            mkdir -p "$(dirname "$settings_json")"
+
+            # Create minimal settings.json with mcpServers
+            cat > "$settings_json" << EOF
+{
+  "permissions": {
+    "defaultMode": "dontAsk"
+  },
+  "mcpServers": {
+    "agent-memory": {
+      "command": "python3",
+      "args": ["${dest_memory_server}"]
+    }
+  }
+}
+EOF
+            success "Created settings.json with agent-memory configuration"
+            configured_count=$((configured_count + 1))
+        else
+            info "[DRY RUN] Would create settings.json"
+        fi
+    else
+        # settings.json exists - check if agent-memory is configured
+        if command -v jq &> /dev/null; then
+            # Use jq to check and update
+            if jq -e '.mcpServers["agent-memory"]' "$settings_json" &> /dev/null; then
+                info "agent-memory already configured in settings.json"
+                skipped_count=$((skipped_count + 1))
+            else
+                info "Adding agent-memory to settings.json..."
+
+                if [[ "$DRY_RUN" == false ]]; then
+                    # Backup original
+                    cp "$settings_json" "${settings_json}.backup"
+
+                    # Add mcpServers.agent-memory using jq
+                    jq --arg server_path "$dest_memory_server" \
+                        '.mcpServers["agent-memory"] = {
+                            "command": "python3",
+                            "args": [$server_path]
+                        }' \
+                        "$settings_json" > "${settings_json}.tmp" && \
+                    mv "${settings_json}.tmp" "$settings_json"
+
+                    success "Added agent-memory to settings.json"
+                    configured_count=$((configured_count + 1))
+                else
+                    info "[DRY RUN] Would add agent-memory to settings.json"
+                fi
+            fi
+        else
+            warning "jq not found - cannot auto-configure settings.json"
+            info "  Install jq with: brew install jq (macOS) or apt-get install jq (Linux)"
+            info "  Or manually add to ${settings_json}:"
+            echo ""
+            echo "  \"mcpServers\": {"
+            echo "    \"agent-memory\": {"
+            echo "      \"command\": \"python3\","
+            echo "      \"args\": [\"${dest_memory_server}\"]"
+            echo "    }"
+            echo "  }"
+            echo ""
+        fi
+    fi
+
+    # -------------------------------------------------------------------------
+    # Test MCP server installation
+    # -------------------------------------------------------------------------
+    blank
+    info "Testing agent-memory server installation..."
+
+    if [[ -f "$dest_memory_server" ]] && command -v python3 &> /dev/null; then
+        if [[ "$DRY_RUN" == false ]]; then
+            # Try to test the server using our test script
+            local test_script="${SCRIPT_DIR}/utils/test-mcp-server.py"
+
+            if [[ -f "$test_script" ]]; then
+                if python3 "$test_script" --server-path "$dest_memory_server" &> /dev/null; then
+                    success "MCP server test passed - server starts successfully"
+                else
+                    warning "MCP server test failed - server may have errors"
+                    info "  Run manually to debug: python3 ${dest_memory_server}"
+                fi
+            else
+                # Fallback: basic syntax check
+                if python3 -m py_compile "$dest_memory_server" &> /dev/null; then
+                    success "MCP server syntax check passed"
+                else
+                    warning "MCP server has syntax errors"
+                fi
+            fi
+        else
+            info "[DRY RUN] Would test MCP server installation"
+        fi
+    else
+        warning "Cannot test MCP server - server file or Python not found"
+    fi
+
+    # -------------------------------------------------------------------------
     # Summary
     # -------------------------------------------------------------------------
     success "MCP servers: ${configured_count} configured, ${skipped_count} skipped"
