@@ -725,7 +725,68 @@ Create a new command that shows batch-organized status of the roadmap, displayin
 ## Backlog: GitHub Integration
 
 ⚪ REQ-205: GitHub Issues Integration (Research-Analyst → Dev-Infrastructure)
-🟡 REQ-206: Create /bind Command (Dev-Infrastructure)
+
+### 🟢 REQ-206: Create /assign Command
+
+**Type:** Enhancement
+**Reported:** 2026-01-03
+**Source:** User request - streamline requirement assignment workflow
+
+**Description:**
+Create a command that binds an agent to a specific requirement for the session. The command marks the requirement as 🟡 In Progress, sets session context to that requirement, and loads requirement details into working memory.
+
+**Note:** Originally specified as `/bind` but renamed to `/assign` to avoid naming conflict with existing `/bind` command (which handles custom workflow rule overrides).
+
+**Tasks:**
+
+- [x] Create `Haunt/commands/assign.md` command documentation
+- [x] Create `Haunt/scripts/haunt-assign.sh` helper script
+- [x] Implement requirement lookup (roadmap + batch files)
+- [x] Implement status validation (blocked, complete, in-progress checks)
+- [x] Implement status update (⚪ → 🟡)
+- [x] Implement context display (description, tasks, files, completion criteria)
+- [x] Add story file integration (check for .haunt/plans/stories/REQ-XXX-story.md)
+- [x] Add dry-run mode for preview
+- [x] Add force mode to skip validations
+- [x] Test with sample requirements
+
+**Files:**
+
+- `Haunt/commands/assign.md` (created)
+- `Haunt/scripts/haunt-assign.sh` (created)
+
+**Effort:** S (1-2 hours)
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:**
+
+- `/assign REQ-XXX` marks requirement as 🟡 In Progress
+- Command displays full requirement details for context
+- Validates requirement is assignable (not blocked, not complete)
+- Supports roadmap sharding (searches batch files)
+- Detects and reports story files
+- Dry-run mode works correctly
+
+**Blocked by:** None
+
+**Implementation Notes (2026-01-05):**
+
+Naming change: Originally specified as `/bind REQ-XXX` but renamed to `/assign REQ-XXX` to avoid conflict with existing `/bind` command (which handles custom workflow rule overrides at `.haunt/bindings/`).
+
+Implementation features:
+- Searches both main roadmap and batch files for requirements
+- Validates requirement status (prevents assignment to 🟢 complete or 🔴 blocked)
+- Prompts for confirmation if requirement has active blocker
+- Displays requirement details (type, agent, effort, description, tasks, files, completion criteria)
+- Checks for story file and recommends reading it for M-sized work
+- Color-coded output (green success, yellow warnings, red errors)
+- Works in dry-run mode (--dry-run) for preview without changes
+- Force mode (--force) skips all validation prompts
+
+Testing:
+- Tested dry-run with REQ-313 (shows blocker warning correctly)
+- Tested with complete requirements (correctly rejects assignment)
+- Tested with blocked requirements (correctly prompts user)
 
 ---
 
