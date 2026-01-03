@@ -11,12 +11,124 @@ description: Structured 2-3 hour weekly ritual for continuous improvement of age
 
 | Phase | Duration | Focus |
 |-------|----------|-------|
+| 0. Metrics Review | 10 min | Context overhead and regression check |
+| 0.5. Regression Check | 10 min | Compare against baseline |
 | 1. Pattern Hunt | 30 min | Find recurring issues |
 | 2. Defeat Tests | 30 min | Write tests for patterns |
 | 3. Prompt Refactor | 30 min | Update agent prompts |
-| 4. Memory Consolidation | 20 min | Run REM sleep |
-| 5. Architecture Check | 20 min | Team structure review |
-| 6. Version & Deploy | 10 min | Finalize changes |
+| 4. Context Audit | 20 min | Review instruction count |
+| 5. Memory Consolidation | 20 min | Run REM sleep |
+| 6. Architecture Check | 20 min | Team structure review |
+| 7. Version & Deploy | 10 min | Finalize changes |
+
+---
+
+## Phase 0: Metrics Review (10 min)
+
+### Collect Current Metrics
+
+Run the metrics script to establish baseline:
+
+```bash
+# Extract all metrics (includes context overhead by default)
+bash Haunt/scripts/haunt-metrics.sh
+
+# Save metrics for comparison
+bash Haunt/scripts/haunt-metrics.sh --format=json > .haunt/metrics/weekly-$(date +%Y-%m-%d).json
+```
+
+### Metrics to Review
+
+- **Context Overhead:** Total agent + rules + CLAUDE.md lines
+- **Completion Rate:** Percentage of requirements completed
+- **First-Pass Success:** Requirements without fix/revert commits
+- **Average Cycle Time:** Time from first commit to completion
+
+### Metrics Review Checklist
+
+- [ ] Context overhead measured
+- [ ] Baseline saved (if first week)
+- [ ] Trends identified (increasing/decreasing)
+- [ ] Anomalies noted (unexpected spikes)
+
+**Output:** Current metrics snapshot and trend direction
+
+---
+
+## Phase 0.5: Regression Check (10 min)
+
+### Compare Against Baseline
+
+If baseline exists (after calibration period):
+
+```bash
+# Run regression check
+bash Haunt/scripts/haunt-regression-check.sh
+
+# Exit codes:
+#   0 = All OK (within thresholds)
+#   1 = Warnings detected
+#   2 = Critical regressions
+```
+
+### Regression Response Decision Tree
+
+```
+Regression Check Result:
+├─ OK (exit code 0)
+│  └─ Continue to Phase 1 (Pattern Hunt)
+│
+├─ WARNING (exit code 1)
+│  ├─ Check if expected (recent refactor, new features)
+│  ├─ Note for Phase 4 (Context Audit)
+│  └─ Continue to Phase 1 with increased scrutiny
+│
+└─ CRITICAL (exit code 2)
+   ├─ STOP: Investigate immediately
+   ├─ Identify root cause (which metric exceeded threshold)
+   ├─ Decide:
+   │  ├─ Roll back recent changes → Fix → Re-run check
+   │  ├─ Justified increase → Update baseline after review
+   │  └─ Refactor needed → Prioritize in Phase 3
+   └─ DO NOT proceed until resolved or justified
+```
+
+### First Week (No Baseline Yet)
+
+If no baseline exists:
+
+```bash
+# Create initial baseline (NOT calibrated yet)
+bash Haunt/scripts/haunt-baseline.sh create "Weekly refactor baseline - Week 1"
+
+# Wait 1 week for calibration
+# During calibration: Run regression checks, verify stability
+# After 1 week: If stable, mark calibrated and set active
+```
+
+### Calibration Period Guidance
+
+**Week 1-4: Calibration Mode**
+- Create baseline each week
+- Run regression checks daily
+- Track threshold violations
+- Expect some variance (normal)
+- Goal: Establish stable baseline over 4 weeks
+
+**After 4 Weeks: Production Mode**
+- Set calibrated baseline as active
+- Regression violations are actionable signals
+- Threshold breaches require investigation
+
+### Regression Check Checklist
+
+- [ ] Baseline exists (or created for Week 1)
+- [ ] Regression check run
+- [ ] Exit code checked (0/1/2)
+- [ ] Warnings/criticals investigated
+- [ ] Decision made (continue/stop/rollback)
+
+**Output:** Regression status and action plan (if violations detected)
 
 ---
 
@@ -30,21 +142,42 @@ git log --oneline --since="7 days ago" | grep -i "fix\|bug\|oops"
 
 # Files changed most often
 git log --since="7 days ago" --name-only --pretty=format: | sort | uniq -c | sort -rn | head -10
+
+# Low first-pass success (from metrics)
+# Review requirements with fix/revert commits for patterns
 ```
 
 ### Pattern Hunt Worksheet
 
-| Pattern | Frequency | Impact | Priority |
-|---------|-----------|--------|----------|
-| [Name] | [Daily/Weekly] | [High/Med/Low] | [Impact × Freq] |
+| Pattern | Frequency | Impact | Priority | Metric Impact |
+|---------|-----------|--------|----------|---------------|
+| [Name] | [Daily/Weekly] | [High/Med/Low] | [Impact × Freq] | [Context/Quality] |
+
+### Integrate Metrics Findings
+
+**From Phase 0 Metrics:**
+- If **completion rate low:** Investigate blockers in roadmap
+- If **first-pass success low:** Patterns causing rework (prioritize)
+- If **cycle time high:** Process inefficiencies or complex requirements
+- If **context overhead high:** Rules/agents may be too verbose
+
+**Priority Formula:**
+```
+Priority = (Frequency × Impact) + Metric_Signal
+where Metric_Signal:
+  - Context regression = +2 priority
+  - Quality regression (first-pass) = +3 priority
+  - Cycle time regression = +1 priority
+```
 
 ### Sources Checklist
 - [ ] Git log reviewed
+- [ ] Metrics findings integrated (Phase 0 context)
 - [ ] Agent memories checked
 - [ ] Review comments scanned
 - [ ] Personal frustrations noted
 
-**Output:** Top 3 patterns to defeat this week
+**Output:** Top 3 patterns to defeat this week (prioritized by metrics + frequency)
 
 ---
 
@@ -105,7 +238,71 @@ Update agent prompts based on learnings.
 
 ---
 
-## Phase 4: Memory Consolidation (20 min)
+## Phase 4: Context Audit (20 min)
+
+### Review Instruction Count
+
+Audit agent prompts and rules for verbosity:
+
+```bash
+# Count instructions in rules
+for rule in Haunt/rules/*.md; do
+  echo "$(basename $rule): $(grep -iE '^\s*(MUST|NEVER|ALWAYS|DO NOT)' "$rule" | wc -l) instructions"
+done
+
+# Count effective lines (context overhead)
+bash Haunt/scripts/haunt-metrics.sh | grep -A 10 "Context Overhead"
+```
+
+### Context Audit Worksheet
+
+| File | Type | Lines | Instructions | Status |
+|------|------|-------|--------------|--------|
+| gco-*.md | Rule | XXX | YYY | OK/HIGH |
+| gco-*.md | Agent | XXX | - | OK/HIGH |
+
+**Thresholds:**
+- Rules: <100 lines each (slim format)
+- Agents: <150 lines each (focused)
+- Total overhead: <1500 lines (all agents + rules + CLAUDE.md)
+
+### Refactor Targets
+
+If context overhead high (from Phase 0.5 regression):
+
+**High-Value Refactors:**
+1. **Extract to references/** - Move examples/tables to reference files
+2. **Consultation gates** - Convert verbose sections to "READ file for details"
+3. **Deduplicate** - Find repeated content across rules/agents
+4. **Consolidate** - Merge overlapping rules if appropriate
+
+**Example Patterns:**
+```markdown
+# BEFORE (verbose inline)
+## Error Handling (50 lines of examples)
+[Python example]
+[JavaScript example]
+[Go example]
+
+# AFTER (slim with reference)
+## Error Handling
+
+⛔ **CONSULTATION GATE:** For language-specific error handling examples, READ `references/error-handling.md`.
+```
+
+### Context Audit Checklist
+
+- [ ] Instruction count per rule reviewed
+- [ ] Context overhead compared to baseline
+- [ ] Refactor targets identified (if high)
+- [ ] Extraction opportunities noted
+- [ ] Consolidation candidates listed
+
+**Output:** Refactor plan for context reduction (if needed)
+
+---
+
+## Phase 5: Memory Consolidation (20 min)
 
 Run REM sleep for all agents:
 
@@ -128,7 +325,7 @@ done
 
 ---
 
-## Phase 5: Architecture Check (20 min)
+## Phase 6: Architecture Check (20 min)
 
 ### Team Structure Review
 
@@ -151,7 +348,7 @@ done
 
 ---
 
-## Phase 6: Version & Deploy (10 min)
+## Phase 7: Version & Deploy (10 min)
 
 ```bash
 # Run full verification
@@ -177,12 +374,32 @@ git commit -m "Weekly refactor: [summary]"
 ```markdown
 ## Weekly Refactor Report - Week [N]
 
+### Metrics Summary
+
+**Context Overhead:**
+- Total Lines: [current] (baseline: [baseline], Δ: [+/-X])
+- Status: ✅ OK / ⚠️ WARNING / 🚨 CRITICAL
+
+**Quality Metrics:**
+- Completion Rate: [X]%
+- First-Pass Success: [X]%
+- Average Cycle Time: [X]h
+
+**Regression Status:**
+- Overall: ✅ OK / ⚠️ WARNING / 🚨 CRITICAL
+- Violations: [None / List if any]
+
 ### Patterns Defeated
-1. [Pattern]: [Brief description]
-2. [Pattern]: [Brief description]
+1. [Pattern]: [Brief description] (Metric impact: [Context/Quality/Cycle])
+2. [Pattern]: [Brief description] (Metric impact: [Context/Quality/Cycle])
 
 ### Agent Updates
-- [Agent]: [Change summary]
+- [Agent]: [Change summary] (Lines: [before] → [after])
+
+### Context Refactoring
+- Rules refactored: [List]
+- Total reduction: [X] lines
+- Techniques used: [Extract/Gate/Consolidate]
 
 ### Memory Health
 | Agent | Long-term | Medium | Recent | Status |
@@ -192,8 +409,14 @@ git commit -m "Weekly refactor: [summary]"
 ### Architecture Decisions
 - [Any changes or notes]
 
+### Baseline Updates
+- Baseline status: [Calibrating Week X/4 | Production]
+- New baseline: [Created/Not created]
+- Calibration notes: [Variance observed, stability assessment]
+
 ### Next Week Focus
-- [Priority items]
+- [Priority items based on metrics]
+- [Regression follow-ups if any]
 ```
 
 ---

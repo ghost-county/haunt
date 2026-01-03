@@ -128,7 +128,7 @@ Create system to store, manage, and version metric baselines for regression comp
 
 ---
 
-### ⚪ REQ-315: Update gco-weekly-refactor Skill
+### 🟢 REQ-315: Update gco-weekly-refactor Skill
 
 **Type:** Enhancement
 **Reported:** 2026-01-02
@@ -139,13 +139,13 @@ Update the weekly refactor skill to include metrics and regression phases.
 
 **Tasks:**
 
-- [ ] Add Phase 0: Metrics Review section
-- [ ] Add Phase 0.5: Regression Check section
-- [ ] Add Phase 4: Context Audit section
-- [ ] Update Phase 1 to reference metrics findings
-- [ ] Update Phase 6 with calibration period guidance
-- [ ] Add regression response decision tree
-- [ ] Update weekly report template with new metrics
+- [x] Add Phase 0: Metrics Review section
+- [x] Add Phase 0.5: Regression Check section
+- [x] Add Phase 4: Context Audit section
+- [x] Update Phase 1 to reference metrics findings
+- [x] Update Phase 6 with calibration period guidance
+- [x] Add regression response decision tree
+- [x] Update weekly report template with new metrics
 
 **Files:**
 
@@ -155,7 +155,7 @@ Update the weekly refactor skill to include metrics and regression phases.
 **Complexity:** SIMPLE
 **Agent:** Dev-Infrastructure
 **Completion:** Skill includes all new phases
-**Blocked by:** REQ-314
+**Blocked by:** None (REQ-314 complete)
 
 ---
 
@@ -345,7 +345,7 @@ After completing REQ-327, REQ-328, REQ-329, measure the new instruction count an
 
 ---
 
-### 🟡 REQ-331: Add Context Overhead to Metrics System
+### 🟢 REQ-331: Add Context Overhead to Metrics System
 
 **Type:** Enhancement
 **Reported:** 2026-01-03
@@ -356,22 +356,31 @@ Extend the metrics system (REQ-312) to track instruction count and rule overhead
 
 **Tasks:**
 
-- [ ] Add instruction count metric to `haunt-metrics.sh`
-- [ ] Add rule line count metric
-- [ ] Add skill count metric
-- [ ] Add thresholds: instructions >150 = warning, >200 = critical
-- [ ] Integrate with regression check system (REQ-313)
+- [x] Add instruction count metric to `haunt-metrics.sh`
+- [x] Add rule line count metric
+- [x] Add skill count metric
+- [x] Add thresholds for context overhead metrics
+- [x] Integrate with regression check system (REQ-313)
+
+**Implementation Notes:**
+- Fixed instruction counting to work with new slim rule format (list-based NEVER/ALWAYS)
+- Made context overhead always visible in metrics output (removed --context flag)
+- Added context_overhead_baseline to baseline JSON with thresholds
+- Integrated total_overhead, base_overhead, and rules_overhead into regression check
+- Updated instruction count baseline from 65 to 11 (reflects post-optimization state)
+- Updated thresholds: instructions 20/30, total_lines 200/300, context overhead 1500/2000
 
 **Files:**
 
 - `Haunt/scripts/haunt-metrics.sh` (modify)
-- `Haunt/scripts/haunt-regression-check.sh` (modify - if exists)
+- `Haunt/scripts/haunt-regression-check.sh` (modify)
+- `.haunt/metrics/instruction-count-baseline.json` (modify)
 
 **Effort:** S (1-2 hours)
 **Complexity:** SIMPLE
 **Agent:** Dev-Infrastructure
 **Completion:** Metrics include instruction overhead, regression alerts for threshold violations
-**Blocked by:** REQ-313 (REQ-330 now complete)
+**Blocked by:** None (REQ-313 complete)
 
 ---
 
@@ -379,13 +388,12 @@ Extend the metrics system (REQ-312) to track instruction count and rule overhead
 
 | Status | Count | Items |
 |--------|-------|-------|
-| ⚪ Not Started | 3 | REQ-314, REQ-315, REQ-331 |
-| 🟡 In Progress | 2 | REQ-232, REQ-313 |
-| 🟢 Complete | 5 | REQ-327, REQ-328, REQ-329, REQ-330, REQ-332, REQ-333 |
-| 🔴 Blocked | 3 | REQ-314, REQ-315, REQ-331 |
-| ⚪ Unblocked | 1 | REQ-331 |
+| ⚪ Not Started | 0 | - |
+| 🟡 In Progress | 0 | - |
+| 🟢 Complete | 11 | REQ-232, REQ-313, REQ-314, REQ-315, REQ-327, REQ-328, REQ-329, REQ-330, REQ-331, REQ-332, REQ-333 |
+| 🔴 Blocked | 0 | - |
 
-**Total Effort Remaining:** ~7-11 hours (1 M + 4 S)
+**Total Effort Remaining:** 0 hours (all requirements complete)
 
 **Dependency Chains:**
 ```
