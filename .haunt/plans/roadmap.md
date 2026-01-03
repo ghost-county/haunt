@@ -150,20 +150,240 @@ Update the weekly refactor skill to include metrics and regression phases.
 
 ---
 
+## Batch: Haunt Efficiency Overhaul
+
+> Critical batch to reduce instruction overhead from ~380 to ~100. Research shows LLM instruction-following degrades significantly above 150-200 instructions.
+
+**Rationale:** Hooks provide deterministic enforcement. Rules duplicating hook behavior waste instruction budget and degrade model performance on ALL instructions.
+
+### {🟢} REQ-332: Fix Completion Gate Hook False Positives
+
+**Type:** Bug Fix
+**Reported:** 2026-01-03
+**Source:** Discovered during roadmap editing - hook matches any text containing emoji
+
+**Description:**
+The completion-gate.sh hook incorrectly triggers when editing roadmap.md with any content containing the green circle emoji, even if not marking a requirement complete. It matched "Unblocked" status in a summary table.
+
+**Tasks:**
+
+- [x] Update hook to only match status icon at start of requirement header
+- [x] Add pattern to specifically match status changes in header format
+- [x] Test that adding new requirements does not trigger hook
+- [x] Test that updating summary tables does not trigger hook
+- [x] Test that actual completion still gets validated
+
+**Files:**
+
+- `Haunt/hooks/completion-gate.sh` (modify)
+
+**Effort:** XS (30min)
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Hook only triggers on actual requirement completion, not text matches
+**Blocked by:** None
+
+---
+
+### {🟢} REQ-327: Delete Hook-Redundant Rules
+
+**Type:** Enhancement
+**Reported:** 2026-01-03
+**Source:** Efficiency audit - rules duplicate hook enforcement
+
+**Description:**
+Remove rules that duplicate behavior already enforced by hooks. Hooks are deterministic; rules telling Claude to do what hooks enforce anyway waste instruction budget.
+
+**Tasks:**
+
+- [x] Delete ~/.claude/rules/gco-seance-enforcement.md (hook: phase-enforcement.sh)
+- [x] Delete ~/.claude/rules/gco-file-conventions.md (hook: file-location-enforcer.sh)
+- [x] Delete source files from Haunt/rules/
+- [x] Verify hooks still function correctly after rule removal
+
+**Files:**
+
+- `Haunt/rules/gco-seance-enforcement.md` (deleted)
+- `Haunt/rules/gco-file-conventions.md` (deleted)
+
+**Implementation Notes:**
+- Deleted both source and deployed rule files
+- Hooks remain configured in ~/.claude/settings.json and functional
+- Setup script naturally skips deleted rules (uses wildcard *.md loop)
+- Instruction overhead reduced by ~66 lines
+- Manual verification: Confirmed hooks still exist and are properly configured
+
+**Effort:** XS (30min-1hr)
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Rules deleted, hooks still enforce behavior, setup script updated
+**Blocked by:** None
+### {⚪} REQ-328: Convert Domain Standards to Skills
+
+**Type:** Enhancement
+**Reported:** 2026-01-03
+**Source:** Efficiency audit - domain rules load on every session
+
+**Description:**
+Move language/framework-specific standards from always-loaded rules to on-demand skills. These should only load when working on relevant file types.
+
+**Tasks:**
+
+- [ ] Create `Haunt/skills/gco-react-standards/SKILL.md` from rule content
+- [ ] Create `Haunt/skills/gco-python-standards/SKILL.md` from rule content
+- [ ] Create `Haunt/skills/gco-ui-design-standards/SKILL.md` from rule content
+- [ ] Create `Haunt/skills/gco-ui-testing/SKILL.md` from rule content (merge with existing if present)
+- [ ] Delete corresponding rules from `Haunt/rules/`
+- [ ] Update setup script to deploy skills, not rules
+- [ ] Update agent character sheets to reference skills instead of rules
+
+**Files:**
+
+- `Haunt/skills/gco-react-standards/SKILL.md` (create)
+- `Haunt/skills/gco-python-standards/SKILL.md` (create)
+- `Haunt/skills/gco-ui-design-standards/SKILL.md` (create)
+- `Haunt/rules/gco-react-standards.md` (delete)
+- `Haunt/rules/gco-python-standards.md` (delete)
+- `Haunt/rules/gco-ui-design-standards.md` (delete)
+- `Haunt/rules/gco-ui-testing.md` (delete)
+- `Haunt/scripts/setup-agentic-sdlc.sh` (modify)
+
+**Effort:** S (1-2 hours)
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Domain standards available as skills, rules deleted, ~275 lines removed from auto-load
+**Blocked by:** None
+
+---
+
+### {⚪} REQ-329: Slim Remaining Rules to References
+
+**Type:** Enhancement
+**Reported:** 2026-01-03
+**Source:** Efficiency audit - rules contain full procedures instead of references
+
+**Description:**
+Reduce remaining rules to minimal reference cards that point to skills for details. Target: ~20-30 lines per rule max.
+
+**Tasks:**
+
+- [ ] Slim `gco-orchestration.md` to delegation decision tree only (~30 lines)
+- [ ] Slim `gco-completion-checklist.md` to hook awareness + skill reference (~15 lines)
+- [ ] Slim `gco-model-selection.md` to agent/model table only (~20 lines)
+- [ ] Slim `gco-roadmap-format.md` to format template only (~30 lines)
+- [ ] Slim `gco-session-startup.md` to 4-step lookup only (~20 lines)
+- [ ] Slim `gco-framework-changes.md` to core warning only (~15 lines)
+- [ ] Verify skills contain full details that rules reference
+- [ ] Update any cross-references
+
+**Files:**
+
+- `Haunt/rules/gco-orchestration.md` (modify)
+- `Haunt/rules/gco-completion-checklist.md` (modify)
+- `Haunt/rules/gco-model-selection.md` (modify)
+- `Haunt/rules/gco-roadmap-format.md` (modify)
+- `Haunt/rules/gco-session-startup.md` (modify)
+- `Haunt/rules/gco-framework-changes.md` (modify)
+
+**Effort:** M (2-4 hours)
+**Complexity:** MODERATE
+**Agent:** Dev-Infrastructure
+**Completion:** Each rule <35 lines, total rules <200 lines, skills contain full details
+**Blocked by:** REQ-328 (need skills to exist before slimming rules)
+
+---
+
+### {⚪} REQ-330: Measure Post-Optimization Instruction Count
+
+**Type:** Research
+**Reported:** 2026-01-03
+**Source:** Efficiency audit - need to verify improvement
+
+**Description:**
+After completing REQ-327, REQ-328, REQ-329, measure the new instruction count and document the improvement.
+
+**Tasks:**
+
+- [ ] Count instructions in remaining rules (target: <100)
+- [ ] Count total lines in remaining rules (target: <200)
+- [ ] Document before/after comparison
+- [ ] Run test sessions to verify model behavior improvement
+- [ ] Update `.haunt/docs/research/claude-code-best-practices-research.md` with results
+- [ ] Create baseline metrics for future regression checks
+
+**Files:**
+
+- `.haunt/docs/research/haunt-efficiency-results.md` (create)
+- `.haunt/metrics/instruction-count-baseline.json` (create)
+
+**Effort:** S (1-2 hours)
+**Complexity:** SIMPLE
+**Agent:** Research
+**Completion:** Documented reduction to <100 instructions, before/after metrics captured
+**Blocked by:** REQ-327, REQ-328, REQ-329
+
+---
+
+### {⚪} REQ-331: Add Context Overhead to Metrics System
+
+**Type:** Enhancement
+**Reported:** 2026-01-03
+**Source:** Efficiency audit - need ongoing monitoring
+
+**Description:**
+Extend the metrics system (REQ-312) to track instruction count and rule overhead as regression indicators.
+
+**Tasks:**
+
+- [ ] Add instruction count metric to `haunt-metrics.sh`
+- [ ] Add rule line count metric
+- [ ] Add skill count metric
+- [ ] Add thresholds: instructions >150 = warning, >200 = critical
+- [ ] Integrate with regression check system (REQ-313)
+
+**Files:**
+
+- `Haunt/scripts/haunt-metrics.sh` (modify)
+- `Haunt/scripts/haunt-regression-check.sh` (modify - if exists)
+
+**Effort:** S (1-2 hours)
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:** Metrics include instruction overhead, regression alerts for threshold violations
+**Blocked by:** REQ-330, REQ-313
+
+---
+
 ## Summary
 
 | Status | Count | Items |
 |--------|-------|-------|
-| ⚪ Not Started | 4 | REQ-232, REQ-313, REQ-314, REQ-315 |
+| ⚪ Not Started | 10 | REQ-232, REQ-313, REQ-314, REQ-315, REQ-327, REQ-328, REQ-329, REQ-330, REQ-331, REQ-332 |
 | 🟡 In Progress | 0 | - |
-| 🔴 Blocked | 2 | REQ-314, REQ-315 |
-| 🟢 Unblocked | 2 | REQ-232, REQ-313 |
+| 🔴 Blocked | 4 | REQ-314, REQ-315, REQ-329, REQ-330, REQ-331 |
+| ⚪ Unblocked | 6 | REQ-232, REQ-313, REQ-327, REQ-328, REQ-332 |
 
-**Total Effort Remaining:** ~6-10 hours (1 M + 3 S)
+**Total Effort Remaining:** ~12-18 hours (2 M + 7 S/XS)
 
-**Dependency Chain:**
+**Dependency Chains:**
 ```
-REQ-232 (unblocked) ─────────────────────────────┐
-                                                  │
-REQ-313 (unblocked) → REQ-314 → REQ-315 ─────────┘
+Existing:
+REQ-232 (unblocked) ─────────────────────────────────────────────┐
+                                                                  │
+REQ-313 (unblocked) → REQ-314 → REQ-315 ─────────────────────────┤
+                          │                                       │
+                          └───────────────────→ REQ-331 ──────────┘
+
+Efficiency Overhaul (PRIORITY):
+REQ-327 (unblocked) ──────────────────────────────┐
+                                                   │
+REQ-328 (unblocked) → REQ-329 → REQ-330 → REQ-331 ┘
 ```
+
+**Recommended Execution Order:**
+0. **REQ-332** (XS, 30 min) - Fix hook false positives first (enables easier roadmap editing)
+1. **REQ-327** (XS, 45 min) - Quick win, removes 66 lines immediately
+2. **REQ-328** (S, 2 hrs) - Biggest impact, removes 275 lines from auto-load
+3. **REQ-329** (M, 3 hrs) - Final consolidation, needs REQ-328 skills first
+4. **REQ-330** (S, 1 hr) - Measure results
+5. **REQ-331** (S, 1 hr) - Add monitoring
