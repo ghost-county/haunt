@@ -2,6 +2,27 @@
 
 Hold a séance to guide ideas through the complete Ghost County workflow: the three-part ritual of scrying (planning), summoning (execution), and banishing (archival).
 
+## ⚠️ Skill Mode Limitation
+
+**Important:** The `/seance` command runs in **skill mode**, which has limited capabilities:
+
+| Entry Point | Task Tool (Spawning) | Full Workflow |
+|-------------|---------------------|---------------|
+| `/seance` command | ❌ No | Scrying + Direct Execution |
+| `haunt` alias | ✅ Yes | Full agent spawning |
+
+**For full agent spawning capability, use the `haunt` alias instead:**
+```bash
+haunt "Add OAuth login support"    # Full Seer agent with Task tool
+```
+
+**What this means in practice:**
+- `/seance` can do planning (scrying) and direct work
+- `/seance` **cannot** spawn specialized agents (PM, Dev, Research)
+- Use `haunt` when you need the full multi-agent workflow
+
+---
+
 ## The Three-Part Ritual
 
 ```
@@ -81,6 +102,8 @@ In a repository without `.haunt/`:
 **Purpose:** Spawn agents for all ⚪ and 🟡 roadmap items
 **Output:** Parallel agent execution working until 🟢 Complete
 
+**⚠️ Note:** This mode requires Task tool. If running via `/seance`, will fall back to direct execution.
+
 ### Mode 6: Explicit Banishing (Archival)
 ```bash
 /seance --banish
@@ -113,6 +136,31 @@ In a repository without `.haunt/`:
 **When to use:** M-SPLIT sized features with high strategic impact
 
 ## Task: $ARGUMENTS
+
+**Step 0: Skill Mode Detection**
+
+⚠️ **CRITICAL:** Check if running in skill mode (no Task tool).
+
+```
+SKILL MODE CHECK:
+- Running via /seance command = SKILL MODE
+- Task tool is NOT available in skill mode
+- Agent spawning will NOT work
+
+IF attempting agent spawning later:
+  Display: "⚠️ Running in skill mode. For agent spawning, use: haunt 'your idea'"
+  Fall back to direct execution
+```
+
+**Display this notice at startup when in skill mode:**
+```
+🕯️ Séance Initiated (Skill Mode)
+
+Note: Running via /seance command (limited mode).
+For full agent spawning: haunt "your idea"
+
+Continuing with direct execution...
+```
 
 **Step 1: Parse Arguments and Detect Mode**
 
@@ -175,9 +223,12 @@ ARGUMENTS: {args}  # With --quick/--deep removed
 PLANNING_DEPTH: {planning_depth}  # "quick", "standard", or "deep"
 HAS_HAUNT: {has_haunt}
 CURRENT_PHASE: SCRYING
+SKILL_MODE: true  # Task tool NOT available
 ```
 
 The skill will handle the appropriate flow based on mode and planning depth.
+
+**Important:** In skill mode, the orchestrator will execute work directly instead of spawning agents.
 
 ## Complete Workflow Examples
 
@@ -263,6 +314,18 @@ $ /seance --deep "Redesign authentication system"
 > Ready to summon the spirits? [yes/no]
 ```
 
+### Using haunt Alias (Full Agent Spawning)
+```bash
+# For full multi-agent workflow, use haunt alias:
+$ haunt "Add OAuth login support"
+> 🔮 Seer agent activated...
+> [Spawns PM for planning...]
+> [PM completes roadmap...]
+> Ready to summon? [yes]
+> [Spawns Dev agents...]
+> ✅ Complete
+```
+
 ## See Also
 
 - **`Haunt/docs/SEANCE-EXPLAINED.md`** - Complete documentation and philosophy
@@ -270,3 +333,4 @@ $ /seance --deep "Redesign authentication system"
 - **`/summon <agent>`** - Directly spawn a specific agent
 - **`/banish --all`** - Quick archive (same as `/seance --banish`)
 - **`/haunting`** - View current active work
+- **`haunt` alias** - Full Seer agent with Task tool for multi-agent workflows

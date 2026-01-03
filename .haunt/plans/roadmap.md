@@ -13,9 +13,11 @@
 - ⚪ REQ-320: Core Seer Agent (M) ← Start here
 - ⚪ REQ-321: Seance Integration (S, blocked by REQ-320)
 - ⚪ REQ-322: Full Seer Testing (S, blocked by REQ-320, REQ-321)
+- ⚪ REQ-324: Agent Memory MCP Setup Integration (S) ← NEW
 
 **Ready to Archive:**
 - 🟢 REQ-319: Consolidate Research Agents (XS)
+- 🟢 REQ-323: /seance Command Tool Limitation UX (XS)
 
 **Recently Archived (2026-01-02):**
 - 🟢 REQ-307: Model Selection (Opus for planning/research, Sonnet for implementation)
@@ -246,7 +248,7 @@ Update `/seance` command documentation to explain coexistence with Seer agent. C
 
 **Tasks:**
 
-- [ ] Update `Haunt/commands/seance.md` to document Seer as alternative entry
+- [x] Update `Haunt/commands/seance.md` to document Seer as alternative entry (completed via REQ-323)
 - [ ] Create shell alias documentation in `Haunt/docs/SHELL-ALIASES.md`
 - [ ] Document recommended alias: `alias haunt='claude --dangerously-skip-permissions --agent gco-seer'`
 - [ ] Update `Haunt/docs/SEANCE-EXPLAINED.md` with Seer section
@@ -316,6 +318,168 @@ End-to-end testing of the complete Seer workflow. Verify phase transitions, memo
 - Any issues discovered are fixed or logged as new REQs
 
 **Blocked by:** REQ-320, REQ-321
+
+---
+
+### 🟢 REQ-323: /seance Command Tool Limitation UX
+
+**Type:** Bug Fix
+**Reported:** 2026-01-04
+**Source:** User testing - /seance command attempts Task tool spawning but lacks access
+
+**Description:**
+When using `/seance` command (which loads gco-orchestrator as a skill), the orchestrator logic attempts to spawn agents via Task tool but fails because the Task tool is not available in skill mode. The current behavior is confusing:
+
+1. `/seance` starts and detects work requiring agent spawning
+2. Claude says "Spawning gco-research..." or similar
+3. Task tool call fails silently (tool not available)
+4. Claude pivots awkwardly: "Interesting! The Task tool isn't available in this context"
+
+**User-reported error:**
+```
+⏺ 👻 Summoning the spirits...
+
+  This is exactly what I'm built for - delegating specialized work...
+
+  ---
+  Spawning: gco-research (Opus)
+  Mission: Research agent memory best practices...
+
+⏺ Interesting! The Task tool isn't available in this context.
+
+  | Entry Point     | Task Tool | Memory MCP        |
+  |-----------------|-----------|-------------------|
+  | /seance command | ❌ No     | Depends on config |
+  | gco-seer agent  | ✅ Yes    | Depends on config |
+```
+
+**Expected behavior:**
+The `/seance` command should either:
+1. **Detect early** that Task tool is unavailable and suggest using `haunt` alias instead
+2. **Fallback gracefully** to skill-mode behavior (direct execution instead of spawning)
+3. **Display clear guidance** at session start about limitations
+
+**Tasks:**
+
+- [x] Add Task tool availability check at /seance startup
+- [x] If Task tool unavailable, display clear message:
+  ```
+  ⚠️ Running in skill mode (limited)
+  For full agent spawning, use: haunt "your idea"
+  Continuing with direct execution...
+  ```
+- [x] Update gco-orchestrator skill to check Task tool before attempting spawn
+- [x] Add fallback behavior in SUMMONING phase when Task unavailable
+- [x] Document limitation clearly in /seance command help
+
+**Files:**
+
+- `Haunt/commands/seance.md` (modified - added Skill Mode Limitation section, Step 0 detection, haunt alias example)
+- `Haunt/skills/gco-orchestrator/SKILL.md` (modified - added SKILL MODE DETECTION section with fallback behavior)
+
+**Effort:** XS (30 min - 1 hour)
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:**
+- ✓ /seance displays clear warning when Task tool unavailable
+- ✓ No confusing "pivoting" behavior (fallback documented)
+- ✓ User understands to use `haunt` alias for full functionality
+
+**Blocked by:** None
+
+**Completed:** 2026-01-04
+**Notes:**
+- Added "⚠️ Skill Mode Limitation" section at top of seance.md with comparison table
+- Added "Step 0: Skill Mode Detection" to command execution flow
+- Added comprehensive "SKILL MODE DETECTION" section to gco-orchestrator skill
+- Documented fallback behavior for each phase (SCRYING works, SUMMONING falls back to direct execution, BANISHING works)
+- Added haunt alias example to "See Also" section
+
+---
+
+### ⚪ REQ-324: Agent Memory MCP Setup Integration
+
+**Type:** Enhancement
+**Reported:** 2026-01-04
+**Source:** User request during séance - MCP memory should be part of setup
+
+**Description:**
+Add Agent Memory MCP server installation to setup-haunt.sh. The setup should:
+1. Check if MCP server is already configured
+2. Offer to install if not present
+3. Verify installation works with no errors before considering complete
+
+**Current State:**
+- Agent memory server exists at `Haunt/scripts/utils/agent-memory-server.py`
+- Best practices documented at `.haunt/docs/research/agent-memory-best-practices.md`
+- Manual setup requires copying files and editing `~/.claude/settings.json`
+
+**Expected Behavior:**
+```bash
+$ bash Haunt/scripts/setup-haunt.sh
+
+[Step N] Checking Agent Memory MCP...
+⚠️  Agent Memory MCP not configured.
+
+Would you like to install Agent Memory MCP for persistent session memory? [y/N]
+> y
+
+✓ Created ~/.claude/mcp-servers/ directory
+✓ Deployed agent-memory-server.py
+✓ Added mcpServers config to settings.json
+✓ Verified MCP Python package installed
+
+Testing memory server...
+✓ Memory server starts without errors
+✓ Agent Memory MCP ready!
+
+NOTE: Restart Claude Code to activate memory tools.
+```
+
+**Tasks:**
+
+- [ ] Add `check_mcp_memory()` function to setup-haunt.sh
+- [ ] Check if `~/.claude/settings.json` has `mcpServers.agent-memory` configured
+- [ ] If not configured, prompt user for installation (default: no)
+- [ ] Create `~/.claude/mcp-servers/` directory if needed
+- [ ] Copy `agent-memory-server.py` to mcp-servers directory
+- [ ] Update `~/.claude/settings.json` with mcpServers entry (preserve existing config)
+- [ ] Check if `mcp` Python package is installed, warn if missing
+- [ ] **Test installation:** Run memory server and verify it starts without errors
+- [ ] **Test installation:** Verify JSON file format is correct
+- [ ] Add `--skip-mcp` flag to bypass memory setup
+- [ ] Add `--mcp-only` flag to run only MCP setup
+- [ ] Document MCP setup in SETUP-GUIDE.md
+
+**Verification (must pass before complete):**
+```bash
+# 1. Server starts without errors
+python3 ~/.claude/mcp-servers/agent-memory-server.py --test
+
+# 2. Settings.json is valid JSON with correct structure
+jq '.mcpServers["agent-memory"]' ~/.claude/settings.json
+
+# 3. Memory directory created
+test -d ~/.agent-memory && echo "OK"
+```
+
+**Files:**
+
+- `Haunt/scripts/setup-haunt.sh` (modify - add MCP setup section)
+- `Haunt/SETUP-GUIDE.md` (modify - document MCP setup)
+- `Haunt/scripts/utils/test-mcp-server.py` (create - verification script)
+
+**Effort:** S (1-2 hours)
+**Complexity:** SIMPLE
+**Agent:** Dev-Infrastructure
+**Completion:**
+- setup-haunt.sh prompts for MCP memory installation
+- Installation verified to work without errors
+- Server starts successfully
+- settings.json correctly updated
+- SETUP-GUIDE.md documents MCP setup
+
+**Blocked by:** None
 
 ---
 

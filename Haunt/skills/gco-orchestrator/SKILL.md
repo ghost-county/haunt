@@ -11,19 +11,70 @@ The Seance is Ghost County's primary workflow orchestration layer - a ritual tha
 
 ---
 
+## ⚠️ SKILL MODE DETECTION (Check First)
+
+**CRITICAL:** Before attempting ANY agent spawning, check if running in skill mode.
+
+### How to Detect Skill Mode
+
+| Context | Task Tool Available | Mode |
+|---------|---------------------|------|
+| Invoked via `/seance` command | ❌ NO | Skill Mode |
+| Invoked via `haunt` alias (gco-seer agent) | ✅ YES | Agent Mode |
+
+**If running via `/seance` command (skill mode):**
+
+1. Display startup notice:
+   ```
+   🕯️ Séance Initiated (Skill Mode)
+
+   Note: Running via /seance command (limited mode).
+   For full agent spawning: haunt "your idea"
+
+   Continuing with direct execution...
+   ```
+
+2. When SUMMONING phase is reached:
+   - **DO NOT** attempt Task tool calls (they will fail)
+   - **DO** execute work directly instead of spawning agents
+   - **DO** inform user: "⚠️ In skill mode - executing directly instead of spawning agents"
+
+### Skill Mode Fallback Behavior
+
+**SCRYING Phase (Planning):**
+- ✅ Works normally - create roadmap, analyze requirements directly
+
+**SUMMONING Phase (Execution):**
+- ❌ Cannot spawn gco-dev, gco-research, gco-pm agents
+- ✅ Fallback: Execute implementation work directly
+- ✅ Display: "Executing directly (skill mode - no agent spawning)"
+
+**BANISHING Phase (Archival):**
+- ✅ Works normally - archive completed work directly
+
+### Agent Mode (Full Capability)
+
+When invoked via `haunt` alias (gco-seer agent):
+- ✅ Task tool available
+- ✅ Can spawn all agent types
+- ✅ Full multi-agent workflow
+
+---
+
 ## DELEGATION GATE (Before ANY Action)
 
 ⛔ **CRITICAL CHECKPOINT:** Before executing any action, verify you're not about to do specialized work.
 
 **Am I about to do specialized work?**
-- [ ] WebSearch/WebFetch → ⛔ STOP: Spawn gco-research
-- [ ] Multi-file analysis (>10 files) → ⛔ STOP: Spawn gco-research
-- [ ] Requirements analysis (JTBD/Kano/RICE) → ⛔ STOP: Spawn gco-project-manager
-- [ ] Write code/tests → ⛔ STOP: Spawn gco-dev-*
-- [ ] Code review → ⛔ STOP: Spawn gco-code-reviewer
+- [ ] WebSearch/WebFetch → ⛔ STOP: Spawn gco-research (if Task available) OR execute directly (skill mode)
+- [ ] Multi-file analysis (>10 files) → ⛔ STOP: Spawn gco-research (if Task available) OR execute directly (skill mode)
+- [ ] Requirements analysis (JTBD/Kano/RICE) → ⛔ STOP: Spawn gco-project-manager (if Task available) OR execute directly (skill mode)
+- [ ] Write code/tests → ⛔ STOP: Spawn gco-dev-* (if Task available) OR execute directly (skill mode)
+- [ ] Code review → ⛔ STOP: Spawn gco-code-reviewer (if Task available) OR execute directly (skill mode)
 
 **If ALL boxes are unchecked:** Proceed (this is coordination work)
-**If ANY box is checked:** STOP and spawn the indicated agent
+**If ANY box is checked AND Task available:** Spawn the indicated agent
+**If ANY box is checked AND skill mode:** Execute directly with notice
 
 ⛔ **PROHIBITION:** Orchestrators NEVER execute WebSearch, WebFetch, or multi-file Read operations directly. These are research activities requiring specialist agents.
 
@@ -80,7 +131,7 @@ PHASE TRANSITION: SCRYING → SUMMONING
 Reason: REQ-042 created, user approved summoning
 ```
 
-Then spawn agents.
+Then spawn agents (or execute directly in skill mode).
 
 **VIOLATION DETECTION:**
 
@@ -246,6 +297,8 @@ If ANY answer is wrong → STOP and declare phase correctly
 - **Implementation:** Write code, tests, configs → Spawn gco-dev-*
 - **Code review:** Quality gates → Spawn gco-code-reviewer
 
+**Exception (Skill Mode):** When Task tool unavailable, execute directly with notice.
+
 **See also:** `references/delegation-protocol.md` for decision tree and success criteria
 
 ---
@@ -326,13 +379,14 @@ Before completing the Seance:
 - [ ] `.haunt/` directory check performed
 - [ ] Arguments presence checked
 - [ ] Appropriate themed prompt displayed
+- [ ] Skill mode detected and communicated if applicable
 
 **Delegation:**
 - [ ] No WebSearch/WebFetch calls from orchestrator
 - [ ] No implementation code written by orchestrator
 - [ ] No multi-file analysis performed by orchestrator
-- [ ] PM spawned for all planning phases
-- [ ] Dev agents spawned for all implementation work
+- [ ] PM spawned for all planning phases (or executed directly in skill mode)
+- [ ] Dev agents spawned for all implementation work (or executed directly in skill mode)
 
 **Gates:**
 - [ ] Delegation gate checked before each action
@@ -370,6 +424,11 @@ Before completing the Seance:
 **If all requirements blocked:**
 - List blocking dependencies
 - Suggest which to resolve first
+
+**If Task tool unavailable (skill mode):**
+- Display clear notice at startup
+- Fall back to direct execution
+- Do NOT attempt Task calls (they will fail)
 
 ---
 
