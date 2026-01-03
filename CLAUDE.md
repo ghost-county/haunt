@@ -23,36 +23,22 @@ See `~/.claude/rules/gco-roadmap-format.md` for status update protocol (global r
 
 ### Current Items
 
-**Active Work (5 in progress):**
-
-🟡 REQ-309: Document Explore Agent Integration Patterns
-   Agent: Dev-Infrastructure | Effort: S
-
-🟡 REQ-310: Refactor gco-dev.md Agent (Option B - References)
-   Agent: Dev-Infrastructure | Effort: M
-
-🟡 REQ-311: Fix haunt-metrics.sh Parsing Bugs
-   Agent: Dev-Infrastructure | Effort: S
-
-🟡 REQ-316: Refactor gco-testing-mindset Skill
-   Agent: Dev-Infrastructure | Effort: S
-
-🟡 REQ-317: Refactor gco-roadmap-planning Skill
-   Agent: Dev-Infrastructure | Effort: S
-
-**Seer Implementation:**
-🟢 REQ-319: Consolidate Research Agents (XS) - Complete
-🟡 REQ-320: Core Seer Agent (M) ⭐ - Structural complete, needs manual testing
+**Seer Implementation (Remaining):**
+🟡 REQ-320: Core Seer Agent (M) - Structural complete, needs manual testing
 ⚪ REQ-321: Seance Integration (S, blocked by REQ-320)
 ⚪ REQ-322: Full Seer Testing (S, blocked by REQ-320, 321)
 
-**Blocked (4 awaiting dependencies):**
-- REQ-312 (blocked by REQ-311)
-- REQ-313 (blocked by REQ-312)
-- REQ-314 (blocked by REQ-313)
-- REQ-315 (blocked by REQ-312, REQ-314)
+**Metrics Pipeline (Remaining):**
+⚪ REQ-313: Create Dashboard Visualization (blocked by REQ-312)
+⚪ REQ-314: Add Historical Trend Tracking (blocked by REQ-313)
+⚪ REQ-315: Implement Metrics Alerts (blocked by REQ-312, REQ-314)
 
-**Ready to Archive:** REQ-308, REQ-316, REQ-317, REQ-318, REQ-319
+**Recently Completed (2026-01-03 Séance):**
+See `.haunt/completed/2026-01/seance-2026-01-03.md` for full archive.
+- REQ-312: Context Overhead Metric (baseline: 1,523 lines)
+- REQ-324, REQ-206, REQ-231: Commands and setup
+- REQ-228, REQ-229, REQ-230: Documentation infographics
+- REQ-326: JetStream Research (DEFER recommendation)
 
 See `.haunt/plans/roadmap.md` for full details.
 
