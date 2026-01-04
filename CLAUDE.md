@@ -23,24 +23,18 @@ See `~/.claude/rules/gco-roadmap-format.md` for status update protocol (global r
 
 ### Current Items
 
-**Batch: Framework Evolution (Kai-Inspired)**
-> Goal: 80% deterministic code, 20% AI reasoning. Trust the model more.
-> See `.haunt/docs/determinism-audit-2026-01-03.md`
+**Status:** All requirements complete. Roadmap clear.
 
-**Ready to Start:**
-⚪ REQ-334: Expand Hook Event Types (M) - SessionStart, Stop, SubagentStop
-⚪ REQ-336: Agent Character Sheet Minimization (M) - 30-line templates
-⚪ REQ-338: Slim Skill Consolidation (M) - Reference doc pattern
+**Archived (2026-01-03):**
+- 28 total requirements archived to `.haunt/completed/2026-01/`
+- Key achievements:
+  - UOCS (Universal Output Capture System) implemented
+  - Agent character sheets minimized (56% reduction)
+  - Skills consolidated (76% reduction)
+  - Instruction overhead reduced 79%
+  - Notification hooks for work completion
 
-**Blocked:**
-🔴 REQ-335: UOCS Implementation (M) - Blocked by REQ-334
-🔴 REQ-337: Learning Extraction (S) - Blocked by REQ-335
-
-**Recently Completed (2026-01-03):**
-- Previous batches: 11 requirements (REQ-232 through REQ-333)
-- See `.haunt/completed/2026-01/seance-2026-01-03.md`
-
-See `.haunt/plans/roadmap.md` for full details.
+Run `/seance` to start new work.
 
 ## Repository Structure
 
