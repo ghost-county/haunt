@@ -149,15 +149,59 @@ In a repository without `.haunt/`:
 
 **When to use:** M-SPLIT sized features with high strategic impact
 
+### Mode 9: Bug Detection (Auto-Triggered)
+
+When input contains error patterns (stack traces, exceptions, error messages), séance auto-detects and offers a choice:
+
+```bash
+$ /seance SnowparkSQLException: (1304): invalid identifier 'USER'
+> 🔮 Bug detected: SQL error - invalid identifier 'USER'
+>
+> Estimated: XS, SIMPLE complexity
+>
+> [A] Quick fix - Just fix it now, skip the ceremony
+> [B] Log to roadmap - Create REQ-XXX and follow standard workflow
+>
+> Which path?
+```
+
+**Purpose:** Give user control over ceremony level for obvious bugs
+**Trigger patterns:** `Traceback`, `Exception:`, `Error:`, `File "...", line X`, SQL error codes, "doesn't work", "broken", etc.
+**Behavior:**
+- [A] Quick fix → Investigate and fix immediately, no roadmap entry
+- [B] Log to roadmap → Standard scrying workflow with REQ creation
+
 ## Task: $ARGUMENTS
 
 **Step 1: Parse Arguments and Detect Mode**
 
 ```python
 import os
+import re
 
 args = "$ARGUMENTS".strip()
 has_haunt = os.path.exists(".haunt/")
+
+# Bug/Error detection patterns
+ERROR_PATTERNS = [
+    r'Traceback',                    # Python stack traces
+    r'Exception:',                   # Generic exceptions
+    r'Error:',                       # Generic errors
+    r'at line \d+',                  # Line number references
+    r'File ".*", line \d+',          # Python file:line format
+    r'invalid identifier',           # SQL errors
+    r'\(\d{3,5}\):',                 # SQL/DB error codes like (1304):
+    r'compilation error',            # SQL compilation errors
+    r'TypeError|ValueError|KeyError|AttributeError',  # Python errors
+    r'undefined|null pointer|segfault',  # Various runtime errors
+    r"doesn't work|does not work|not working|broken|failed",  # Natural language
+]
+
+def looks_like_bug(text):
+    """Detect if input contains error/bug patterns"""
+    return any(re.search(p, text, re.IGNORECASE) for p in ERROR_PATTERNS)
+
+is_bug = looks_like_bug(args)
 
 # Extract planning depth modifiers
 planning_depth = "standard"  # default
@@ -179,6 +223,8 @@ elif args in ["--summon", "--execute"]:
     mode = 5  # Explicit summoning
 elif args in ["--banish", "--archive"]:
     mode = 6  # Explicit banishing
+elif is_bug and args and not args.startswith("--"):
+    mode = 9  # Bug detected - present choice to user
 elif args:
     mode = 1  # With prompt - immediate workflow
 elif has_haunt:
@@ -203,6 +249,26 @@ with open(".haunt/state/current-phase.txt", "w") as f:
 ```
 
 **Step 2: Execute Mode-Specific Flow**
+
+**If MODE is 9 (Bug Detected):**
+
+Use the AskUserQuestion tool to present the choice:
+
+```markdown
+🔮 Bug detected: [Extract brief summary - first line or key error message]
+
+Estimated: XS, SIMPLE complexity
+
+Options:
+[A] Quick fix - Just fix it now, skip the ceremony
+[B] Log to roadmap - Create REQ-XXX and follow standard workflow
+```
+
+Based on user's answer:
+- **[A] Quick fix** → Investigate the error, identify the root cause, and fix it directly. No roadmap entry, no agent spawning. Just fix and report what was done.
+- **[B] Log to roadmap** → Set `mode = 1` and continue with standard scrying workflow below.
+
+**For all other modes:**
 
 Invoke the `gco-orchestrator` skill with detected mode, arguments, and planning depth:
 
@@ -304,6 +370,36 @@ $ /seance --deep "Redesign authentication system"
 > ✅ Roadmap created: .haunt/plans/roadmap.md
 > ✅ Strategic analysis: .haunt/plans/REQ-XXX-strategic-analysis.md
 > Ready to summon the spirits? [yes/no]
+```
+
+### Bug Detection Mode (Auto-Triggered)
+
+```bash
+$ /seance SnowparkSQLException: (1304): 01c18965-0c0e-46e2-0003-169611f5cf8a:
+  000904 (42000): SQL compilation error: error line 2 at position 32
+  invalid identifier 'USER'
+
+> 🔮 Bug detected: SQL compilation error - invalid identifier 'USER'
+>
+> Estimated: XS, SIMPLE complexity
+>
+> [A] Quick fix - Just fix it now, skip the ceremony
+> [B] Log to roadmap - Create REQ-XXX and follow standard workflow
+>
+> Which path?
+
+$ [Choose A]
+> Investigating...
+> Found: USER is a reserved keyword in Snowflake, needs to be quoted as "USER"
+> Fixed: utils/audit_data.py - changed USER to "USER" in 4 locations
+> ✅ Done
+
+$ [Choose B]
+> 🔮 Scrying the future...
+> ✅ Created REQ-XXX: Fix SQL reserved keyword error
+>    Agent: Dev-Backend
+>    Effort: XS
+> Ready to summon? [yes/no]
 ```
 
 ## Setting Up the haunt Alias
