@@ -280,6 +280,7 @@ WITH_RITUALS=true  # Enabled by default
 NO_RITUALS=false
 WITH_PATTERN_DETECTION=true  # Enabled by default
 NO_PATTERN_DETECTION=false
+WITH_SECRETS=false  # Disabled by default, use --with-secrets to enable
 CLEANUP_AFTER=true  # For remote execution: delete cloned repo after setup
 YES_TO_ALL=false  # Skip prompts and auto-install all dependencies
 CLEAN_BEFORE_INSTALL=false  # Remove stale files before installation
@@ -336,6 +337,7 @@ ${BOLD}OPTIONS:${NC}
     ${BOLD}--no-mcp${NC}            Skip MCP server channeling
     ${BOLD}--with-playwright${NC}   Install Playwright MCP without prompting (auto-yes)
     ${BOLD}--no-playwright${NC}     Skip Playwright MCP installation (auto-no)
+    ${BOLD}--with-secrets${NC}      Install secrets management template (.env.template with 1Password integration)
     ${BOLD}--no-rituals${NC}        Skip binding of ritual scripts (morning-review, evening-handoff, weekly-refactor)
     ${BOLD}--no-pattern-detection${NC}  Skip conjuring of pattern detection tools (hunt-patterns, weekly-refactor)
     ${BOLD}--clean, --repair${NC}   Remove stale files before installation (files in dest not in source)
@@ -504,6 +506,10 @@ parse_arguments() {
             --no-pattern-detection)
                 WITH_PATTERN_DETECTION=false
                 NO_PATTERN_DETECTION=false
+                shift
+                ;;
+            --with-secrets)
+                WITH_SECRETS=true
                 shift
                 ;;
             --cleanup)
@@ -3251,6 +3257,59 @@ CLAUDE_MD_EOF
             log "    - Disable strict mode: export STRICT_E2E_MODE=false"
             log "    - Enable test execution: export RUN_E2E_TESTS=true"
             log "    - Bypass hook once: git commit --no-verify"
+        fi
+    fi
+
+    # -------------------------------------------------------------------------
+    # Install Secrets Management Template (if --with-secrets flag is set)
+    # -------------------------------------------------------------------------
+    if [[ "$WITH_SECRETS" == true ]]; then
+        blank
+        info "Installing secrets management template..."
+
+        local template_source="${PROJECT_ROOT}/secrets/.env.template"
+        local template_dest="${project_root}/.env.template"
+
+        # Check if source template exists
+        if [[ ! -f "$template_source" ]]; then
+            warning "Secrets template not found at ${template_source}"
+            warning "Skipping secrets installation"
+        else
+            # Copy template if it doesn't exist
+            if [[ ! -f "$template_dest" ]]; then
+                if [[ "$DRY_RUN" == false ]]; then
+                    cp "$template_source" "$template_dest"
+                    success "Created .env.template with 1Password tag examples"
+                    ((created_count++))
+
+                    # Print setup instructions
+                    blank
+                    log "  ${BOLD}Secrets Management Setup:${NC}"
+                    log "  1. Copy .env.template to .env:"
+                    log "     cp .env.template .env"
+                    log ""
+                    log "  2. Set up 1Password Service Account:"
+                    log "     https://developer.1password.com/docs/service-accounts/"
+                    log ""
+                    log "  3. Export service account token:"
+                    log "     export OP_SERVICE_ACCOUNT_TOKEN='your-token-here'"
+                    log ""
+                    log "  4. Load secrets in bash scripts:"
+                    log "     source Haunt/scripts/haunt-secrets.sh"
+                    log "     load_secrets .env"
+                    log ""
+                    log "  5. Load secrets in Python:"
+                    log "     from haunt_secrets import load_secrets"
+                    log "     load_secrets('.env')"
+                    log ""
+                    log "  See Haunt/secrets/README.md for complete documentation"
+                else
+                    info "[DRY RUN] Would copy .env.template to ${template_dest}"
+                fi
+            else
+                info "Skipped: .env.template already exists"
+                ((skipped_count++))
+            fi
         fi
     fi
 

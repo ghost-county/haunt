@@ -26,9 +26,9 @@ See `~/.claude/rules/gco-roadmap-format.md` for status update protocol (global r
 **Status:** All requirements complete. Roadmap clear.
 
 **Archived (2026-01-05):**
-- 43 total requirements archived to `.haunt/completed/2026-01/`
-- Latest: 77% skill compression (3,395 → 763 lines)
-- New rules: gco-communication.md, gco-decisions.md
+- 49 total requirements archived to `.haunt/completed/2026-01/`
+- Latest: Secrets Management Core (6 requirements)
+- Previous: 77% skill compression (3,395 → 763 lines)
 
 Run `/seance` to start new work.
 
