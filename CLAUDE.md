@@ -25,14 +25,10 @@ See `~/.claude/rules/gco-roadmap-format.md` for status update protocol (global r
 
 **Status:** All requirements complete. Roadmap clear.
 
-**Archived (2026-01-03):**
-- 28 total requirements archived to `.haunt/completed/2026-01/`
-- Key achievements:
-  - UOCS (Universal Output Capture System) implemented
-  - Agent character sheets minimized (56% reduction)
-  - Skills consolidated (76% reduction)
-  - Instruction overhead reduced 79%
-  - Notification hooks for work completion
+**Archived (2026-01-05):**
+- 43 total requirements archived to `.haunt/completed/2026-01/`
+- Latest: 77% skill compression (3,395 → 763 lines)
+- New rules: gco-communication.md, gco-decisions.md
 
 Run `/seance` to start new work.
 
