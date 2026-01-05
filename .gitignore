@@ -138,5 +138,8 @@ nats-data/
 # Project-local Claude Code configuration
 .claude/
 
-# Haunt SDLC artifacts (entire directory)
-.haunt/
+# Haunt SDLC artifacts (see .haunt/.gitignore for granular rules)
+# Using * to allow nested .gitignore to work
+.haunt/*
+!.haunt/.gitignore
+!.haunt/plans

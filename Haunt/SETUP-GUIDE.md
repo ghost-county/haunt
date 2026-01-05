@@ -41,7 +41,7 @@ cd .. && rm -rf ghost-county
 **Alternative: Remote installation (one-liner)**
 ```bash
 # Quick install via curl (may fail on some networks - see Troubleshooting Issue 11)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 **Note:** If the curl command fails with "Failed to clone repository", use the manual method above instead.
 
@@ -1060,7 +1060,7 @@ grep -n "TODO" Haunt/scripts/setup-haunt.sh
 
 **When:** Running the one-liner curl install command:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 
 **Diagnostic:**
@@ -1133,7 +1133,7 @@ git config --global http.proxy http://proxy.example.com:8080
 git config --global https.proxy https://proxy.example.com:8080
 
 # Then retry curl install
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 
 # Remove proxy after install (if needed)
 git config --global --unset http.proxy

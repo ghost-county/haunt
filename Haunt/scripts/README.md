@@ -51,18 +51,14 @@ bash Haunt/scripts/setup-haunt.sh
 cd .. && rm -rf ghost-county  # Optional cleanup
 
 # ALTERNATIVE: Remote installation (one-liner, may fail on some networks)
-# Quick install (clones repo temporarily, keeps it for reference)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+# Recommended: Global install with cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 
-# Install and cleanup (removes cloned repo after setup)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=both --cleanup
-
-# Install with options
+# Project-only install
 curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
 
-# Global-only install with cleanup (removes project gco-* files, cleans stale, installs to ~/.claude/ only)
-rm -rf .claude/agents/gco-*.md .claude/rules/gco-*.md .claude/skills/gco-* .claude/commands/gco-*.md 2>/dev/null; \
-  curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --clean --cleanup
+# Basic install (clones repo temporarily, keeps it for reference)
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
 
 # Use GitHub API to bypass CDN cache (if you need latest immediately)
 curl -fsSL -H "Accept: application/vnd.github.v3.raw" \

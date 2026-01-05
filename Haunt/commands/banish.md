@@ -55,7 +55,8 @@ If any validation fails, STOP and report which criterion is not met.
 ```
 
 5. Remove the requirement from `.haunt/plans/roadmap.md`
-6. Report success with REQ number and archive location
+6. Run `/git-push` to commit and push changes
+7. Report success with REQ number and archive location
 
 #### For All Complete (`/banish --all` or `/banish --all-complete`)
 
@@ -65,7 +66,8 @@ Both `--all` and `--all-complete` work identically:
 2. Find ALL requirements with 🟢 status
 3. Validate each one (as above)
 4. Archive each using the single-requirement process
-5. Report count of archived requirements
+5. Run `/git-push` to commit and push all changes
+6. Report count of archived requirements
 
 ### Error Handling
 

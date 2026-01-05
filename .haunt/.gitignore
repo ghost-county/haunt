@@ -1,0 +1,24 @@
+# Ignore working files (ephemeral)
+plans/*
+!plans/roadmap.md
+progress/
+completed/
+docs/
+
+# Preserve tests (optionally shareable)
+!tests/
+
+# Preserve scripts (team rituals)
+!scripts/
+
+# Ignore verification reports
+*verification*.md
+
+# Ignore session reports
+session-*.md
+
+# But preserve templates
+!README.md
+
+# Exception: Track lessons-learned database (project knowledge)
+!docs/lessons-learned.md

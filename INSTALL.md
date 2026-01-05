@@ -2,7 +2,7 @@
 
 ## Step 1: Install
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=both --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 
 ## Step 2: Restart Claude Code
