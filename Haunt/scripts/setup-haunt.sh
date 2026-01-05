@@ -1728,9 +1728,16 @@ setup_hooks() {
     fi
 
     # Interactive prompt if not explicitly set
-    if [[ "$WITH_HOOKS" == "" && "$QUIET" == true && "$YES_TO_ALL" == false ]]; then
+    # Only prompt when: WITH_HOOKS not set, QUIET=false (interactive mode), and YES_TO_ALL=false
+    if [[ "$WITH_HOOKS" == "" && "$QUIET" == false && "$YES_TO_ALL" == false ]]; then
         echo ""
-        read -p "Install damage control hooks? [Y/n] " -n 1 -r
+        # Use /dev/tty to handle remote/piped execution
+        if [[ -r /dev/tty ]]; then
+            read -p "Install damage control hooks? [Y/n] " -n 1 -r < /dev/tty
+        else
+            # No tty available, default to yes
+            REPLY="y"
+        fi
         echo ""
         if [[ $REPLY =~ ^[Nn]$ ]]; then
             info "Skipping hooks installation"
