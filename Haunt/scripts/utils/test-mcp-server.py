@@ -21,11 +21,8 @@ from pathlib import Path
 
 def test_mcp_dependencies():
     """Check if required dependencies are installed."""
-    try:
-        import mcp
-        return True
-    except ImportError:
-        return False
+    import importlib.util
+    return importlib.util.find_spec("mcp") is not None
 
 
 def test_mcp_server(server_path: Path, timeout: int = 5) -> bool:

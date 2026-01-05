@@ -41,11 +41,6 @@ def main():
         print("No completed requirements to archive")
         return
 
-    # Read existing archive
-    archive_content = ""
-    if ARCHIVE_PATH.exists():
-        archive_content = ARCHIVE_PATH.read_text()
-
     # Add new completed items to archive
     today = datetime.now().strftime("%Y-%m-%d")
     new_archive = f"\n\n## Archived {today}\n\n"

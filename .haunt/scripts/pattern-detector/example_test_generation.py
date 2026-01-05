@@ -187,9 +187,9 @@ def example_write_to_files():
             )
 
             if pytest_result.returncode == 0:
-                print(f"    ✓ Pytest collection successful")
+                print("    ✓ Pytest collection successful")
             else:
-                print(f"    ✗ Pytest collection failed")
+                print("    ✗ Pytest collection failed")
 
 
 def example_validation():

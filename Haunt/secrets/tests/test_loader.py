@@ -3,7 +3,6 @@
 import os
 import pytest
 from unittest.mock import patch, MagicMock
-from pathlib import Path
 from haunt_secrets.loader import load_secrets, get_secrets
 
 

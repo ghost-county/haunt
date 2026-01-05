@@ -171,9 +171,7 @@ ghost-county/
 │   ├── README.md             # Architecture overview
 │   ├── SETUP-GUIDE.md        # Detailed setup instructions
 │   └── QUICK-REFERENCE.md    # Quick reference card
-├── Skills/                   # Domain-specific skills (optional)
-├── Knowledge/                # Educational materials
-└── Agentic_SDLC_Framework/   # v1.0 Legacy framework
+└── Skills/                   # Domain-specific skills (optional)
 ```
 
 ## Documentation

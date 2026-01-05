@@ -482,7 +482,7 @@ class TestGenerator:
 
         # Generate test code
         if self.mock:
-            print(f"  Using mock template", file=sys.stderr)
+            print("  Using mock template", file=sys.stderr)
             test_code = self._get_mock_template(pattern_slug, pattern)
         else:
             # Create prompt
@@ -507,14 +507,14 @@ class TestGenerator:
                 print(f"  Generated {len(test_code)} characters", file=sys.stderr)
             except Exception as e:
                 print(f"  Error generating test: {e}", file=sys.stderr)
-                print(f"  Falling back to mock template", file=sys.stderr)
+                print("  Falling back to mock template", file=sys.stderr)
                 test_code = self._get_mock_template(pattern_slug, pattern)
 
         # Validate syntax
         is_valid, error = self._validate_python_syntax(test_code)
 
         if is_valid:
-            print(f"  ✓ Syntax validation passed", file=sys.stderr)
+            print("  ✓ Syntax validation passed", file=sys.stderr)
         else:
             print(f"  ✗ Syntax validation failed: {error}", file=sys.stderr)
 
@@ -659,7 +659,7 @@ def main():
                 print(f"\n{invalid_count} test(s) failed validation", file=sys.stderr)
                 return 1
             else:
-                print(f"\nAll tests validated successfully", file=sys.stderr)
+                print("\nAll tests validated successfully", file=sys.stderr)
                 return 0
 
         # Read input patterns
@@ -691,7 +691,7 @@ def main():
         valid_count = sum(1 for r in results if r['validation']['is_valid'])
         invalid_count = len(results) - valid_count
 
-        print(f"\n=== Generation Summary ===", file=sys.stderr)
+        print("\n=== Generation Summary ===", file=sys.stderr)
         print(f"Total patterns: {len(patterns)}", file=sys.stderr)
         print(f"Valid tests: {valid_count}", file=sys.stderr)
         print(f"Invalid tests: {invalid_count}", file=sys.stderr)

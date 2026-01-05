@@ -8,13 +8,12 @@ This test suite validates the complete workflow:
 
 import os
 import subprocess
-import tempfile
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 import pytest
 
 from haunt_secrets import load_secrets, get_secrets
-from haunt_secrets.redaction import register_secret, redact, contains_secret, reset_secrets
+from haunt_secrets.redaction import redact, contains_secret, reset_secrets
 
 
 @pytest.fixture
@@ -145,8 +144,8 @@ class TestEndToEndWorkflow:
         with patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "test_token"}):
             reset_secrets()
 
-            # Load secrets
-            secrets = get_secrets(sample_env_file)
+            # Load secrets (triggers side effect of registering for redaction)
+            get_secrets(sample_env_file)
 
             # Verify secrets are redacted in logs/output
             assert contains_secret("DB password is: db_secret_12345") is True
@@ -439,7 +438,7 @@ SECRET=placeholder
             with patch.dict(os.environ, {"OP_SERVICE_ACCOUNT_TOKEN": "test_token"}):
                 try:
                     get_secrets(sample_env_file)
-                except:
+                except Exception:
                     pass
 
                 # Verify capture_output was used

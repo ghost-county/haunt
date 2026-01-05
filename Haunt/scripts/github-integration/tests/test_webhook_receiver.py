@@ -6,7 +6,6 @@ import hmac
 import hashlib
 import json
 import pytest
-from pathlib import Path
 
 
 # Mock Flask app for testing

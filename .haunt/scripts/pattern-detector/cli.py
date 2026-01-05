@@ -34,13 +34,12 @@ Features:
 
 import argparse
 import json
-import os
 import subprocess
 import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 # ANSI color codes for better UX
 class Colors:
@@ -223,7 +222,7 @@ class PatternHunterCLI:
         print(f"{Colors.YELLOW}{question}{Colors.RESET}")
         for i, choice in enumerate(choices, 1):
             print(f"  {i}. {choice}")
-        print(f"  0. Skip")
+        print("  0. Skip")
 
         while True:
             response = input(f"{Colors.YELLOW}Choice [1-{len(choices)}, 0 to skip]: {Colors.RESET}").strip()

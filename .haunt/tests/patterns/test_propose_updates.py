@@ -9,14 +9,13 @@ Validates that proposal generation meets acceptance criteria:
 """
 
 import json
-import pytest
 import sys
 from pathlib import Path
 
 # Add parent directory to path to import the module
 sys.path.insert(0, str(Path(__file__).parent.parent.parent / 'Haunt' / 'scripts' / 'rituals' / 'pattern-detector'))
 
-from propose_updates import ProposalGenerator, MOCK_PROPOSALS
+from propose_updates import ProposalGenerator
 
 
 def test_agent_classification():

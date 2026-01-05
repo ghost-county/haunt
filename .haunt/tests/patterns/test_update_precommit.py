@@ -5,8 +5,6 @@ Unit tests for update_precommit.py module.
 Tests the pre-commit configuration update functionality.
 """
 
-import json
-import os
 import sys
 import tempfile
 from pathlib import Path
@@ -19,7 +17,6 @@ import yaml
 
 from update_precommit import (
     DEFAULT_CONFIG,
-    PATTERN_HOOK_CONFIG,
     PreCommitUpdater
 )
 

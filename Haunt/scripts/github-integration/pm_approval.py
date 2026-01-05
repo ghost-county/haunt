@@ -13,7 +13,7 @@ import logging
 import os
 import sys
 from pathlib import Path
-from typing import Dict, Any, List, Optional
+from typing import Dict, Any, List
 
 try:
     import yaml
@@ -282,7 +282,7 @@ class PMApprovalWorkflow:
             print("No pending issues to review.")
             return
 
-        print(f"\n=== PM Approval Workflow ===")
+        print("\n=== PM Approval Workflow ===")
         print(f"Pending issues: {len(pending)}\n")
 
         approved_count = 0
@@ -294,7 +294,7 @@ class PMApprovalWorkflow:
             print(f"URL: {issue['url']}")
             print(f"Labels: {', '.join(issue.get('labels', []))}")
             print(f"Marker location: {issue.get('marker_location', 'unknown')}")
-            print(f"\nBody preview:")
+            print("\nBody preview:")
             print(issue.get('body', 'No description')[:200])
             print("...")
 
@@ -325,7 +325,7 @@ class PMApprovalWorkflow:
         # Save remaining pending issues
         self.save_pending_issues(pending)
 
-        print(f"\n=== Review Complete ===")
+        print("\n=== Review Complete ===")
         print(f"Approved: {approved_count}")
         print(f"Rejected: {rejected_count}")
         print(f"Remaining: {len(pending)}")

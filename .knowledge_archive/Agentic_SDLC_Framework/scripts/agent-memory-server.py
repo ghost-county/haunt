@@ -9,8 +9,7 @@ Start: python scripts/agent-memory-server.py
 """
 
 import json
-import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from dataclasses import dataclass, field, asdict
@@ -189,19 +188,19 @@ async def call_tool(name: str, arguments: dict):
 
         if memory.long_term_insights:
             recent_insights = memory.long_term_insights[-5:]
-            summary_parts.append(f"## Long-term Insights\n" + "\n".join(f"- {i}" for i in recent_insights))
+            summary_parts.append("## Long-term Insights\n" + "\n".join(f"- {i}" for i in recent_insights))
 
         if memory.medium_term_patterns:
             recent_patterns = memory.medium_term_patterns[-5:]
-            summary_parts.append(f"## Current Patterns\n" + "\n".join(f"- {p}" for p in recent_patterns))
+            summary_parts.append("## Current Patterns\n" + "\n".join(f"- {p}" for p in recent_patterns))
 
         if memory.recent_tasks:
             recent = memory.recent_tasks[-5:]
-            summary_parts.append(f"## Recent Tasks\n" + "\n".join(f"- {t}" for t in recent))
+            summary_parts.append("## Recent Tasks\n" + "\n".join(f"- {t}" for t in recent))
 
         if memory.recent_learnings:
             recent = memory.recent_learnings[-5:]
-            summary_parts.append(f"## Recent Learnings\n" + "\n".join(f"- {l}" for l in recent))
+            summary_parts.append("## Recent Learnings\n" + "\n".join(f"- {item}" for item in recent))
 
         summary = "\n\n".join(summary_parts) if summary_parts else "No memories yet."
         return [TextContent(type="text", text=summary)]
@@ -249,7 +248,7 @@ async def call_tool(name: str, arguments: dict):
         if len(memory.recent_learnings) > 10:
             # Move oldest learnings to medium-term as patterns
             to_consolidate = memory.recent_learnings[:-5]
-            memory.medium_term_patterns.extend([f"Pattern from learnings: {l}" for l in to_consolidate[:3]])
+            memory.medium_term_patterns.extend([f"Pattern from learnings: {item}" for item in to_consolidate[:3]])
             memory.recent_learnings = memory.recent_learnings[-5:]
 
         if len(memory.medium_term_patterns) > 20:

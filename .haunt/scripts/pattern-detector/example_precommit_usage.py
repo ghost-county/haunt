@@ -38,7 +38,7 @@ def example_new_repository():
         print(f"Repository: {repo_dir}")
         print(f"Config file: {config_path}")
         print(f"Test directory: {test_dir}")
-        print(f"\nInitial state:")
+        print("\nInitial state:")
         print(f"  Config exists: {config_path.exists()}")
 
         # Run updater
@@ -49,13 +49,13 @@ def example_new_repository():
 
         success, changed = updater.update(dry_run=False, install=False)
 
-        print(f"\nUpdate result:")
+        print("\nUpdate result:")
         print(f"  Success: {success}")
         print(f"  Changed: {changed}")
         print(f"  Config exists: {config_path.exists()}")
 
         if config_path.exists():
-            print(f"\nGenerated config:")
+            print("\nGenerated config:")
             print("-" * 60)
             print(config_path.read_text())
             print("-" * 60)
@@ -90,7 +90,7 @@ def example_existing_repository():
 
         print(f"Repository: {repo_dir}")
         print(f"Test directory: {test_dir}")
-        print(f"\nExisting config:")
+        print("\nExisting config:")
         print("-" * 60)
         print(existing_config)
         print("-" * 60)
@@ -103,12 +103,12 @@ def example_existing_repository():
 
         success, changed = updater.update(dry_run=False, install=False)
 
-        print(f"\nUpdate result:")
+        print("\nUpdate result:")
         print(f"  Success: {success}")
         print(f"  Changed: {changed}")
 
         if config_path.exists():
-            print(f"\nUpdated config:")
+            print("\nUpdated config:")
             print("-" * 60)
             print(config_path.read_text())
             print("-" * 60)
@@ -172,7 +172,7 @@ def example_dry_run():
         print("Running dry run...")
         success, changed = updater.update(dry_run=True, install=False)
 
-        print(f"\nDry run result:")
+        print("\nDry run result:")
         print(f"  Success: {success}")
         print(f"  Changed: {changed}")
         print(f"  Config created: {config_path.exists()}")
@@ -287,7 +287,7 @@ def example_acceptance_tests():
 
         print(f"  Has local repo: {has_local_repo}")
         print(f"  Has pattern hook: {has_pattern_hook}")
-        print(f"  ✓ Test passed" if (success and has_local_repo and has_pattern_hook) else "  ✗ Test failed")
+        print("  ✓ Test passed" if (success and has_local_repo and has_pattern_hook) else "  ✗ Test failed")
 
     # Acceptance Test 2: Repo with existing config
     print("\n2. Repository with existing config")
@@ -313,7 +313,7 @@ def example_acceptance_tests():
         with open(config_path, 'w') as f:
             yaml.safe_dump(existing_config, f)
 
-        print(f"  Before: 1 repo (black)")
+        print("  Before: 1 repo (black)")
 
         updater = PreCommitUpdater(config_path=config_path, test_dir=test_dir)
         success, changed = updater.update(dry_run=False, install=False)
@@ -336,7 +336,7 @@ def example_acceptance_tests():
 
         print(f"  Black hook preserved: {black_preserved}")
         print(f"  Pattern hook added: {pattern_added}")
-        print(f"  ✓ Test passed" if (success and black_preserved and pattern_added) else "  ✗ Test failed")
+        print("  ✓ Test passed" if (success and black_preserved and pattern_added) else "  ✗ Test failed")
 
 
 def main():

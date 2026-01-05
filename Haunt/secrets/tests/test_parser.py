@@ -1,7 +1,6 @@
 """Tests for .env secret tag parser."""
 
 import pytest
-from pathlib import Path
 from haunt_secrets.parser import parse_env_file, parse_env_content
 
 

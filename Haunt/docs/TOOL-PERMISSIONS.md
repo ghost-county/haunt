@@ -10,7 +10,7 @@ This document explains how tool permissions work in the Haunt Framework.
 
 ```yaml
 ---
-name: gco-seer
+name: gco-example-agent
 tools: Task, Glob, Grep, Read, Write, mcp__agent_memory__*  # ← This does NOT work
 ---
 ```
@@ -19,7 +19,7 @@ Many assume that listing tools in the agent YAML frontmatter will grant those to
 
 ### The Reality
 
-When you run `claude --agent gco-seer`:
+When you run `claude --agent <name>`:
 
 - ✅ Agent personality/instructions are loaded
 - ✅ Skills are loaded
@@ -32,13 +32,9 @@ When you run `claude --agent gco-seer`:
 2. **Subagents via Task:** When spawning via Task tool, the `subagent_type` parameter determines tools
 3. **Agent Mode:** When using `--agent` flag, you get a LIMITED subset (no Task tool)
 
-### Why gco-seer Was Deprecated
+### Historical Note
 
-The original `gco-seer` agent was built on the incorrect assumption that `tools: Task` would grant Task tool access. Since the Task tool is only available in the main session (not via `--agent`), the Seer couldn't spawn other agents.
-
-**Solution:** Use `/seance` command in the main session instead of `claude --agent gco-seer`.
-
-See `.haunt/deprecated/gco-seer.md` for the full story.
+An earlier version of the framework included an agent that was deprecated due to this misconception. Coordination agents should be invoked via commands in the main session (like `/seance`) rather than as standalone agents.
 
 ---
 
@@ -308,10 +304,10 @@ If no model specified when spawning, the agent uses the current session's model.
 **Fix:** Use main session with `/seance` command instead:
 
 ```bash
-# Wrong - no Task tool access
-claude --agent gco-seer
+# Wrong - coordination agent with --agent flag (no Task tool)
+claude --agent gco-coordination-agent
 
-# Right - full tool access including Task
+# Right - full tool access including Task in main session
 claude --dangerously-skip-permissions
 /seance "your idea"
 ```

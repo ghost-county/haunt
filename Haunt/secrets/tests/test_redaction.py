@@ -5,7 +5,6 @@ in logs, stdout, stderr, and any other output.
 """
 
 import logging
-import pytest
 from io import StringIO
 
 from haunt_secrets.redaction import (

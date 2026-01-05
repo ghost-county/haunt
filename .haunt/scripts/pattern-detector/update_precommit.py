@@ -30,11 +30,10 @@ Example:
 """
 
 import argparse
-import os
 import subprocess
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 
 # Try to import PyYAML, provide helpful error if missing
 try:
@@ -118,11 +117,11 @@ class PreCommitUpdater:
                 config = yaml.safe_load(f)
 
             if not config:
-                print(f"Empty config file, using default", file=sys.stderr)
+                print("Empty config file, using default", file=sys.stderr)
                 return DEFAULT_CONFIG.copy()
 
             if not isinstance(config, dict):
-                print(f"Invalid config format, using default", file=sys.stderr)
+                print("Invalid config format, using default", file=sys.stderr)
                 return DEFAULT_CONFIG.copy()
 
             # Ensure repos key exists
@@ -244,7 +243,7 @@ class PreCommitUpdater:
         else:
             # Update existing hook if command changed
             if pattern_hook.get('entry') != test_command:
-                print(f"Updating pattern-defeat-tests command", file=sys.stderr)
+                print("Updating pattern-defeat-tests command", file=sys.stderr)
                 print(f"  Old: {pattern_hook.get('entry')}", file=sys.stderr)
                 print(f"  New: {test_command}", file=sys.stderr)
                 pattern_hook['entry'] = test_command

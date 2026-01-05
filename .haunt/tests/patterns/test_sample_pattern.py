@@ -8,7 +8,6 @@ Created: 2025-12-10
 Status: Example/Template
 """
 
-import os
 import re
 from pathlib import Path
 
@@ -52,7 +51,7 @@ def test_no_hardcoded_secrets():
                         'pattern': pattern,
                         'match': match.group()
                     })
-        except Exception as e:
+        except Exception:
             # Skip files that can't be read
             continue
 

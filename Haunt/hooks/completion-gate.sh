@@ -1,9 +1,12 @@
 #!/bin/bash
 # Completion Gate Hook
-# Blocks: Marking requirements complete (🟢) without test verification
+# Blocks:
+# 1. Marking requirements complete (🟢) without test verification
+# 2. Marking requirements complete (🟢) with unchecked task boxes (- [ ])
 #
-# This hook ensures requirements can only be marked complete when tests have
-# been verified by running verify-tests.sh, which creates evidence files.
+# This hook ensures requirements can only be marked complete when:
+# - Tests have been verified (via verify-tests.sh evidence file)
+# - All task checkboxes are marked complete (- [x], not - [ ])
 
 set -euo pipefail
 
@@ -89,5 +92,28 @@ if [[ $VERIFY_AGE -gt 3600 ]]; then
     exit 2  # Blocking error
 fi
 
-# Verification is valid and recent
+# Check for unchecked task boxes in the requirement being marked complete
+# Pattern: - [ ] (task checkbox that is NOT checked)
+UNCHECKED_TASKS=$(echo "$NEW_STRING" | grep -E '^[[:space:]]*-[[:space:]]*\[[[:space:]]\]' || true)
+
+if [[ -n "$UNCHECKED_TASKS" ]]; then
+    UNCHECKED_COUNT=$(echo "$UNCHECKED_TASKS" | wc -l | tr -d ' ')
+    echo "Completion gate: Cannot mark $REQ_MATCH complete with unchecked tasks." >&2
+    echo "" >&2
+    echo "Found $UNCHECKED_COUNT unchecked task(s):" >&2
+    echo "$UNCHECKED_TASKS" | head -5 >&2
+    if [[ $UNCHECKED_COUNT -gt 5 ]]; then
+        echo "  ... and $((UNCHECKED_COUNT - 5)) more" >&2
+    fi
+    echo "" >&2
+    echo "To fix:" >&2
+    echo "1. Complete all tasks and mark them as [x]" >&2
+    echo "2. Then retry marking the requirement complete" >&2
+    echo "" >&2
+    echo "Rule: All tasks must be - [x] (not - [ ]) before marking 🟢" >&2
+    echo "See: gco-completion-checklist rule" >&2
+    exit 2  # Blocking error
+fi
+
+# All checks passed - verification valid and all tasks complete
 exit 0

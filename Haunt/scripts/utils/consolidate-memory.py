@@ -56,7 +56,7 @@ def consolidate_memories():
             # Consolidate learnings to patterns
             if len(recent_learnings) > 10:
                 to_consolidate = recent_learnings[:-5]
-                medium_patterns.extend([f"Pattern from learnings: {l}" for l in to_consolidate[:3]])
+                medium_patterns.extend([f"Pattern from learnings: {item}" for item in to_consolidate[:3]])
                 recent_learnings = recent_learnings[-5:]
 
             # Promote patterns to long-term
@@ -95,13 +95,13 @@ def consolidate_memories():
         print(f"🧠 Memory consolidation complete for {len(consolidated_agents)} agent(s):")
         for agent in consolidated_agents:
             aid = agent['agent_id']
-            t = agent['tasks']
-            l = agent['learnings']
-            p = agent['patterns']
+            tasks = agent['tasks']
+            learnings = agent['learnings']
+            patterns = agent['patterns']
             print(f"  • {aid}:")
-            print(f"    - Tasks: {t['old']} → {t['new']}")
-            print(f"    - Learnings: {l['old']} → {l['new']}")
-            print(f"    - Patterns: {p['old']} → {p['new']}")
+            print(f"    - Tasks: {tasks['old']} → {tasks['new']}")
+            print(f"    - Learnings: {learnings['old']} → {learnings['new']}")
+            print(f"    - Patterns: {patterns['old']} → {patterns['new']}")
 
         return True
 

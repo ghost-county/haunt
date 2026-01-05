@@ -10,7 +10,6 @@ Tests the pattern-detector/generate_tests.py functionality:
 """
 
 import ast
-import json
 import sys
 import tempfile
 from pathlib import Path

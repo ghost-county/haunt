@@ -91,7 +91,6 @@ def main():
         sys.exit(1)
 
     # Extract file_path from tool_input
-    tool_name = input_data.get("tool_name")
     tool_input = input_data.get("tool_input", {})
     file_path = tool_input.get("file_path")
 
@@ -107,13 +106,13 @@ def main():
     # Check zeroAccessPaths (absolute no-access)
     if is_protected(file_path, zero_access):
         print(f"BLOCKED: Edit to {file_path} targets zero-access path (secrets/credentials)", file=sys.stderr)
-        print(f"REASON: File is under protected directory containing sensitive data", file=sys.stderr)
+        print("REASON: File is under protected directory containing sensitive data", file=sys.stderr)
         sys.exit(2)
 
     # Check readOnlyPaths (currently empty, but implement for future-proofing)
     if is_protected(file_path, read_only):
         print(f"BLOCKED: Edit to {file_path} targets read-only path", file=sys.stderr)
-        print(f"REASON: Path is marked read-only in patterns.yaml", file=sys.stderr)
+        print("REASON: Path is marked read-only in patterns.yaml", file=sys.stderr)
         sys.exit(2)
 
     # If no protection matched, allow the edit

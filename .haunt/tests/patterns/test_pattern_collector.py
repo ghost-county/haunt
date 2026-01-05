@@ -11,7 +11,6 @@ Expected: Valid JSON output with all three signal types
 import json
 import subprocess
 import sys
-from pathlib import Path
 
 
 def test_pattern_collector_basic_execution():

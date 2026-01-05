@@ -12,10 +12,8 @@ Usage:
 """
 
 import json
-import shutil
 import sys
 from pathlib import Path
-from datetime import datetime
 
 import pytest
 
@@ -23,7 +21,7 @@ import pytest
 pattern_detector_path = Path(__file__).parent.parent.parent / 'Haunt' / 'scripts' / 'rituals' / 'pattern-detector'
 sys.path.insert(0, str(pattern_detector_path))
 
-from update_memory import MemoryUpdater
+from update_memory import MemoryUpdater  # noqa: E402
 
 
 @pytest.fixture

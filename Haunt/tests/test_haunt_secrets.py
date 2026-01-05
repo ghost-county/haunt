@@ -8,7 +8,6 @@ from .env files with the format: # @secret:op:vault/item/field
 import pytest
 import tempfile
 import os
-from pathlib import Path
 
 
 # This will fail until we implement haunt_secrets module

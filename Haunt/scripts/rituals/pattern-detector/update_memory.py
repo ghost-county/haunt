@@ -41,9 +41,7 @@ Output:
 
 import argparse
 import json
-import os
 import re
-import subprocess
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -241,7 +239,7 @@ class MemoryUpdater:
         try:
             # Placeholder for MCP server call
             # In practice, would use MCP SDK or subprocess to call server tools
-            print(f"WARNING: MCP integration not yet implemented, falling back to direct file mode", file=sys.stderr)
+            print("WARNING: MCP integration not yet implemented, falling back to direct file mode", file=sys.stderr)
             return False
         except Exception as e:
             print(f"Error calling MCP server: {e}", file=sys.stderr)

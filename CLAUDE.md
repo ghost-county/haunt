@@ -12,8 +12,6 @@ This is a knowledge base and framework repository for **Haunt** - a methodology 
   - **Haunt/skills/** - SDLC methodology skills (on-demand)
   - **Haunt/scripts/** - Setup and validation scripts
 - **Skills/** - Domain-specific Claude Code skills (career, business, finance, etc.)
-- **Knowledge/** - Educational curriculum from "Ghost County - Multiverse Curriculum"
-- **Agentic_SDLC_Framework/** - v1.0 Legacy framework (monolithic agents)
 
 ## Active Work
 
@@ -26,9 +24,9 @@ See `~/.claude/rules/gco-roadmap-format.md` for status update protocol (global r
 **Status:** All requirements complete. Roadmap clear.
 
 **Archived (2026-01-05):**
-- 56 total requirements archived to `.haunt/completed/2026-01/`
-- Latest: Damage Control Hooks (7 requirements)
-- Previous: Secrets Management Core, Skill Compression
+- 64 total requirements archived to `.haunt/completed/2026-01/`
+- Latest: Repository Cleanup Batch (8 requirements) + Task Checkbox Enforcement
+- Previous: Damage Control Hooks, Secrets Management Core, Skill Compression
 
 Run `/seance` to start new work.
 
@@ -54,17 +52,6 @@ ghost-county/
 ├── Skills/                    # Domain-specific skills (optional)
 │   ├── */SKILL.md            # Career, business, finance skills
 │   └── */references/         # Supporting documentation
-├── Knowledge/                 # Educational materials
-│   └── Ghost County - Multiverse Curriculum/
-├── Agentic_SDLC_Framework/   # v1.0 Legacy framework (monolithic agents)
-│   ├── 00-Overview.md        # Quick start guide
-│   ├── 01-Prerequisites.md   # Environment setup
-│   ├── 02-Infrastructure.md  # MCP servers, memory
-│   ├── 03-Agent-Definitions.md  # Agent character sheets
-│   ├── 04-Implementation-Phases.md
-│   ├── 05-Operations.md      # Daily/weekly rituals
-│   ├── 06-Patterns-and-Defeats.md  # TDD for agent behavior
-│   └── scripts/              # Automation scripts
 ├── .haunt/                   # Project SDLC artifacts (gitignored)
 │   ├── plans/                # Feature roadmaps and planning
 │   │   └── roadmap.md        # Main project roadmap

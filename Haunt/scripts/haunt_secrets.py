@@ -195,8 +195,6 @@ def parse_secret_tags(env_file: str) -> Dict[str, Tuple[str, str, str]]:
     i = 0
 
     while i < len(lines):
-        line = lines[i].strip()
-
         # Check if line contains a secret tag
         if tag_prefix_pattern.match(lines[i]):
             # Extract tag content and remove inline comments
@@ -549,8 +547,8 @@ def fetch_secret(vault: str, item: str, field: str) -> str:
     except FileNotFoundError as e:
         logger.error(f"1Password CLI (op) not found: {e}")
         raise OpNotInstalledError(
-            f"1Password CLI (op) is not installed or not found in PATH. "
-            f"Install it from: https://developer.1password.com/docs/cli"
+            "1Password CLI (op) is not installed or not found in PATH. "
+            "Install it from: https://developer.1password.com/docs/cli"
         )
 
     # Check for success

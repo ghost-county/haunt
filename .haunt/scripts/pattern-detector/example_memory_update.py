@@ -55,7 +55,7 @@ def example_basic_usage():
     # Show what was written
     print(f"\nMemory file created at: {temp_memory}")
     print(f"File size: {temp_memory.stat().st_size} bytes")
-    print(f"\nFirst entry content:")
+    print("\nFirst entry content:")
     memories = json.loads(temp_memory.read_text())
     print(json.dumps(memories[0], indent=2))
 
@@ -175,11 +175,11 @@ def example_error_handling():
 
     print("Attempting to load invalid JSON file...")
     try:
-        memories = updater._load_existing_memories()
+        updater._load_existing_memories()  # Should raise JSONDecodeError
         print("ERROR: Should have raised JSONDecodeError")
     except json.JSONDecodeError as e:
         print(f"✓ Correctly caught error: {type(e).__name__}")
-        print(f"  Message: Invalid JSON in memory file")
+        print("  Message: Invalid JSON in memory file")
 
     # Cleanup
     temp_memory.unlink()
