@@ -281,6 +281,7 @@ NO_RITUALS=false
 WITH_PATTERN_DETECTION=true  # Enabled by default
 NO_PATTERN_DETECTION=false
 WITH_SECRETS=false  # Disabled by default, use --with-secrets to enable
+WITH_HOOKS=""  # Empty = prompt, "true" = install, "false" = skip
 CLEANUP_AFTER=true  # For remote execution: delete cloned repo after setup
 YES_TO_ALL=false  # Skip prompts and auto-install all dependencies
 CLEAN_BEFORE_INSTALL=false  # Remove stale files before installation
@@ -338,6 +339,8 @@ ${BOLD}OPTIONS:${NC}
     ${BOLD}--with-playwright${NC}   Install Playwright MCP without prompting (auto-yes)
     ${BOLD}--no-playwright${NC}     Skip Playwright MCP installation (auto-no)
     ${BOLD}--with-secrets${NC}      Install secrets management template (.env.template with 1Password integration)
+    ${BOLD}--with-hooks${NC}        Install damage control hooks without prompting (auto-yes)
+    ${BOLD}--no-hooks${NC}          Skip damage control hook installation (auto-no)
     ${BOLD}--no-rituals${NC}        Skip binding of ritual scripts (morning-review, evening-handoff, weekly-refactor)
     ${BOLD}--no-pattern-detection${NC}  Skip conjuring of pattern detection tools (hunt-patterns, weekly-refactor)
     ${BOLD}--clean, --repair${NC}   Remove stale files before installation (files in dest not in source)
@@ -510,6 +513,14 @@ parse_arguments() {
                 ;;
             --with-secrets)
                 WITH_SECRETS=true
+                shift
+                ;;
+            --with-hooks)
+                WITH_HOOKS="true"
+                shift
+                ;;
+            --no-hooks)
+                WITH_HOOKS="false"
                 shift
                 ;;
             --cleanup)
@@ -1710,12 +1721,29 @@ setup_rules() {
 # ============================================================================
 
 setup_hooks() {
-    section "Phase 2c: Installing Claude Code Hooks (GLOBAL)"
+    # Check if hooks should be installed
+    if [[ "$WITH_HOOKS" == "false" ]]; then
+        info "Skipping hooks installation (--no-hooks)"
+        return 0
+    fi
 
-    local hooks_source="${PROJECT_ROOT}/hooks"
-    local hooks_target="${HOME}/.claude/hooks"
+    # Interactive prompt if not explicitly set
+    if [[ "$WITH_HOOKS" == "" && "$QUIET" == true && "$YES_TO_ALL" == false ]]; then
+        echo ""
+        read -p "Install damage control hooks? [Y/n] " -n 1 -r
+        echo ""
+        if [[ $REPLY =~ ^[Nn]$ ]]; then
+            info "Skipping hooks installation"
+            return 0
+        fi
+    fi
+
+    section "Phase 2c: Installing Damage Control Hooks (GLOBAL)"
+
+    local hooks_source="${PROJECT_ROOT}/hooks/damage-control"
+    local hooks_target="${HOME}/.claude/hooks/damage-control"
     local settings_file="${HOME}/.claude/settings.json"
-    local hooks_template="${PROJECT_ROOT}/templates/settings.hooks.json"
+    local hooks_template="${PROJECT_ROOT}/templates/settings.damage-control.json"
 
     # Check if source hooks directory exists
     if [[ ! -d "$hooks_source" ]]; then
@@ -1732,6 +1760,14 @@ setup_hooks() {
         return 0
     fi
 
+    # Check for uv (required for running Python hooks)
+    if ! command -v uv &> /dev/null; then
+        warning "uv is not installed. Python hooks require uv to run."
+        warning "Install uv: curl -LsSf https://astral.sh/uv/install.sh | sh"
+        warning "Skipping hooks setup"
+        return 0
+    fi
+
     # Create hooks target directory
     if [[ ! -d "$hooks_target" ]]; then
         if [[ "$DRY_RUN" == false ]]; then
@@ -1742,12 +1778,22 @@ setup_hooks() {
         fi
     fi
 
+    # Copy patterns.yaml
+    if [[ -f "$hooks_source/patterns.yaml" ]]; then
+        if [[ "$DRY_RUN" == false ]]; then
+            cp "$hooks_source/patterns.yaml" "$hooks_target/"
+            success "Installed patterns.yaml"
+        else
+            info "[DRY RUN] Would install: patterns.yaml"
+        fi
+    fi
+
     # Copy hook scripts
     local hooks_copied=0
     local hooks_updated=0
     local hooks_unchanged=0
 
-    for hook_script in "$hooks_source"/*.sh; do
+    for hook_script in "$hooks_source"/*.py; do
         [[ -f "$hook_script" ]] || continue
 
         local script_name=$(basename "$hook_script")
@@ -1822,15 +1868,10 @@ setup_hooks() {
     fi
 
     echo ""
-    info "Hooks installed. To disable temporarily:"
-    info "  HAUNT_HOOKS_DISABLED=1 claude"
-    info ""
-    info "Active hooks:"
-    info "  - phase-enforcement.sh: Blocks dev agents outside SUMMONING phase"
-    info "  - file-location-enforcer.sh: Blocks GCO artifacts outside .haunt/"
-    info "  - commit-validator.sh: Requires [REQ-XXX] prefix on commits"
-    info "  - completion-gate.sh: Requires test verification before marking complete"
-    info "  - format-code.sh: Auto-formats code after edits (requires linters)"
+    info "Damage control hooks installed:"
+    info "  - Bash tool: Prevents dangerous commands (rm -rf, dd, format)"
+    info "  - Edit tool: Prevents accidental modification of critical files"
+    info "  - Write tool: Prevents overwriting important configuration files"
 }
 
 # Setup linting tools for auto-formatting hook

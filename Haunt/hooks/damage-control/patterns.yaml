@@ -1,0 +1,116 @@
+# Damage Control Pattern Configuration
+# Single source of truth for PreToolUse damage control protection rules
+
+# ============================================================================
+# DANGEROUS COMMAND PATTERNS (Bash Tool Only)
+# ============================================================================
+# These patterns block or request confirmation for destructive bash commands.
+# Patterns use regex syntax and are matched against the full command string.
+#
+# Fields:
+#   pattern: Regex pattern to match dangerous commands
+#   reason: Human-readable explanation of why blocked
+#   ask: (Optional) If true, prompts for confirmation instead of blocking
+# ============================================================================
+
+bashToolPatterns:
+  # BLOCK: Root/home directory deletion (catastrophic)
+  - pattern: 'rm\s+-rf\s+/$'
+    reason: 'Attempting to delete root filesystem - BLOCKED'
+    ask: false
+
+  - pattern: 'rm\s+-rf\s+~/?$'
+    reason: 'Attempting to delete entire home directory - BLOCKED'
+    ask: false
+
+  - pattern: 'rm\s+-rf\s+\$HOME/?$'
+    reason: 'Attempting to delete entire home directory - BLOCKED'
+    ask: false
+
+  # BLOCK: Wildcard deletion in current directory (dangerous)
+  - pattern: 'rm\s+-rf\s+\*'
+    reason: 'Wildcard deletion can destroy entire directory - BLOCKED'
+    ask: false
+
+  # BLOCK: Parent directory deletion (can escape project)
+  - pattern: 'rm\s+-rf\s+\.\.'
+    reason: 'Parent directory deletion can escape project boundary - BLOCKED'
+    ask: false
+
+  # ASK: Specific path deletion (might be intentional cleanup)
+  - pattern: 'rm\s+-rf\s+[^\s*~/$]'
+    reason: 'Recursive deletion of specific path - confirm before proceeding'
+    ask: true
+
+  # BLOCK: Insecure permission changes
+  - pattern: 'chmod\s+(777|666)'
+    reason: 'Setting insecure permissions (world-writable) - BLOCKED'
+    ask: false
+
+  # BLOCK: Unguarded SQL DELETE (no WHERE clause)
+  - pattern: 'DELETE\s+FROM\s+\w+\s*;'
+    reason: 'SQL DELETE without WHERE clause will delete all rows - BLOCKED'
+    ask: false
+
+# ============================================================================
+# ZERO ACCESS PATHS (No Read/Write/Edit/Delete)
+# ============================================================================
+# These paths contain secrets/credentials and should NEVER be accessed.
+# All tool operations blocked completely for these paths.
+#
+# IMPORTANT: This is minimal by design. User explicitly allows access to:
+#   - .env files (project-specific configuration)
+#   - credentials.json (service account keys)
+# ============================================================================
+
+zeroAccessPaths:
+  - ~/.ssh/              # SSH private keys
+  - ~/.aws/              # AWS credentials
+  - ~/.gnupg/            # GPG private keys
+
+# ============================================================================
+# READ-ONLY PATHS (Read Allowed, Modifications Blocked)
+# ============================================================================
+# These paths can be read but not modified/deleted.
+# Currently EMPTY - user explicitly wants full read/write/edit access.
+#
+# If future requirements need read-only protection, add paths here.
+# ============================================================================
+
+readOnlyPaths: []  # Empty - allow editing everything
+
+# ============================================================================
+# NO DELETE PATHS (Read/Write/Edit Allowed, Delete Blocked)
+# ============================================================================
+# These paths are critical to project structure and should not be deleted.
+# Read, Write, and Edit operations are allowed.
+# ============================================================================
+
+noDeletePaths:
+  # Version control
+  - .git/
+
+  # Project SDLC artifacts
+  - .haunt/plans/
+  - .haunt/completed/
+
+  # Common source directories
+  - src/
+  - lib/
+  - app/
+  - packages/
+
+  # Haunt framework (source)
+  - Haunt/agents/
+  - Haunt/rules/
+  - Haunt/skills/
+  - Haunt/scripts/
+  - Haunt/docs/
+  - Haunt/hooks/
+
+  # Deployed artifacts (global ~/.claude/)
+  - ~/.claude/rules/
+  - ~/.claude/agents/
+  - ~/.claude/skills/
+  - ~/.claude/commands/
+  - ~/.claude/hooks/
