@@ -54,7 +54,7 @@ One curl command to install. Run `/seance` to start. The spirits do the rest.
 
 ```bash
 # 1. Install
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 
 # 2. Restart Claude Code
 

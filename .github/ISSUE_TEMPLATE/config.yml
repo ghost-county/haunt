@@ -1,11 +1,11 @@
 blank_issues_enabled: true
 contact_links:
   - name: Quick Reference Guide
-    url: https://github.com/yourusername/haunt/blob/main/Haunt/QUICK-REFERENCE.md
+    url: https://github.com/ghost-county/haunt/blob/main/Haunt/QUICK-REFERENCE.md
     about: Cheat sheet for commands, agents, and skills
   - name: Setup Guide
-    url: https://github.com/yourusername/haunt/blob/main/Haunt/SETUP-GUIDE.md
+    url: https://github.com/ghost-county/haunt/blob/main/Haunt/SETUP-GUIDE.md
     about: Complete installation and configuration instructions
   - name: White Paper
-    url: https://github.com/yourusername/haunt/blob/main/Haunt/docs/WHITE-PAPER.md
+    url: https://github.com/ghost-county/haunt/blob/main/Haunt/docs/WHITE-PAPER.md
     about: Framework design philosophy and deep dive

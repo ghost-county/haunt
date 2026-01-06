@@ -117,7 +117,7 @@ END
 **With GitHub CLI (automated):**
 1. Collects diagnostics
 2. Prompts for issue details
-3. Creates issue on `github.com/yourusername/haunt`
+3. Creates issue on `github.com/ghost-county/haunt`
 4. Returns issue URL for tracking
 
 **Without GitHub CLI (browser fallback):**
@@ -150,7 +150,7 @@ END
 **"Failed to encode issue body"**
 - Python 3 may not be available
 - Script will show the issue text
-- Manually create issue at: `https://github.com/yourusername/haunt/issues/new`
+- Manually create issue at: `https://github.com/ghost-county/haunt/issues/new`
 
 ## Privacy & Security
 
@@ -174,8 +174,8 @@ END
 
 ## See Also
 
-- [GitHub Issues](https://github.com/yourusername/haunt/issues) - View existing issues
-- [Contributing Guidelines](https://github.com/yourusername/haunt/blob/main/CONTRIBUTING.md)
+- [GitHub Issues](https://github.com/ghost-county/haunt/issues) - View existing issues
+- [Contributing Guidelines](https://github.com/ghost-county/haunt/blob/main/CONTRIBUTING.md)
 - `/haunt` command - Check Haunt installation health
 - `/checkup` command - Verify framework setup
 

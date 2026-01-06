@@ -41,13 +41,13 @@
 
 ```bash
 # Option 1: Manual installation (recommended, works on all platforms)
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 bash Haunt/scripts/setup-haunt.sh --scope=project
 cd .. && rm -rf ghost-county
 
 # Option 2: One-liner (may fail on some networks)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 
 **Windows users:** Use Git Bash or WSL, not PowerShell. See [SETUP-GUIDE.md Issue 11](../SETUP-GUIDE.md#issue-11-failed-to-clone-repository-during-remote-installation) if clone fails.

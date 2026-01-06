@@ -12,7 +12,7 @@ Run directly from the internet - no manual cloning required:
 cd ~/github_repos/my_directory
 
 # 2. Install Haunt globally and cleanup source files (removes cloned repo after setup)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 
 # 3. Open Claude Code terminal with Bypass Permissions On
 claude --dangerously-skip-permissions
@@ -25,23 +25,23 @@ claude --dangerously-skip-permissions
 
 ```bash
 # Install globally (recommended - works in any project)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 
 # Install to current project only
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
 
 # Verify existing installation
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --verify
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --verify
 
 # Install (clones repo temporarily, keeps it for reference)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash
 
 # Preview what would be installed (dry run)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --dry-run
 
 # Alternative: Use GitHub API to bypass CDN cache (if you need latest immediately)
 curl -fsSL -H "Accept: application/vnd.github.v3.raw" \
-  "https://api.github.com/repos/ghost-county/ghost-county/contents/Haunt/scripts/setup-haunt.sh" | bash
+  "https://api.github.com/repos/ghost-county/haunt/contents/Haunt/scripts/setup-haunt.sh" | bash
 ```
 
 ### Quick Uninstall
@@ -122,7 +122,7 @@ cd /path/to/your/project
 git init  # if not already a git repo
 
 # 2. Run the Haunt setup
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
 
 # 3. Start Claude 
 claude 

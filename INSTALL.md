@@ -2,7 +2,7 @@
 
 ## Step 1: Install
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 
 ## Step 2: Restart Claude Code
@@ -37,5 +37,5 @@ Haunt installed specialized AI agents, skills, rules, and workflows into your Cl
 
 ## Need More?
 
-- [Full Documentation](https://github.com/ghost-county/ghost-county/tree/main/Haunt)
-- [Quick Reference](https://github.com/ghost-county/ghost-county/blob/main/Haunt/QUICK-REFERENCE.md)
+- [Full Documentation](https://github.com/ghost-county/haunt/tree/main/Haunt)
+- [Quick Reference](https://github.com/ghost-county/haunt/blob/main/Haunt/QUICK-REFERENCE.md)

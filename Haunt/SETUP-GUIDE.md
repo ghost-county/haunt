@@ -25,7 +25,7 @@
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 
 # 2. Run setup script
@@ -41,7 +41,7 @@ cd .. && rm -rf ghost-county
 **Alternative: Remote installation (one-liner)**
 ```bash
 # Quick install via curl (may fail on some networks - see Troubleshooting Issue 11)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 **Note:** If the curl command fails with "Failed to clone repository", use the manual method above instead.
 
@@ -50,7 +50,7 @@ curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haun
 **Recommended: Use Git Bash on Windows**
 ```bash
 # 1. Clone repository
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 
 # 2. Run setup script
@@ -66,7 +66,7 @@ cd .. && rm -rf ghost-county
 **Alternative: PowerShell (if available)**
 ```powershell
 # 1. Clone repository
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 
 # 2. Run setup script
@@ -451,7 +451,7 @@ Haunt fully supports Windows via PowerShell. Choose one of these methods:
 
 ```powershell
 # 1. Clone the repository
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 
 # 2. Run the PowerShell setup script
@@ -468,7 +468,7 @@ claude -a dev
 
 ```powershell
 # Quick install - downloads and runs setup automatically
-irm https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.ps1 | iex
+irm https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.ps1 | iex
 ```
 
 #### Method 3: WSL (Windows Subsystem for Linux)
@@ -480,7 +480,7 @@ If you prefer bash, use WSL:
 wsl --install
 
 # After restart, open Ubuntu and run:
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 bash Haunt/scripts/setup-haunt.sh
 ```
@@ -1053,14 +1053,14 @@ grep -n "TODO" Haunt/scripts/setup-haunt.sh
 **Symptoms:**
 ```
 [i] Remote execution detected - cloning repository...
-[X] Failed to clone repository from https://github.com/ghost-county/ghost-county.git
+[X] Failed to clone repository from https://github.com/ghost-county/haunt.git
 ```
 
 **Occurs on:** macOS, Linux, Windows (all platforms)
 
 **When:** Running the one-liner curl install command:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 
 **Diagnostic:**
@@ -1074,7 +1074,7 @@ curl -I https://github.com
 # Should show: HTTP/2 200
 
 # Test 3: Try manual clone
-git clone https://github.com/ghost-county/ghost-county.git /tmp/haunt-test
+git clone https://github.com/ghost-county/haunt.git /tmp/haunt-test
 # If this works, issue is with curl | bash execution context
 
 # Test 4: Check git credentials (if clone asks for password)
@@ -1104,7 +1104,7 @@ git config --get credential.helper
 **Option A: Manual installation (Recommended - always works)**
 ```bash
 # 1. Clone repository manually first
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 
 # 2. Run setup script locally
@@ -1119,7 +1119,7 @@ rm -rf ghost-county
 ```bash
 # Force HTTPS and explicit branch
 export GIT_SSL_NO_VERIFY=false
-git clone --depth 1 --branch main https://github.com/ghost-county/ghost-county.git /tmp/haunt-setup
+git clone --depth 1 --branch main https://github.com/ghost-county/haunt.git /tmp/haunt-setup
 cd /tmp/haunt-setup
 bash Haunt/scripts/setup-haunt.sh
 cd -
@@ -1133,7 +1133,7 @@ git config --global http.proxy http://proxy.example.com:8080
 git config --global https.proxy https://proxy.example.com:8080
 
 # Then retry curl install
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 
 # Remove proxy after install (if needed)
 git config --global --unset http.proxy
@@ -1143,13 +1143,13 @@ git config --global --unset https.proxy
 **Option D: Download script and run with explicit clone**
 ```bash
 # 1. Download script
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh -o setup-haunt.sh
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh -o setup-haunt.sh
 
 # 2. Make executable
 chmod +x setup-haunt.sh
 
 # 3. Clone repo first
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 
 # 4. Run from cloned directory
 cd ghost-county
@@ -1163,7 +1163,7 @@ rm -rf ghost-county setup-haunt.sh
 **Option E: Use GitHub CLI (if you have gh installed)**
 ```bash
 # Clone with gh (respects GitHub credentials)
-gh repo clone ghost-county/ghost-county
+gh repo clone ghost-county/haunt
 cd ghost-county
 bash Haunt/scripts/setup-haunt.sh
 cd ..
@@ -1178,18 +1178,18 @@ If on Windows and getting clone errors:
 # PowerShell: Use Git Bash or WSL
 # Option 1: Git Bash (recommended)
 # Open Git Bash and run:
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 bash Haunt/scripts/setup-haunt.sh
 
 # Option 2: WSL (Windows Subsystem for Linux)
 wsl
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 bash Haunt/scripts/setup-haunt.sh
 
 # Option 3: PowerShell with manual steps
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 bash Haunt/scripts/setup-haunt.sh
 ```
@@ -1216,7 +1216,7 @@ If all options fail:
 2. Verify you can access GitHub: `curl -I https://github.com`
 3. Try from a different network (mobile hotspot, different WiFi)
 4. Contact your network administrator if on corporate network
-5. File an issue: https://github.com/ghost-county/ghost-county/issues
+5. File an issue: https://github.com/ghost-county/haunt/issues
 
 ---
 

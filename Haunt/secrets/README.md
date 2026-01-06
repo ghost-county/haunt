@@ -415,4 +415,4 @@ See root repository LICENSE.
 
 ## Support
 
-For issues, see the main Haunt repository: [ghost-county](https://github.com/yourusername/ghost-county)
+For issues, see the main Haunt repository: [ghost-county](https://github.com/ghost-county/haunt)

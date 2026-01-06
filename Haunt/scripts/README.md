@@ -45,24 +45,24 @@ Install directly from GitHub without cloning the repository:
 
 ```bash
 # RECOMMENDED: Manual installation (works on all platforms, including Windows)
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 bash Haunt/scripts/setup-haunt.sh
 cd .. && rm -rf ghost-county  # Optional cleanup
 
 # ALTERNATIVE: Remote installation (one-liner, may fail on some networks)
 # Recommended: Global install with cleanup
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 
 # Project-only install
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
 
 # Basic install (clones repo temporarily, keeps it for reference)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash
 
 # Use GitHub API to bypass CDN cache (if you need latest immediately)
 curl -fsSL -H "Accept: application/vnd.github.v3.raw" \
-  "https://api.github.com/repos/ghost-county/ghost-county/contents/Haunt/scripts/setup-haunt.sh" | bash
+  "https://api.github.com/repos/ghost-county/haunt/contents/Haunt/scripts/setup-haunt.sh" | bash
 ```
 
 **Windows Users:**

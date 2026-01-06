@@ -60,7 +60,7 @@
     Verify and fix any issues
 
 .EXAMPLE
-    irm https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.ps1 | iex
+    irm https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.ps1 | iex
     Remote installation via PowerShell
 
 .NOTES
@@ -98,7 +98,7 @@ param(
 $ErrorActionPreference = 'Stop'
 
 # GitHub repo for remote installation
-$GitHubRepoUrl = "https://github.com/ghost-county/ghost-county.git"
+$GitHubRepoUrl = "https://github.com/ghost-county/haunt.git"
 $GitHubRepoBranch = "main"
 
 # Paths
@@ -240,22 +240,22 @@ OPTIONS:
 
 WINDOWS INSTALLATION RECOMMENDATIONS:
     RECOMMENDED: Use Git Bash (more reliable)
-        git clone https://github.com/ghost-county/ghost-county.git
+        git clone https://github.com/ghost-county/haunt.git
         cd ghost-county
         bash Haunt/scripts/setup-haunt.sh
         cd .. && rm -rf ghost-county
 
     ALTERNATIVE: PowerShell (if Git Bash not available)
         # Quick install via PowerShell
-        irm https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.ps1 | iex
+        irm https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.ps1 | iex
 
         # Or download and run
-        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.ps1" -OutFile setup-haunt.ps1
+        Invoke-WebRequest -Uri "https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.ps1" -OutFile setup-haunt.ps1
         .\setup-haunt.ps1
 
     TROUBLESHOOTING:
         If you get "Failed to clone repository" errors, see:
-        https://github.com/ghost-county/ghost-county/blob/main/Haunt/SETUP-GUIDE.md#issue-11-failed-to-clone-repository-during-remote-installation
+        https://github.com/ghost-county/haunt/blob/main/Haunt/SETUP-GUIDE.md#issue-11-failed-to-clone-repository-during-remote-installation
 
 EXAMPLES:
     # Full setup (default: project-local to .claude/)
@@ -328,7 +328,7 @@ function Get-ClonedRepo {
         Write-Err "  4. Rate limiting (try again later)"
         Write-Host ""
         Write-Err "Use manual installation instead:"
-        Write-Err "  git clone https://github.com/ghost-county/ghost-county.git"
+        Write-Err "  git clone https://github.com/ghost-county/haunt.git"
         Write-Err "  cd ghost-county"
         Write-Err "  .\Haunt\scripts\setup-haunt.ps1"
         exit 3

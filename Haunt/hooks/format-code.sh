@@ -6,7 +6,7 @@
 # Tools auto-detect project-level configs (pyproject.toml, .eslintrc, etc.)
 # Missing tools are gracefully skipped (via command -v checks).
 #
-# Part of the Haunt framework: https://github.com/ghost-county/Haunt
+# Part of the Haunt framework: https://github.com/ghost-county/haunt
 #
 
 # Skip if disabled

@@ -155,7 +155,7 @@ clone_repo_for_setup() {
         error "  4. Rate limiting (try again later)"
         echo "" >&2
         error "Use manual installation instead:"
-        error "  git clone https://github.com/ghost-county/ghost-county.git"
+        error "  git clone https://github.com/ghost-county/haunt.git"
         error "  cd ghost-county && bash Haunt/scripts/setup-haunt.sh"
         exit 3
     fi
@@ -291,7 +291,7 @@ REMOTE_CLONE_DIR=""  # Will be set if we clone the repo
 RUNNING_FROM_REMOTE=false
 
 # GitHub repo URL for remote installation
-readonly GITHUB_REPO_URL="https://github.com/ghost-county/ghost-county.git"
+readonly GITHUB_REPO_URL="https://github.com/ghost-county/haunt.git"
 readonly GITHUB_REPO_BRANCH="main"
 
 # ============================================================================
@@ -352,16 +352,16 @@ ${BOLD}REMOTE INSTALLATION:${NC}
     This script can be run directly from the internet:
 
     # Quick install (clones repo, runs setup, keeps repo)
-    curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash
+    curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash
 
     # Install and cleanup (removes cloned repo after setup)
-    curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
+    curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
 
     # Install with options
-    curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
+    curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
 
     # Global-only install with cleanup (removes project gco-* files, cleans stale, installs to ~/.claude/ only)
-    rm -rf .claude/agents/gco-*.md .claude/rules/gco-*.md .claude/skills/gco-* .claude/commands/gco-*.md 2>/dev/null; curl -fsSL https://raw.githubusercontent.com/ghost-county/ghost-county/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --clean --cleanup
+    rm -rf .claude/agents/gco-*.md .claude/rules/gco-*.md .claude/skills/gco-* .claude/commands/gco-*.md 2>/dev/null; curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --clean --cleanup
 
 ${BOLD}EXAMPLES:${NC}
     # Manifest full haunt (default: project-local to .claude/)

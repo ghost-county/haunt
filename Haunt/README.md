@@ -2,7 +2,7 @@
 
 > Transform AI language models into coordinated development teams with persistent memory, structured workflows, and enforced quality standards.
 
-[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/ghost-county/ghost-county)
+[![Version](https://img.shields.io/badge/version-2.0-blue.svg)](https://github.com/ghost-county/haunt)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 ---
@@ -29,7 +29,7 @@ While traditional AI coding assistants forget everything between sessions, Haunt
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/ghost-county/ghost-county.git
+git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 
 # 2. Run setup

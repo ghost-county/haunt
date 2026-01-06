@@ -1009,7 +1009,7 @@ NEVER put implementation summaries in source directories:
 
 ```bash
 # 1. Clone repository
-git clone https://github.com/yourusername/haunt.git
+git clone https://github.com/ghost-county/haunt.git
 cd haunt
 
 # 2. Run setup
