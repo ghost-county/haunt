@@ -1,0 +1,369 @@
+# Haunt Object Manifest
+# Single source of truth for all Haunt framework assets (agents, rules, skills, commands)
+#
+# PURPOSE:
+#   - Define all active Haunt objects with their source paths and deployment scope
+#   - Track deprecated objects for automatic cleanup
+#   - Enable verification that deployed objects match source of truth
+#
+# SCHEMA:
+#   Active Sections (agents, rules, skills, commands):
+#     - name: Base filename without extension (e.g., "gco-dev" not "gco-dev.md")
+#     - scope: Where to deploy (global | project | both)
+#       - global: Deploy to ~/.claude/ only
+#       - project: Deploy to .claude/ only (project-specific customization)
+#       - both: Deploy to both locations
+#     - source: Relative path from Haunt/ directory to source file/directory
+#
+#   Deprecated Section:
+#     - type: Type of object (agent | rule | skill | command)
+#     - name: Object name (as it appears in ~/.claude/ or .claude/)
+#     - removed: ISO date when deprecated (YYYY-MM-DD)
+#     - reason: Brief explanation of why deprecated
+#
+# MAINTENANCE:
+#   - Active sections: Auto-generated via `bash Haunt/scripts/utils/generate-manifest.sh`
+#   - Deprecated section: MANUALLY maintained (never auto-generated)
+#   - Update workflow:
+#     1. Add/remove files in Haunt/agents/, rules/, skills/, commands/
+#     2. Run generator to update active sections
+#     3. Manually add deprecated entries when removing objects
+#     4. Run setup-haunt.sh --clean to remove deprecated objects
+
+version: "2.0"
+updated: "$(date +%Y-%m-%d)"
+generated_by: "Haunt/scripts/utils/generate-manifest.sh"
+
+# ==============================================================================
+# AGENTS - Character sheets for agent personas
+# ==============================================================================
+
+agents:
+  - name: gco-code-reviewer-readonly
+    scope: global
+    source: agents/gco-code-reviewer-readonly.md
+
+  - name: gco-code-reviewer
+    scope: global
+    source: agents/gco-code-reviewer.md
+
+  - name: gco-dev
+    scope: global
+    source: agents/gco-dev.md
+
+  - name: gco-project-manager
+    scope: global
+    source: agents/gco-project-manager.md
+
+  - name: gco-release-manager
+    scope: global
+    source: agents/gco-release-manager.md
+
+  - name: gco-research-critic
+    scope: global
+    source: agents/gco-research-critic.md
+
+  - name: gco-research
+    scope: global
+    source: agents/gco-research.md
+
+# ==============================================================================
+# RULES - Invariant enforcement protocols
+# ==============================================================================
+
+rules:
+  - name: gco-communication
+    scope: global
+    source: rules/gco-communication.md
+
+  - name: gco-completion-checklist
+    scope: global
+    source: rules/gco-completion-checklist.md
+
+  - name: gco-decisions
+    scope: global
+    source: rules/gco-decisions.md
+
+  - name: gco-framework-changes
+    scope: global
+    source: rules/gco-framework-changes.md
+
+  - name: gco-model-selection
+    scope: global
+    source: rules/gco-model-selection.md
+
+  - name: gco-orchestration
+    scope: global
+    source: rules/gco-orchestration.md
+
+  - name: gco-roadmap-format
+    scope: global
+    source: rules/gco-roadmap-format.md
+
+  - name: gco-session-startup
+    scope: global
+    source: rules/gco-session-startup.md
+
+  - name: gco-ui-testing-reminder
+    scope: global
+    source: rules/gco-ui-testing-reminder.md
+
+# ==============================================================================
+# SKILLS - On-demand SDLC methodology guidance
+# ==============================================================================
+
+skills:
+  - name: gco-code-patterns
+    scope: global
+    source: skills/gco-code-patterns/
+
+  - name: gco-code-quality
+    scope: global
+    source: skills/gco-code-quality/
+
+  - name: gco-code-review
+    scope: global
+    source: skills/gco-code-review/
+
+  - name: gco-commit-conventions
+    scope: global
+    source: skills/gco-commit-conventions/
+
+  - name: gco-completion
+    scope: global
+    source: skills/gco-completion/
+
+  - name: gco-context7-usage
+    scope: global
+    source: skills/gco-context7-usage/
+
+  - name: gco-damage-control
+    scope: global
+    source: skills/gco-damage-control/
+
+  - name: gco-feature-contracts
+    scope: global
+    source: skills/gco-feature-contracts/
+
+  - name: gco-file-conventions
+    scope: global
+    source: skills/gco-file-conventions/
+
+  - name: gco-haunt-mode
+    scope: global
+    source: skills/gco-haunt-mode/
+
+  - name: gco-issue-to-roadmap
+    scope: global
+    source: skills/gco-issue-to-roadmap/
+
+  - name: gco-model-selection
+    scope: global
+    source: skills/gco-model-selection/
+
+  - name: gco-orchestrator
+    scope: global
+    source: skills/gco-orchestrator/
+
+  - name: gco-pattern-defeat
+    scope: global
+    source: skills/gco-pattern-defeat/
+
+  - name: gco-playwright-tests
+    scope: global
+    source: skills/gco-playwright-tests/
+
+  - name: gco-python-standards
+    scope: global
+    source: skills/gco-python-standards/
+
+  - name: gco-react-standards
+    scope: global
+    source: skills/gco-react-standards/
+
+  - name: gco-requirements-analysis
+    scope: global
+    source: skills/gco-requirements-analysis/
+
+  - name: gco-requirements-development
+    scope: global
+    source: skills/gco-requirements-development/
+
+  - name: gco-requirements-rubric
+    scope: global
+    source: skills/gco-requirements-rubric/
+
+  - name: gco-roadmap-creation
+    scope: global
+    source: skills/gco-roadmap-creation/
+
+  - name: gco-roadmap-format
+    scope: global
+    source: skills/gco-roadmap-format/
+
+  - name: gco-roadmap-planning
+    scope: global
+    source: skills/gco-roadmap-planning/
+
+  - name: gco-roadmap-workflow
+    scope: global
+    source: skills/gco-roadmap-workflow/
+
+  - name: gco-session-startup
+    scope: global
+    source: skills/gco-session-startup/
+
+  - name: gco-task-decomposition
+    scope: global
+    source: skills/gco-task-decomposition/
+
+  - name: gco-tdd-workflow
+    scope: global
+    source: skills/gco-tdd-workflow/
+
+  - name: gco-testing-mindset
+    scope: global
+    source: skills/gco-testing-mindset/
+
+  - name: gco-ui-design
+    scope: global
+    source: skills/gco-ui-design/
+
+  - name: gco-ui-testing
+    scope: global
+    source: skills/gco-ui-testing/
+
+  - name: gco-weekly-refactor
+    scope: global
+    source: skills/gco-weekly-refactor/
+
+  - name: gco-witching-hour
+    scope: global
+    source: skills/gco-witching-hour/
+
+# ==============================================================================
+# COMMANDS - Workflow automation commands
+# ==============================================================================
+
+commands:
+  - name: apparition
+    scope: global
+    source: commands/apparition.md
+
+  - name: assign
+    scope: global
+    source: commands/assign.md
+
+  - name: banish
+    scope: global
+    source: commands/banish.md
+
+  - name: bind-list
+    scope: global
+    source: commands/bind-list.md
+
+  - name: bind
+    scope: global
+    source: commands/bind.md
+
+  - name: checkup
+    scope: global
+    source: commands/checkup.md
+
+  - name: cleanse
+    scope: global
+    source: commands/cleanse.md
+
+  - name: decompose
+    scope: global
+    source: commands/decompose.md
+
+  - name: exorcism
+    scope: global
+    source: commands/exorcism.md
+
+  - name: git-push
+    scope: global
+    source: commands/git-push.md
+
+  - name: haunt-baseline
+    scope: global
+    source: commands/haunt-baseline.md
+
+  - name: haunt-gather
+    scope: global
+    source: commands/haunt-gather.md
+
+  - name: haunt-metrics
+    scope: global
+    source: commands/haunt-metrics.md
+
+  - name: haunt-regression-check
+    scope: global
+    source: commands/haunt-regression-check.md
+
+  - name: haunt-report
+    scope: global
+    source: commands/haunt-report.md
+
+  - name: haunt-status
+    scope: global
+    source: commands/haunt-status.md
+
+  - name: haunt-update
+    scope: global
+    source: commands/haunt-update.md
+
+  - name: haunt
+    scope: global
+    source: commands/haunt.md
+
+  - name: haunting
+    scope: global
+    source: commands/haunting.md
+
+  - name: pattern
+    scope: global
+    source: commands/pattern.md
+
+  - name: qa
+    scope: global
+    source: commands/qa.md
+
+  - name: ritual
+    scope: global
+    source: commands/ritual.md
+
+  - name: roadmap
+    scope: global
+    source: commands/roadmap.md
+
+  - name: seance
+    scope: global
+    source: commands/seance.md
+
+  - name: seer
+    scope: global
+    source: commands/seer.md
+
+  - name: story
+    scope: global
+    source: commands/story.md
+
+  - name: summon
+    scope: global
+    source: commands/summon.md
+
+  - name: unbind
+    scope: global
+    source: commands/unbind.md
+
+  - name: witching-hour
+    scope: global
+    source: commands/witching-hour.md
+
+deprecated:
+  - type: skill
+    name: git-push
+    removed: "2026-01-05"
+    reason: "Redundant - command exists at commands/git-push.md"

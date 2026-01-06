@@ -727,6 +727,139 @@ remove_stale_items() {
     done < "$STALE_FILES_LIST"
 }
 
+# Remove deprecated items from manifest
+remove_deprecated_items() {
+    local manifest_path="${PROJECT_ROOT}/manifest.yaml"
+
+    if [[ ! -f "$manifest_path" ]]; then
+        return 0
+    fi
+
+    info "Checking manifest for deprecated items..."
+
+    # Extract deprecated section entries using grep (simpler than AWK parsing)
+    # Look for lines with "- type:" which start each deprecated entry
+    local deprecated_entries=$(grep -A1 "^  - type:" "$manifest_path" 2>/dev/null | grep -E "type:|name:" | paste -d: - - | sed 's/^  - //')
+
+    if [[ -z "$deprecated_entries" ]]; then
+        info "No deprecated items in manifest"
+        return 0
+    fi
+
+    # Process each deprecated entry (format: "type: skill:    name: git-push")
+    while IFS= read -r entry; do
+        # Extract type and name from the entry
+        local deprecated_type=$(echo "$entry" | sed 's/.*type: *\([^:]*\).*/\1/' | xargs)
+        local deprecated_name=$(echo "$entry" | sed 's/.*name: *\([^:]*\).*/\1/' | xargs)
+
+        if [[ -z "$deprecated_type" || -z "$deprecated_name" ]]; then
+            continue
+        fi
+
+        # Process removal based on type
+        case "$deprecated_type" in
+            agent)
+                if [[ "$SCOPE" == "global" || "$SCOPE" == "both" ]]; then
+                    local global_file="$GLOBAL_AGENTS_DIR/${deprecated_name}.md"
+                    if [[ -f "$global_file" ]]; then
+                        if [[ "$DRY_RUN" == true ]]; then
+                            info "[DRY RUN] Would remove deprecated agent: $global_file"
+                        else
+                            rm -f "$global_file" && success "Removed deprecated agent: $global_file"
+                            STALE_REMOVED_COUNT=$((STALE_REMOVED_COUNT + 1))
+                        fi
+                    fi
+                fi
+                if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
+                    local project_file="$PROJECT_AGENTS_INSTALL_DIR/${deprecated_name}.md"
+                    if [[ -f "$project_file" ]]; then
+                        if [[ "$DRY_RUN" == true ]]; then
+                            info "[DRY RUN] Would remove deprecated agent: $project_file"
+                        else
+                            rm -f "$project_file" && success "Removed deprecated agent: $project_file"
+                            STALE_REMOVED_COUNT=$((STALE_REMOVED_COUNT + 1))
+                        fi
+                    fi
+                fi
+                ;;
+            rule)
+                if [[ "$SCOPE" == "global" || "$SCOPE" == "both" ]]; then
+                    local global_file="$GLOBAL_RULES_DIR/${deprecated_name}.md"
+                    if [[ -f "$global_file" ]]; then
+                        if [[ "$DRY_RUN" == true ]]; then
+                            info "[DRY RUN] Would remove deprecated rule: $global_file"
+                        else
+                            rm -f "$global_file" && success "Removed deprecated rule: $global_file"
+                            STALE_REMOVED_COUNT=$((STALE_REMOVED_COUNT + 1))
+                        fi
+                    fi
+                fi
+                if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
+                    local project_file="$PROJECT_RULES_INSTALL_DIR/${deprecated_name}.md"
+                    if [[ -f "$project_file" ]]; then
+                        if [[ "$DRY_RUN" == true ]]; then
+                            info "[DRY RUN] Would remove deprecated rule: $project_file"
+                        else
+                            rm -f "$project_file" && success "Removed deprecated rule: $project_file"
+                            STALE_REMOVED_COUNT=$((STALE_REMOVED_COUNT + 1))
+                        fi
+                    fi
+                fi
+                ;;
+            skill)
+                if [[ "$SCOPE" == "global" || "$SCOPE" == "both" ]]; then
+                    local global_dir="$GLOBAL_SKILLS_DIR/$deprecated_name"
+                    if [[ -d "$global_dir" ]]; then
+                        if [[ "$DRY_RUN" == true ]]; then
+                            info "[DRY RUN] Would remove deprecated skill: $global_dir/"
+                        else
+                            chmod -R +rwx "$global_dir" 2>/dev/null || true
+                            rm -rf "$global_dir" && success "Removed deprecated skill: $global_dir/"
+                            STALE_REMOVED_COUNT=$((STALE_REMOVED_COUNT + 1))
+                        fi
+                    fi
+                fi
+                if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
+                    local project_dir="$PROJECT_SKILLS_INSTALL_DIR/$deprecated_name"
+                    if [[ -d "$project_dir" ]]; then
+                        if [[ "$DRY_RUN" == true ]]; then
+                            info "[DRY RUN] Would remove deprecated skill: $project_dir/"
+                        else
+                            chmod -R +rwx "$project_dir" 2>/dev/null || true
+                            rm -rf "$project_dir" && success "Removed deprecated skill: $project_dir/"
+                            STALE_REMOVED_COUNT=$((STALE_REMOVED_COUNT + 1))
+                        fi
+                    fi
+                fi
+                ;;
+            command)
+                if [[ "$SCOPE" == "global" || "$SCOPE" == "both" ]]; then
+                    local global_file="$GLOBAL_COMMANDS_DIR/${deprecated_name}.md"
+                    if [[ -f "$global_file" ]]; then
+                        if [[ "$DRY_RUN" == true ]]; then
+                            info "[DRY RUN] Would remove deprecated command: $global_file"
+                        else
+                            rm -f "$global_file" && success "Removed deprecated command: $global_file"
+                            STALE_REMOVED_COUNT=$((STALE_REMOVED_COUNT + 1))
+                        fi
+                    fi
+                fi
+                if [[ "$SCOPE" == "project" || "$SCOPE" == "both" ]]; then
+                    local project_file="$PROJECT_COMMANDS_INSTALL_DIR/${deprecated_name}.md"
+                    if [[ -f "$project_file" ]]; then
+                        if [[ "$DRY_RUN" == true ]]; then
+                            info "[DRY RUN] Would remove deprecated command: $project_file"
+                        else
+                            rm -f "$project_file" && success "Removed deprecated command: $project_file"
+                            STALE_REMOVED_COUNT=$((STALE_REMOVED_COUNT + 1))
+                        fi
+                    fi
+                fi
+                ;;
+        esac
+    done <<< "$deprecated_entries"
+}
+
 # Main cleanup function (called when --clean flag is used)
 cleanup_stale_files() {
     if [[ "$CLEAN_BEFORE_INSTALL" != true ]]; then
@@ -734,6 +867,11 @@ cleanup_stale_files() {
     fi
 
     section "Pre-Installation Cleanup"
+
+    # First, remove items explicitly marked as deprecated in manifest
+    remove_deprecated_items
+
+    # Then, detect stale files (exist in deployment but not in source)
     info "Detecting stale files (exist in deployment but not in source)..."
 
     if scan_for_stale; then
