@@ -39,7 +39,7 @@ Activate this workflow when the user says anything like:
 
 ## Workflow Execution
 
-**Quick Mode Flow:** Steps 1 → 2 → 2.5 (Sanity Check) → 3 → 4 → 5 → 6
+**Quick Mode Flow:** Steps 1 → 2 → 2.5 (Sanity Check) → 3 → 4 → 4.5 (Project Detection) → 5 → 6
 **Full Mode Flow:** Steps 1 → 2 → Escalate to detailed skills
 
 ### Step 1: Acknowledge and Confirm Understanding
@@ -124,20 +124,49 @@ Determine effort and assignment:
 - Needs investigation → Research-Analyst
 - Unclear ownership → Flag for triage
 
+### Step 4.5: Project Detection
+
+Determine which project section to add the requirement under.
+
+**Detection Order (check in sequence):**
+
+1. **Explicit mention:** User said "for TrueSight", "in Familiar", "Haunt framework" → Use that project
+2. **File path context:** Issue mentions `truesight/src/...` or `familiar/...` → Infer project
+3. **Current working directory:** If running from a project subdir → Use that project
+4. **Ask user:** If ambiguous, ask: "Which project? [Haunt/TrueSight/Familiar/Cross-Project]"
+
+**Available Projects:**
+| Project | Section Header | Description |
+|---------|---------------|-------------|
+| Cross-Project | `## Cross-Project Work` | Affects multiple projects |
+| Haunt | `## Haunt Framework` | Agent framework and SDLC tooling |
+| TrueSight | `## TrueSight` | ADHD productivity dashboard |
+| Familiar | `## Familiar` | Personal command center |
+
 ### Step 5: Add to Roadmap
 
-Append to `.haunt/plans/roadmap.md`:
+Append to `.haunt/plans/roadmap.md` **under the appropriate project section**:
 
 ```markdown
-⚪ REQ-XXX: [Title]
-   Tasks:
-   - [ ] [Task 1]
-   - [ ] [Task 2]
-   Files: [Paths or "TBD"]
-   Effort: S | M
-   Agent: [Assigned agent]
-   Completion: [How to verify done]
-   Blocked by: None
+### ⚪ REQ-XXX: [Title]
+
+**Type:** Bug | Feature | Enhancement | Refactor
+**Reported:** [Date]
+**Source:** User report
+**Description:** [Brief description]
+
+**Tasks:**
+- [ ] [Task 1]
+- [ ] [Task 2]
+
+**Files:**
+- `path/to/file.ext` (modify)
+
+**Effort:** S | M
+**Complexity:** SIMPLE | MODERATE
+**Agent:** [Assigned agent]
+**Completion:** [How to verify done]
+**Blocked by:** None
 ```
 
 **If starting immediately (status 🟡):** Also add to CLAUDE.md Active Work section:
@@ -156,6 +185,7 @@ Respond with:
 Added to roadmap:
 
 **REQ-XXX:** [Title]
+**Project:** [Project name]
 **Effort:** S/M
 **Assigned to:** [Agent]
 **Status:** ⚪ Not Started

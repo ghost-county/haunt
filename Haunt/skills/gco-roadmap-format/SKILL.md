@@ -339,3 +339,97 @@ Roadmap files MUST stay under **500 lines** for readability:
 3. Consider splitting into multiple roadmap files by feature area
 
 **Session startup:** Check file size before starting work. If >500 lines, archive first.
+
+## Multi-Project Organization
+
+For monorepos with multiple sub-projects, organize the roadmap using project sections:
+
+### Roadmap Structure
+
+```markdown
+# Monorepo Roadmap
+
+## Current Focus
+[Active focus description]
+
+## Cross-Project Work
+*Requirements affecting multiple projects go here.*
+
+### ⚪ REQ-001: [Cross-project requirement]
+...
+
+## Haunt Framework
+*Haunt agent framework and SDLC tooling.*
+
+### ⚪ REQ-002: [Haunt-specific requirement]
+...
+
+## TrueSight
+*ADHD productivity dashboard.*
+
+### ⚪ REQ-003: [TrueSight requirement]
+...
+
+## Familiar
+*Personal command center and knowledge management.*
+
+### ⚪ REQ-004: [Familiar requirement]
+...
+
+## Summary
+| Project | ⚪ | 🟡 | 🟢 |
+|---------|---|---|---|
+| Cross-Project | 0 | 0 | 0 |
+| Haunt | 0 | 0 | 0 |
+| TrueSight | 0 | 0 | 0 |
+| Familiar | 0 | 0 | 0 |
+| **Total** | 0 | 0 | 0 |
+
+## Recent Archives
+[Archive links]
+```
+
+### Project Sections
+
+| Section | Header | Purpose |
+|---------|--------|---------|
+| Cross-Project | `## Cross-Project Work` | Requirements affecting multiple projects |
+| Haunt | `## Haunt Framework` | Agent framework and SDLC tooling |
+| TrueSight | `## TrueSight` | ADHD productivity dashboard |
+| Familiar | `## Familiar` | Personal command center |
+
+### Adding New Projects
+
+To add a new project section:
+
+1. Add `## Project Name` section header between existing projects
+2. Add description line: `*Brief project description.*`
+3. Update Summary table with new row
+4. Update `haunt-roadmap.sh` PROJECT_PATTERNS if needed
+
+### Project Filtering
+
+Use `haunt-roadmap.sh` with `--project=` flag to filter by section:
+
+```bash
+# List all TrueSight requirements
+bash Haunt/scripts/haunt-roadmap.sh list --project=TrueSight
+
+# List in-progress Haunt requirements
+bash Haunt/scripts/haunt-roadmap.sh list --project=Haunt --status=🟡
+
+# Combine with agent filter
+bash Haunt/scripts/haunt-roadmap.sh list --project=Familiar --agent=Dev-Frontend
+```
+
+### REQ Numbering
+
+Requirements use **global sequential numbering** (REQ-001, REQ-002...) across all projects. Project context is determined by which section the requirement is under, not by the ID.
+
+### Future: Option C Upgrade
+
+When a project outgrows section-based organization:
+
+1. Extract project section to `.haunt/plans/projects/{project}/roadmap.md`
+2. Switch REQ numbering to project prefix (TS-001, HAUNT-001)
+3. Update tooling for multi-file roadmap support

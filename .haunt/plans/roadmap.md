@@ -1,6 +1,6 @@
-# Haunt Framework Roadmap
+# Monorepo Roadmap
 
-> Single source of truth for project work items. See `.haunt/completed/` for archived work.
+> Single source of truth for all project work items. See `.haunt/completed/` for archived work.
 
 ---
 
@@ -12,19 +12,41 @@ Run `/seance` to start new work.
 
 ---
 
-## Active Work
+## Cross-Project Work
 
-*No active requirements.*
+*Requirements affecting multiple projects go here.*
+
+---
+
+## Haunt Framework
+
+*Haunt agent framework and SDLC tooling.*
+
+---
+
+## TrueSight
+
+*ADHD productivity dashboard.*
+
+---
+
+## Familiar
+
+*Personal command center and knowledge management.*
 
 ---
 
 ## Summary
 
-| Status | Count | Requirements |
-|--------|-------|--------------|
-| Archived | 69 | See `.haunt/completed/` |
-| Not Started | 0 | - |
-| In Progress | 0 | - |
+| Project | ⚪ | 🟡 | 🟢 |
+|---------|---|---|---|
+| Cross-Project | 0 | 0 | 0 |
+| Haunt | 0 | 0 | 0 |
+| TrueSight | 0 | 0 | 0 |
+| Familiar | 0 | 0 | 0 |
+| **Total** | 0 | 0 | 0 |
+
+**Archived:** 69 requirements → See `.haunt/completed/`
 
 ---
 

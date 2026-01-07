@@ -103,12 +103,15 @@ In a repository without `.haunt/`:
 ### Mode 5: Explicit Summoning (Execution)
 
 ```bash
-/seance --summon
-/seance --execute
+/seance --summon                      # All unblocked requirements
+/seance --summon --project=TrueSight  # Only TrueSight section
+/seance --execute --project=Haunt     # Only Haunt Framework section
 ```
 
-**Purpose:** Spawn agents for all ⚪ and 🟡 roadmap items
+**Purpose:** Spawn agents for ⚪ and 🟡 roadmap items (optionally filtered by project)
 **Output:** Parallel agent execution working until 🟢 Complete
+
+**Project Filter:** When `--project=` is specified, only summons agents for requirements under that project's section in the roadmap.
 
 ### Mode 6: Explicit Banishing (Archival)
 
@@ -248,6 +251,74 @@ with open(".haunt/state/current-phase.txt", "w") as f:
     f.write("SCRYING")
 ```
 
+**Step 1C: Project Detection and Confirmation**
+
+For modes that create/modify requirements (1, 4, 9), detect and confirm the target project:
+
+```python
+# Project detection order:
+# 1. Explicit in args: "for TrueSight", "in Familiar", "Haunt framework"
+# 2. File path in args: "truesight/src/..." → TrueSight
+# 3. Current working directory pattern
+# 4. Ask user
+
+PROJECT_PATTERNS = {
+    "haunt": "Haunt Framework",
+    "truesight": "TrueSight",
+    "familiar": "Familiar",
+    "cross": "Cross-Project Work",
+}
+
+def detect_project(args, cwd):
+    """Detect project from args or cwd"""
+    args_lower = args.lower()
+    cwd_lower = cwd.lower()
+
+    # Check explicit mention in args
+    for key, name in PROJECT_PATTERNS.items():
+        if key in args_lower or name.lower() in args_lower:
+            return name
+
+    # Check file paths in args
+    for key, name in PROJECT_PATTERNS.items():
+        if f"{key}/" in args_lower:
+            return name
+
+    # Check cwd
+    for key, name in PROJECT_PATTERNS.items():
+        if f"/{key}" in cwd_lower or cwd_lower.endswith(key):
+            return name
+
+    return None  # Will need to ask user
+
+detected_project = detect_project(args, os.getcwd())
+```
+
+**Project Confirmation Flow:**
+
+If project was detected, confirm with user:
+
+```
+🕯️ Detected project: {detected_project} (from cwd)
+Continue with {detected_project}? [Y/n/other]
+```
+
+- **Y** → Proceed with detected project
+- **n** → Show project selection menu
+- **other** → Show project selection menu
+
+If project was NOT detected (or user chose "other"):
+
+```
+Which project?
+[A] Haunt Framework - Agent framework and SDLC tooling
+[B] TrueSight - ADHD productivity dashboard
+[C] Familiar - Personal command center
+[D] Cross-Project - Affects multiple projects
+```
+
+Store selected project for use in requirement creation.
+
 **Step 2: Execute Mode-Specific Flow**
 
 **If MODE is 9 (Bug Detected):**
@@ -270,43 +341,47 @@ Based on user's answer:
 
 **For all other modes:**
 
-Invoke the `gco-orchestrator` skill with detected mode, arguments, and planning depth:
+Invoke the `gco-orchestrator` skill with detected mode, arguments, planning depth, and project:
 
 ```
 MODE: {mode}
 ARGUMENTS: {args}  # With --quick/--deep removed
 PLANNING_DEPTH: {planning_depth}  # "quick", "standard", or "deep"
+PROJECT: {selected_project}  # From Step 1C confirmation
 HAS_HAUNT: {has_haunt}
 CURRENT_PHASE: SCRYING
 ```
 
-The skill will handle the appropriate flow based on mode and planning depth.
+The skill will handle the appropriate flow based on mode and planning depth. Requirements will be added under the appropriate `## {PROJECT}` section in roadmap.md.
 
 ## Complete Workflow Examples
 
-### Full Ritual (Interactive)
+### Full Ritual (Interactive with Project Detection)
 
 ```bash
+$ cd ~/github_repos/truesight
 $ haunt
 > /seance
-> 🕯️ The spirits stir. What brings you to the veil?
-> [A] Add something new
-> [B] Summon the spirits
+> 🕯️ Detected project: TrueSight (from cwd)
+> Continue with TrueSight? [Y/n/other]
 
-$ [Choose A]
-> What would you like to add?
+$ Y
+> What would you like to add to TrueSight?
 
-$ "Add OAuth login"
+$ "Add dark mode toggle"
 > 🔮 Scrying the future...
 > [Planning happens...]
+> ✅ Created REQ-042: Add dark mode toggle
+>    Project: TrueSight
+>    Effort: M
+>    Agent: Dev-Frontend
 > Ready to summon the spirits? [yes/no]
 
 $ yes
 > 👻 The spirits rise...
 > [Spawns agents for implementation...]
 > ⚰️ Banishing completed work...
-> [Archival happens automatically...]
-> ✅ OAuth login complete
+> ✅ Dark mode toggle complete
 ```
 
 ### Partial Ritual (Explicit Phases)

@@ -212,6 +212,7 @@ cmd_list() {
 
     local filter_status=""
     local filter_agent=""
+    local filter_project=""
 
     # Parse arguments
     while [[ $# -gt 0 ]]; do
@@ -224,32 +225,83 @@ cmd_list() {
                 filter_agent="${1#*=}"
                 shift
                 ;;
+            --project=*)
+                filter_project="${1#*=}"
+                shift
+                ;;
             *)
                 error "Unknown option: $1"
                 ;;
         esac
     done
 
-    # Extract all requirement IDs
+    # Extract all requirement IDs with their line numbers
     local req_ids=()
-    while IFS= read -r line; do
-        if [[ -n "$line" ]]; then
+    local req_lines=()
+    while IFS=: read -r line_num line_content; do
+        if [[ -n "$line_content" ]]; then
             local req_id
-            req_id=$(echo "$line" | grep -o "REQ-[0-9]\+" | head -1)
+            req_id=$(echo "$line_content" | grep -o "REQ-[0-9]\+" | head -1)
             if [[ -n "$req_id" ]]; then
                 req_ids+=("$req_id")
+                req_lines+=("$line_num")
             fi
         fi
-    done < <(grep "^### {[⚪🟡🟢🔴]} REQ-\|^### [⚪🟡🟢🔴] REQ-" "$roadmap_file")
+    done < <(grep -n "^### {[⚪🟡🟢🔴]} REQ-\|^### [⚪🟡🟢🔴] REQ-" "$roadmap_file")
+
+    # Build section map: line number -> section name
+    # Sections are ## headers (not ### requirement headers)
+    declare -A section_map
+    local current_section=""
+    local section_start=0
+    while IFS=: read -r line_num line_content; do
+        # Extract section name from ## Header
+        local section_name
+        section_name=$(echo "$line_content" | sed 's/^## //')
+        section_map["$line_num"]="$section_name"
+    done < <(grep -n "^## " "$roadmap_file" | grep -v "^## Summary\|^## Recent Archives\|^## Current Focus")
+
+    # Get sorted section line numbers for determining which section a req belongs to
+    local section_lines=()
+    for line in "${!section_map[@]}"; do
+        section_lines+=("$line")
+    done
+    IFS=$'\n' section_lines=($(sort -n <<<"${section_lines[*]}")); unset IFS
+
+    # Helper: find section for a given line number
+    get_section_for_line() {
+        local target_line="$1"
+        local found_section=""
+        for section_line in "${section_lines[@]}"; do
+            if [[ "$section_line" -le "$target_line" ]]; then
+                found_section="${section_map[$section_line]}"
+            else
+                break
+            fi
+        done
+        echo "$found_section"
+    }
 
     # Parse each requirement and filter
     local results=()
+    local idx=0
     for req_id in "${req_ids[@]}"; do
+        local req_line="${req_lines[$idx]}"
         local req_json
         req_json=$(parse_requirement "$roadmap_file" "$req_id")
 
         # Apply filters
         local include=true
+
+        # Project filter: check which section the requirement is under
+        if [[ -n "$filter_project" ]]; then
+            local req_section
+            req_section=$(get_section_for_line "$req_line")
+            # Case-insensitive partial match (e.g., "Haunt" matches "Haunt Framework")
+            if [[ ! "${req_section,,}" =~ ${filter_project,,} ]]; then
+                include=false
+            fi
+        fi
 
         if [[ -n "$filter_status" ]]; then
             local req_status
@@ -270,6 +322,8 @@ cmd_list() {
         if [[ "$include" == true ]]; then
             results+=("$req_json")
         fi
+
+        ((idx++))
     done
 
     # Output JSON array
@@ -321,6 +375,7 @@ COMMANDS:
 LIST FILTERS:
     --status={⚪|🟡|🟢|🔴}     Filter by status icon
     --agent=<agent-type>       Filter by assigned agent type
+    --project=<project>        Filter by project section (case-insensitive partial match)
 
 OPTIONS:
     --help                     Show this help message
@@ -335,6 +390,12 @@ EXAMPLES:
 
     # List requirements for Dev-Backend agent
     $SCRIPT_NAME list --agent=Dev-Backend
+
+    # List requirements in TrueSight project section
+    $SCRIPT_NAME list --project=TrueSight
+
+    # Combine filters: TrueSight project, Dev-Frontend agent
+    $SCRIPT_NAME list --project=TrueSight --agent=Dev-Frontend
 
     # List all requirements
     $SCRIPT_NAME list
