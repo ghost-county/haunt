@@ -33,6 +33,7 @@ E2E_TEST_PATHS=(
     ".haunt/tests/e2e/"
     "test/e2e/"
     "__tests__/e2e/"
+    "truesight/tests/e2e/"
 )
 
 echo "🔍 Checking for UI changes requiring E2E tests..."
