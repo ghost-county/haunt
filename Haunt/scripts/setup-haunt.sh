@@ -1923,20 +1923,34 @@ setup_hooks() {
         fi
     fi
 
-    # Copy patterns.yaml
-    if [[ -f "$hooks_source/patterns.yaml" ]]; then
-        if [[ "$DRY_RUN" == false ]]; then
-            cp "$hooks_source/patterns.yaml" "$hooks_target/"
-            success "Installed patterns.yaml"
-        else
-            info "[DRY RUN] Would install: patterns.yaml"
-        fi
-    fi
-
-    # Copy hook scripts
+    # Copy hook scripts (including patterns.yaml)
     local hooks_copied=0
     local hooks_updated=0
     local hooks_unchanged=0
+
+    # Handle patterns.yaml with proper install/update/unchanged tracking
+    if [[ -f "$hooks_source/patterns.yaml" ]]; then
+        local target_patterns="$hooks_target/patterns.yaml"
+        if [[ -f "$target_patterns" ]]; then
+            if cmp -s "$hooks_source/patterns.yaml" "$target_patterns"; then
+                ((hooks_unchanged++))
+            else
+                if [[ "$DRY_RUN" == false ]]; then
+                    cp "$hooks_source/patterns.yaml" "$target_patterns"
+                    ((hooks_updated++))
+                else
+                    info "[DRY RUN] Would update: patterns.yaml"
+                fi
+            fi
+        else
+            if [[ "$DRY_RUN" == false ]]; then
+                cp "$hooks_source/patterns.yaml" "$target_patterns"
+                ((hooks_copied++))
+            else
+                info "[DRY RUN] Would install: patterns.yaml"
+            fi
+        fi
+    fi
 
     for hook_script in "$hooks_source"/*.py; do
         [[ -f "$hook_script" ]] || continue
