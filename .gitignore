@@ -144,3 +144,6 @@ nats-data/
 !.haunt/.gitignore
 !.haunt/plans
 !.haunt/CHANGELOG.md
+
+# Upland Specific
+Haunt/skills/upland-data-engineering
