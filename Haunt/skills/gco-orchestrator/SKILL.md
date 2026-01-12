@@ -50,6 +50,8 @@ rm -f .haunt/state/summoning-approved
 
 ## Operating Modes
 
+⛔ **CONSULTATION GATE:** For Mode 4-7 implementation details (`--scry`, `--summon`, `--banish`, `--handoff`), READ `references/mode-workflows.md`.
+
 | Mode | Trigger | Action |
 |------|---------|--------|
 | 1 | `/seance <prompt>` | Immediate workflow with idea |
