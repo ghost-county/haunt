@@ -881,7 +881,7 @@ bash Haunt/scripts/setup-haunt.sh --skills-only
 
 **Symptoms:**
 ```
-bash: scripts/setup-agentic-sdlc.sh: command not found
+bash: scripts/setup-haunt.sh: command not found
 ```
 
 **Cause:** Wrong working directory or incorrect path
@@ -1531,7 +1531,7 @@ claude -a dev --skill session-startup
 
 ```bash
 # Basic usage
-bash scripts/setup-agentic-sdlc.sh [OPTIONS]
+bash scripts/setup-haunt.sh [OPTIONS]
 
 # Options
 --help                 # Show help message
@@ -1546,13 +1546,13 @@ bash scripts/setup-agentic-sdlc.sh [OPTIONS]
 --verbose              # Detailed output
 
 # Examples
-bash scripts/setup-agentic-sdlc.sh                    # Full setup
-bash scripts/setup-agentic-sdlc.sh --dry-run          # Preview
-bash scripts/setup-agentic-sdlc.sh --agents-only      # Agents only
-bash scripts/setup-agentic-sdlc.sh --yes             # Auto-install dependencies
-bash scripts/setup-agentic-sdlc.sh --verify           # Verify
-bash scripts/setup-agentic-sdlc.sh --verify --fix     # Verify & fix
-bash scripts/setup-agentic-sdlc.sh --verbose          # Verbose output
+bash scripts/setup-haunt.sh                    # Full setup
+bash scripts/setup-haunt.sh --dry-run          # Preview
+bash scripts/setup-haunt.sh --agents-only      # Agents only
+bash scripts/setup-haunt.sh --yes             # Auto-install dependencies
+bash scripts/setup-haunt.sh --verify           # Verify
+bash scripts/setup-haunt.sh --verify --fix     # Verify & fix
+bash scripts/setup-haunt.sh --verbose          # Verbose output
 ```
 
 ### Exit Codes

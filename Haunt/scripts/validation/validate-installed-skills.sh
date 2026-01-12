@@ -195,11 +195,11 @@ if [[ $FAILED -gt 0 ]]; then
     echo ""
     echo "To fix, run:"
     if [[ "$SCOPE" == "global" ]]; then
-        echo "  bash Haunt/scripts/setup-agentic-sdlc.sh --scope=global --skills-only"
+        echo "  bash Haunt/scripts/setup-haunt.sh --scope=global --skills-only"
     elif [[ "$SCOPE" == "project" ]]; then
-        echo "  bash Haunt/scripts/setup-agentic-sdlc.sh --scope=project --skills-only"
+        echo "  bash Haunt/scripts/setup-haunt.sh --scope=project --skills-only"
     else
-        echo "  bash Haunt/scripts/setup-agentic-sdlc.sh --scope=both --skills-only"
+        echo "  bash Haunt/scripts/setup-haunt.sh --scope=both --skills-only"
     fi
     exit 1
 fi

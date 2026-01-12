@@ -113,14 +113,14 @@ ${BOLD}${CYAN}DOCUMENTATION:${NC}
 ${BOLD}${CYAN}TROUBLESHOOTING:${NC}
 
     ${BOLD}If agents not found:${NC}
-       bash scripts/setup-agentic-sdlc.sh --verify --fix
+       bash scripts/setup-haunt.sh --verify --fix
 
     ${BOLD}If skills not loading:${NC}
        bash scripts/validation/validate-skills.sh
        bash scripts/validation/validate-agent-skills.sh
 
     ${BOLD}For detailed help:${NC}
-       bash scripts/setup-agentic-sdlc.sh --help
+       bash scripts/setup-haunt.sh --help
        cat SETUP-GUIDE.md
 
 ${BOLD}${CYAN}CUSTOMIZATION:${NC}

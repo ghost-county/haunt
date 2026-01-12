@@ -121,7 +121,7 @@ if [[ $fail_count -eq 0 ]]; then
     echo "Next hauntings:"
     echo "  1. Review PRECOMMIT-INTEGRATION.md for binding instructions"
     echo "  2. Integrate addon into main summoning script"
-    echo "  3. Test with: bash setup-agentic-sdlc.sh --with-hooks --dry-run"
+    echo "  3. Test with: bash setup-haunt.sh --with-hooks --dry-run"
     exit 0
 else
     echo -e "${RED}✗ Some binding rituals failed.${NC}"

@@ -71,16 +71,16 @@ Located in `Haunt/scripts/`:
 
 ```bash
 # Full setup (v2.0 recommended)
-bash Haunt/scripts/setup-agentic-sdlc.sh
+bash Haunt/scripts/setup-haunt.sh
 
 # Only update global agents
-bash Haunt/scripts/setup-agentic-sdlc.sh --agents-only
+bash Haunt/scripts/setup-haunt.sh --agents-only
 
 # Project setup only (skip global agents)
-bash Haunt/scripts/setup-agentic-sdlc.sh --project-only
+bash Haunt/scripts/setup-haunt.sh --project-only
 
 # Verify setup completeness
-bash Haunt/scripts/setup-agentic-sdlc.sh --verify
+bash Haunt/scripts/setup-haunt.sh --verify
 
 # Validation scripts
 bash Haunt/scripts/validation/validate-skills.sh

@@ -73,19 +73,19 @@ All rules located in: `Haunt/rules/`
 ### Setup & Verification
 ```bash
 # Full setup
-bash scripts/setup-agentic-sdlc.sh
+bash scripts/setup-haunt.sh
 
 # Update agents only
-bash scripts/setup-agentic-sdlc.sh --agents-only
+bash scripts/setup-haunt.sh --agents-only
 
 # Verify setup
-bash scripts/setup-agentic-sdlc.sh --verify
+bash scripts/setup-haunt.sh --verify
 
 # Fix issues
-bash scripts/setup-agentic-sdlc.sh --verify --fix
+bash scripts/setup-haunt.sh --verify --fix
 
 # Get help
-bash scripts/setup-agentic-sdlc.sh --help
+bash scripts/setup-haunt.sh --help
 ```
 
 ### Validation
@@ -149,7 +149,7 @@ Skills/                        # Domain-specific skills (optional)
 ```bash
 ls ~/.claude/agents/*.md
 claude --list-agents
-bash scripts/setup-agentic-sdlc.sh --agents-only
+bash scripts/setup-haunt.sh --agents-only
 ```
 
 ### Skills not loading
@@ -168,7 +168,7 @@ node --version
 claude --version
 
 # Re-run with verbose
-bash scripts/setup-agentic-sdlc.sh --verbose
+bash scripts/setup-haunt.sh --verbose
 ```
 
 ---
@@ -377,8 +377,8 @@ export CLAUDE_CONFIG=~/.config/claude/custom.json
 
 ```bash
 git pull origin master
-bash scripts/setup-agentic-sdlc.sh --agents-only
-bash scripts/setup-agentic-sdlc.sh --verify
+bash scripts/setup-haunt.sh --agents-only
+bash scripts/setup-haunt.sh --verify
 ```
 
 ---
@@ -396,7 +396,7 @@ bash Ghost_County_Framework/scripts/setup-all.sh --agents
 
 ```bash
 # Setup help
-bash scripts/setup-agentic-sdlc.sh --help
+bash scripts/setup-haunt.sh --help
 
 # Comprehensive guide
 cat SETUP-GUIDE.md

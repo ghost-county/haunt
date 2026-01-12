@@ -3,7 +3,7 @@
 # setup-precommit-hooks-addon.sh - Pre-commit Hooks Configuration
 #
 # This script adds pre-commit hooks functionality to the Haunt setup.
-# It can be called from setup-agentic-sdlc.sh or run standalone.
+# It can be called from setup-haunt.sh or run standalone.
 #
 # Usage: bash setup-precommit-hooks-addon.sh [--dry-run] [--verbose]
 
@@ -15,8 +15,8 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_ROOT="$(cd "${SCRIPT_DIR}/../.." && pwd)"
 
 # Import color functions if available
-if [ -f "${SCRIPT_DIR}/setup-agentic-sdlc.sh" ]; then
-    source "${SCRIPT_DIR}/setup-agentic-sdlc.sh" 2>/dev/null || true
+if [ -f "${SCRIPT_DIR}/setup-haunt.sh" ]; then
+    source "${SCRIPT_DIR}/setup-haunt.sh" 2>/dev/null || true
 fi
 
 # Fallback color functions if not imported

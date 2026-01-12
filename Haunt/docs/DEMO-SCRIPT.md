@@ -306,7 +306,7 @@ Your choice: [1]
 
 ### Call to Action
 
-- **Get started:** `bash Haunt/scripts/setup-agentic-sdlc.sh`
+- **Get started:** `bash Haunt/scripts/setup-haunt.sh`
 - **Read docs:** Haunt/SETUP-GUIDE.md
 - **Try séance:** `/seance idea` in your own project
 
