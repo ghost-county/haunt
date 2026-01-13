@@ -1347,15 +1347,44 @@ check_prerequisites() {
     # -------------------------------------------------------------------------
     # Check: Python 3.11+
     # -------------------------------------------------------------------------
-    if ! command -v python3 &> /dev/null; then
+    # Helper: Find best available Python 3.11+ binary
+    # Checks versioned binaries first (brew installs python3.11), then generic python3
+    find_python311() {
+        # Check versioned binaries first (brew-style)
+        for py_cmd in python3.11 python3.12 python3.13; do
+            if command -v "$py_cmd" &> /dev/null; then
+                echo "$py_cmd"
+                return 0
+            fi
+        done
+        # Check brew's common install locations directly
+        for brew_path in /opt/homebrew/opt/python@3.11/bin/python3.11 /usr/local/opt/python@3.11/bin/python3.11; do
+            if [[ -x "$brew_path" ]]; then
+                echo "$brew_path"
+                return 0
+            fi
+        done
+        # Fall back to generic python3
+        if command -v python3 &> /dev/null; then
+            echo "python3"
+            return 0
+        fi
+        return 1
+    }
+
+    local python_cmd
+    python_cmd=$(find_python311)
+
+    if [[ -z "$python_cmd" ]]; then
         error "Python 3: NOT FOUND"
 
         # Attempt interactive installation
         if install_python; then
             # Verify installation succeeded
-            if command -v python3 &> /dev/null; then
-                local python_version=$(python3 --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
-                success "Python 3: ${python_version} (newly installed)"
+            python_cmd=$(find_python311)
+            if [[ -n "$python_cmd" ]]; then
+                local python_version=$($python_cmd --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+                success "Python 3: ${python_version} (newly installed via ${python_cmd})"
             else
                 critical_missing+=("python3")
                 error "Python installation failed - command still not found"
@@ -1367,7 +1396,7 @@ check_prerequisites() {
             info "                  yum install python311  (CentOS/RHEL)"
         fi
     else
-        local python_version=$(python3 --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+        local python_version=$($python_cmd --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
         local python_major=$(echo "$python_version" | cut -d. -f1)
         local python_minor=$(echo "$python_version" | cut -d. -f2)
 
@@ -1375,13 +1404,14 @@ check_prerequisites() {
             error "Python 3: ${python_version} (requires 3.11+)"
             # Attempt upgrade
             if install_python; then
-                # Re-check version
-                if command -v python3 &> /dev/null; then
-                    python_version=$(python3 --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+                # Re-check with find_python311 (might find newly installed version)
+                python_cmd=$(find_python311)
+                if [[ -n "$python_cmd" ]]; then
+                    python_version=$($python_cmd --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
                     python_major=$(echo "$python_version" | cut -d. -f1)
                     python_minor=$(echo "$python_version" | cut -d. -f2)
                     if [[ "$python_major" -ge 3 ]] && [[ "$python_minor" -ge 11 ]]; then
-                        success "Python 3: ${python_version} (upgraded)"
+                        success "Python 3: ${python_version} (upgraded via ${python_cmd})"
                     else
                         critical_missing+=("python3.11+")
                         error "Python upgrade failed - still ${python_version}"
@@ -1392,7 +1422,7 @@ check_prerequisites() {
                 info "  Manual install: brew install python@3.11  (macOS)"
             fi
         else
-            success "Python 3: ${python_version}"
+            success "Python 3: ${python_version} (via ${python_cmd})"
         fi
     fi
 
@@ -3070,20 +3100,35 @@ PROGRESS_EOF
                 fi
                 ((installed_tools++))
             else
-                # Update existing installation
+                # Update existing installation - only count as updated if files changed
                 if [[ "$DRY_RUN" == false ]]; then
+                    local changes_made=false
                     # Use rsync if available for better updates, otherwise use cp
                     if command -v rsync &> /dev/null; then
-                        rsync -a --exclude='__pycache__' --exclude='.pytest_cache' --exclude='*.pyc' \
-                              "${pattern_dir}/" "${dest_pattern_dir}/"
+                        # Use --itemize-changes to detect if anything was actually updated
+                        local rsync_output
+                        rsync_output=$(rsync -a --itemize-changes --exclude='__pycache__' --exclude='.pytest_cache' --exclude='*.pyc' \
+                              "${pattern_dir}/" "${dest_pattern_dir}/" 2>&1)
+                        if [[ -n "$rsync_output" ]]; then
+                            changes_made=true
+                        fi
                     else
-                        cp -r "$pattern_dir"/* "$dest_pattern_dir"/
+                        # cp always overwrites, so compare checksums first
+                        if ! diff -rq "$pattern_dir" "$dest_pattern_dir" &>/dev/null; then
+                            cp -r "$pattern_dir"/* "$dest_pattern_dir"/
+                            changes_made=true
+                        fi
                     fi
-                    success "  Updated pattern-detector/ directory"
+                    if [[ "$changes_made" == true ]]; then
+                        success "  Updated pattern-detector/ directory"
+                        ((updated_tools++))
+                    else
+                        info "  Unchanged: pattern-detector/ directory"
+                        ((unchanged_tools++))
+                    fi
                 else
-                    info "  [DRY RUN] Would update pattern-detector/ directory"
+                    info "  [DRY RUN] Would check pattern-detector/ directory"
                 fi
-                ((updated_tools++))
             fi
 
             # Install hunt-patterns wrapper script
