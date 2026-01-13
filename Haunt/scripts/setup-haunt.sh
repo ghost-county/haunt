@@ -81,6 +81,31 @@ section() {
     fi
 }
 
+# Find best available Python 3.11+ binary
+# Checks versioned binaries first (brew installs python3.11), then generic python3
+find_python311() {
+    # Check versioned binaries first (brew-style)
+    for py_cmd in python3.11 python3.12 python3.13; do
+        if command -v "$py_cmd" &> /dev/null; then
+            echo "$py_cmd"
+            return 0
+        fi
+    done
+    # Check brew's common install locations directly
+    for brew_path in /opt/homebrew/opt/python@3.11/bin/python3.11 /usr/local/opt/python@3.11/bin/python3.11; do
+        if [[ -x "$brew_path" ]]; then
+            echo "$brew_path"
+            return 0
+        fi
+    done
+    # Fall back to generic python3
+    if command -v python3 &> /dev/null; then
+        echo "python3"
+        return 0
+    fi
+    return 1
+}
+
 # ============================================================================
 # ASCII BANNER
 # ============================================================================
@@ -1347,31 +1372,6 @@ check_prerequisites() {
     # -------------------------------------------------------------------------
     # Check: Python 3.11+
     # -------------------------------------------------------------------------
-    # Helper: Find best available Python 3.11+ binary
-    # Checks versioned binaries first (brew installs python3.11), then generic python3
-    find_python311() {
-        # Check versioned binaries first (brew-style)
-        for py_cmd in python3.11 python3.12 python3.13; do
-            if command -v "$py_cmd" &> /dev/null; then
-                echo "$py_cmd"
-                return 0
-            fi
-        done
-        # Check brew's common install locations directly
-        for brew_path in /opt/homebrew/opt/python@3.11/bin/python3.11 /usr/local/opt/python@3.11/bin/python3.11; do
-            if [[ -x "$brew_path" ]]; then
-                echo "$brew_path"
-                return 0
-            fi
-        done
-        # Fall back to generic python3
-        if command -v python3 &> /dev/null; then
-            echo "python3"
-            return 0
-        fi
-        return 1
-    }
-
     local python_cmd
     python_cmd=$(find_python311)
 
@@ -4083,12 +4083,14 @@ EOF
     fi
 
     # Check Python 3.11+
-    if ! command -v python3 &> /dev/null; then
+    local python_cmd
+    python_cmd=$(find_python311)
+    if [[ -z "$python_cmd" ]]; then
         error "  Python 3: NOT FOUND"
         issues+=("CRITICAL: Python 3.11+ not installed")
         ((prereq_issues++))
     else
-        local python_version=$(python3 --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
+        local python_version=$($python_cmd --version | grep -oE '[0-9]+\.[0-9]+\.[0-9]+' | head -1)
         local python_major=$(echo "$python_version" | cut -d. -f1)
         local python_minor=$(echo "$python_version" | cut -d. -f2)
         if [[ "$python_major" -lt 3 ]] || [[ "$python_major" -eq 3 && "$python_minor" -lt 11 ]]; then
@@ -4096,7 +4098,7 @@ EOF
             issues+=("CRITICAL: Python 3.11+ required")
             ((prereq_issues++))
         else
-            success "  Python 3: ${python_version}"
+            success "  Python 3: ${python_version} (via ${python_cmd})"
         fi
     fi
 
