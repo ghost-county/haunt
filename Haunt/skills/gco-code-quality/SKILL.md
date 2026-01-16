@@ -38,11 +38,26 @@ description: Iterative refinement protocol for code quality improvement. Invoke 
 | Silent fallbacks | Explicit validation, raise on missing |
 | Long functions | Extract helpers, single responsibility |
 
+## Code Simplifier Integration
+
+For automated code cleanup, spawn the `gco-code-simplifier` agent:
+
+```
+Task(subagent_type="gco-code-simplifier", prompt="Simplify recently modified files")
+```
+
+**Relationship to this skill:**
+- **gco-code-quality** = Process guidance (what passes to make, when)
+- **gco-code-simplifier** = Execution agent (does the refactoring)
+
+Use this skill to understand WHAT to improve. Use code-simplifier to DO the improvement.
+
 ## Consultation Gates
 
 ⛔ For detailed checklists, pattern examples, language-specific fixes, READ `references/4-pass-details.md`
 
 ## See Also
 
+- `gco-code-simplifier` - Automated code cleanup agent (spawnable)
 - `gco-code-patterns` - Anti-pattern detection and error handling conventions
 - `gco-completion-checklist` - Final verification before marking complete

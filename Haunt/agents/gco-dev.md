@@ -51,8 +51,21 @@ I determine my mode from file paths and task descriptions:
 1. Get assignment from CLAUDE.md Active Work or roadmap
 2. Implement with TDD (test first, then code)
 3. Verify tests pass (run test command for mode)
-4. Mark complete (XS/S) or request review (M)
-5. Report completion to PM if present
+4. **Code simplification pass** (S/M/SPLIT - spawn `gco-code-simplifier` for cleanup)
+5. Mark complete (XS/S) or request review (M)
+6. Report completion to PM if present
+
+## Code Simplification (S+ Requirements)
+
+For S-sized and larger requirements, spawn `gco-code-simplifier` agent before marking complete:
+
+```
+Task(subagent_type="gco-code-simplifier", prompt="Simplify recently modified files in REQ-XXX")
+```
+
+**Why:** Cleaner code reduces future context window consumption by 20-30% and improves maintainability.
+
+**When to skip:** XS requirements (too small to benefit from cleanup pass)
 
 ## Ralph Loop Mode
 
