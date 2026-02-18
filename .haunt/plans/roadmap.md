@@ -22,6 +22,37 @@ Run `/seance` to start new work.
 
 *Haunt agent framework and SDLC tooling.*
 
+### 🟢 REQ-381: Create gco-secure-coding Skill
+
+**Type:** Enhancement
+**Reported:** 2026-01-20
+**Source:** User planning session
+**Description:** On-demand security skill providing production security patterns for TypeScript/Python. Adapts TikiTribe framework (agent security, AI security, OWASP) into single skill with keyword auto-suggest.
+
+**Tasks:**
+- [x] Create skill file with YAML frontmatter and auto-suggest keywords
+- [x] Add Agent Security section (tool validation, permission boundaries, output validation)
+- [x] Add AI Security section (prompt injection, input sanitization)
+- [x] Add OWASP/Web Security section and checklist
+
+**Files:**
+- `Haunt/skills/gco-secure-coding/SKILL.md` (created)
+
+**Effort:** S
+**Complexity:** SIMPLE
+**Agent:** Dev-Backend
+**Completion:** Skill deploys via setup-haunt.sh --verify; provides security patterns without blocking local dev
+**Blocked by:** None
+
+**Completed:** 2026-01-20
+**Implementation Notes:**
+- Created comprehensive skill with 13 security patterns (Do/Don't/Why format)
+- 4 main sections: Agent Security, AI Security, Web Security (OWASP), Quick Checklist
+- 13 TypeScript + 13 Python code examples
+- Auto-suggest keywords in description trigger on production, deploy, auth, security, payments, PII, public API
+- Deployed to ~/.claude/skills/gco-secure-coding/ via setup-haunt.sh
+- Verified all patterns follow Do/Don't/Why/code example format
+
 ---
 
 ## TrueSight
@@ -41,10 +72,10 @@ Run `/seance` to start new work.
 | Project | ⚪ | 🟡 | 🟢 |
 |---------|---|---|---|
 | Cross-Project | 0 | 0 | 0 |
-| Haunt | 0 | 0 | 0 |
+| Haunt | 0 | 0 | 1 |
 | TrueSight | 0 | 0 | 0 |
 | Familiar | 0 | 0 | 0 |
-| **Total** | 0 | 0 | 0 |
+| **Total** | 0 | 0 | 1 |
 
 **Archived:** 84 requirements → See `.haunt/completed/`
 

@@ -4,14 +4,6 @@
 # ============================================================================
 # DANGEROUS COMMAND PATTERNS (Bash Tool Only)
 # ============================================================================
-# These patterns block or request confirmation for destructive bash commands.
-# Patterns use regex syntax and are matched against the full command string.
-#
-# Fields:
-#   pattern: Regex pattern to match dangerous commands
-#   reason: Human-readable explanation of why blocked
-#   ask: (Optional) If true, prompts for confirmation instead of blocking
-# ============================================================================
 
 bashToolPatterns:
   # BLOCK: Root/home directory deletion (catastrophic)
@@ -55,13 +47,6 @@ bashToolPatterns:
 # ============================================================================
 # ZERO ACCESS PATHS (No Read/Write/Edit/Delete)
 # ============================================================================
-# These paths contain secrets/credentials and should NEVER be accessed.
-# All tool operations blocked completely for these paths.
-#
-# IMPORTANT: This is minimal by design. User explicitly allows access to:
-#   - .env files (project-specific configuration)
-#   - credentials.json (service account keys)
-# ============================================================================
 
 zeroAccessPaths:
   - ~/.ssh/              # SSH private keys
@@ -71,16 +56,10 @@ zeroAccessPaths:
 # ============================================================================
 # READ-ONLY PATHS (Read Allowed, Modifications Blocked)
 # ============================================================================
-# These paths can be read but not modified/deleted.
-# Currently EMPTY - user explicitly wants full read/write/edit access.
-#
-# If future requirements need read-only protection, add paths here.
-# ============================================================================
 
 readOnlyPaths:
-  # Deployed framework assets - edit Haunt/ source instead
+  # Deployed assets - edit Haunt/ source, then run setup-haunt.sh
   - ~/.claude/rules/
-  - ~/.claude/agents/
   - ~/.claude/skills/
   - ~/.claude/commands/
   - ~/.claude/hooks/
@@ -88,17 +67,10 @@ readOnlyPaths:
 # ============================================================================
 # NO DELETE PATHS (Read/Write/Edit Allowed, Delete Blocked)
 # ============================================================================
-# These paths are critical to project structure and should not be deleted.
-# Read, Write, and Edit operations are allowed.
-# ============================================================================
 
 noDeletePaths:
   # Version control
   - .git/
-
-  # Project SDLC artifacts
-  - .haunt/plans/
-  - .haunt/completed/
 
   # Common source directories
   - src/
@@ -107,16 +79,14 @@ noDeletePaths:
   - packages/
 
   # Haunt framework (source)
-  - Haunt/agents/
   - Haunt/rules/
   - Haunt/skills/
   - Haunt/scripts/
   - Haunt/docs/
   - Haunt/hooks/
 
-  # Deployed artifacts (global ~/.claude/)
+  # Deployed artifacts
   - ~/.claude/rules/
-  - ~/.claude/agents/
   - ~/.claude/skills/
   - ~/.claude/commands/
   - ~/.claude/hooks/

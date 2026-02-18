@@ -276,32 +276,15 @@ When reviewing frontend PRs:
 - **Regression risk** - No protection against future changes breaking the feature
 - **Technical debt** - Missing tests accumulate, harder to add later
 
-### Verification Script Enforcement
+### Verification Before Marking Complete
 
-Use the verification script before marking complete:
+Before marking UI work complete, verify E2E tests exist and pass:
 
 ```bash
-# Check if E2E tests exist for your requirement
-bash Haunt/scripts/verify-e2e-tests.sh REQ-XXX frontend
-
-# Exit code 0 = Tests exist (safe to mark 🟢)
-# Exit code 1 = Tests missing (CANNOT mark 🟢)
+npx playwright test
 ```
 
-### What Happens When You Bypass
-
-**Scenario: Dev marks REQ-XXX 🟢 without E2E tests**
-
-1. **Code Reviewer runs verification:**
-   ```bash
-   $ bash Haunt/scripts/verify-e2e-tests.sh REQ-XXX frontend
-   ERROR: No E2E tests found for UI requirement REQ-XXX
-   ERROR: Requirement CANNOT be marked 🟢 Complete without E2E tests
-   ```
-
-2. **Code Reviewer verdict: CHANGES_REQUESTED**
-   - Status reverted to 🟡
-   - Blocked from merge
+If tests are missing or failing, write them before marking complete.
    - Must write tests before re-submitting
 
 3. **Pattern tracked:**

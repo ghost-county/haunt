@@ -1,506 +1,110 @@
-# Checkup (Haunt Health Verification)
+# Checkup (Health Verification)
 
-Verify that Haunt framework is properly installed and the spirits are responding to Ghost County protocols.
+Verify that dev guardrails are properly deployed.
 
 ## Usage
 
 ```bash
 /checkup              # Full health check
-/checkup --quick      # Quick verification (rules + agents only)
-/checkup --verbose    # Detailed diagnostic output
+/checkup --quick      # Quick verification (rules only)
 ```
 
 ## Health Check Sequence
 
-The checkup performs six verification phases:
+### 1. Rules Check
 
-### 1. Rules Adherence Check
+Verify rules are deployed to `~/.claude/rules/`:
 
-**What it checks:**
-- Rules directory exists: `~/.claude/rules/`
-- Expected GCO rules are present
-- Rules are properly formatted
-
-**Expected Rules:**
-- `gco-session-startup.md`
-- `gco-commit-conventions.md`
+**Expected GCO rules (5):**
+- `gco-communication.md`
 - `gco-completion-checklist.md`
-- `gco-file-conventions.md`
-- `gco-framework-changes.md`
-- `gco-roadmap-format.md`
-- `gco-session-startup.md`
-- `gco-roadmap-format.md`
+- `gco-decisions.md`
+- `gco-ui-testing-reminder.md`
+- `gco-visual-verification.md`
 
-**Verification:**
+**Expected personal rules (3):**
+- `familiar-adhd-patterns.md`
+- `familiar-user-profile.md`
+- `username-correction.md`
+
 ```bash
 RULES_DIR="$HOME/.claude/rules"
-EXPECTED_RULES=8
-
-if [ -d "$RULES_DIR" ]; then
-    FOUND_RULES=$(ls "$RULES_DIR"/gco-*.md 2>/dev/null | wc -l)
-    if [ "$FOUND_RULES" -eq "$EXPECTED_RULES" ]; then
-        echo "✅ Rules: $FOUND_RULES/$EXPECTED_RULES loaded"
-    else
-        echo "⚠️ Rules: $FOUND_RULES/$EXPECTED_RULES loaded (missing $(($EXPECTED_RULES - $FOUND_RULES)))"
-    fi
-else
-    echo "❌ Rules: Directory not found"
-fi
+GCO_COUNT=$(ls "$RULES_DIR"/gco-*.md 2>/dev/null | wc -l | tr -d ' ')
+TOTAL_COUNT=$(ls "$RULES_DIR"/*.md 2>/dev/null | wc -l | tr -d ' ')
+echo "Rules: $GCO_COUNT gco rules, $TOTAL_COUNT total"
 ```
 
-### 2. Skills Availability Check
+### 2. Skills Check
 
-**What it checks:**
-- Skills directory exists: `~/.claude/skills/`
-- Expected GCO skills are present
-- SKILL.md files are properly formatted
+Verify skills are deployed to `~/.claude/skills/`:
 
-**Expected Skills:**
-- `gco-code-patterns/`
-- `gco-commit-conventions/`
-- `gco-context7-usage/`
-- `gco-haunt-mode/`
-- `gco-feature-contracts/`
-- `gco-pattern-defeat/`
-- `gco-roadmap-workflow/`
-- `gco-session-startup/`
-- `gco-tdd-workflow/`
-- `gco-witching-hour/`
-- Plus any additional GCO skills
+**Expected GCO skills (~14):**
+- `gco-code-review`, `gco-commit-conventions`, `gco-code-patterns`
+- `gco-tdd-workflow`, `gco-playwright-tests`, `gco-ui-testing`, `gco-testing-mindset`
+- `gco-secure-coding`, `gco-python-standards`, `gco-react-standards`, `gco-ui-design`
+- `gco-task-decomposition`, `gco-requirements-development`, `gco-context7-usage`
 
-**Verification:**
 ```bash
 SKILLS_DIR="$HOME/.claude/skills"
-
-if [ -d "$SKILLS_DIR" ]; then
-    FOUND_SKILLS=$(ls -d "$SKILLS_DIR"/gco-*/ 2>/dev/null | wc -l)
-    VALID_SKILLS=0
-
-    for skill_dir in "$SKILLS_DIR"/gco-*/; do
-        if [ -f "$skill_dir/SKILL.md" ]; then
-            VALID_SKILLS=$((VALID_SKILLS + 1))
-        fi
-    done
-
-    echo "✅ Skills: $VALID_SKILLS/$FOUND_SKILLS available"
-else
-    echo "❌ Skills: Directory not found"
-fi
+GCO_SKILLS=$(ls -d "$SKILLS_DIR"/gco-*/ 2>/dev/null | wc -l | tr -d ' ')
+echo "Skills: $GCO_SKILLS gco skills deployed"
 ```
 
-### 3. MCP Server Connectivity Check
+### 3. Commands Check
 
-**What it checks:**
-- MCP configuration file exists: `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
-- Expected MCP servers are configured
-- Servers are accessible (optional deep check)
+Verify commands are deployed to `~/.claude/commands/`:
 
-**Expected MCP Servers:**
-- `context7` - Library documentation lookup
-- `agent_memory` - Agent memory persistence
-- `playwright` - Browser automation (optional)
-
-**Verification:**
-```bash
-# macOS path
-MCP_CONFIG="$HOME/Library/Application Support/Claude/claude_desktop_config.json"
-
-# Linux path (alternative)
-if [ ! -f "$MCP_CONFIG" ]; then
-    MCP_CONFIG="$HOME/.config/Claude/claude_desktop_config.json"
-fi
-
-if [ -f "$MCP_CONFIG" ]; then
-    # Check for MCP servers in config
-    CONTEXT7=$(grep -c "context7" "$MCP_CONFIG" || echo 0)
-    MEMORY=$(grep -c "agent_memory" "$MCP_CONFIG" || echo 0)
-    PLAYWRIGHT=$(grep -c "playwright" "$MCP_CONFIG" || echo 0)
-
-    CONNECTED=0
-    SERVERS=""
-
-    if [ "$CONTEXT7" -gt 0 ]; then
-        CONNECTED=$((CONNECTED + 1))
-        SERVERS="$SERVERS context7"
-    fi
-
-    if [ "$MEMORY" -gt 0 ]; then
-        CONNECTED=$((CONNECTED + 1))
-        SERVERS="$SERVERS agent_memory"
-    fi
-
-    if [ "$PLAYWRIGHT" -gt 0 ]; then
-        CONNECTED=$((CONNECTED + 1))
-        SERVERS="$SERVERS playwright"
-    fi
-
-    if [ "$CONNECTED" -ge 2 ]; then
-        echo "✅ MCP:$SERVERS connected ($CONNECTED/3)"
-    elif [ "$CONNECTED" -eq 1 ]; then
-        echo "⚠️ MCP:$SERVERS connected ($CONNECTED/3 - some servers missing)"
-    else
-        echo "❌ MCP: No servers configured"
-    fi
-else
-    echo "⚠️ MCP: Configuration file not found"
-fi
-```
-
-### 4. Agent Deployment Verification
-
-**What it checks:**
-- Agents directory exists: `~/.claude/agents/`
-- Expected GCO agents are present
-- Agents have valid YAML frontmatter
-
-**Expected Core Agents:**
-- `gco-dev.md`
-- `gco-research.md`
-- `gco-code-reviewer.md`
-- `gco-project-manager.md`
-- `gco-release-manager.md`
-- Plus variant agents (gco-research.md, gco-code-reviewer-readonly.md, etc.)
-
-**Verification:**
-```bash
-AGENTS_DIR="$HOME/.claude/agents"
-
-if [ -d "$AGENTS_DIR" ]; then
-    FOUND_AGENTS=$(ls "$AGENTS_DIR"/gco-*.md 2>/dev/null | wc -l)
-    VALID_AGENTS=0
-
-    for agent_file in "$AGENTS_DIR"/gco-*.md; do
-        # Check for valid YAML frontmatter
-        if head -n 5 "$agent_file" | grep -q "^---$"; then
-            VALID_AGENTS=$((VALID_AGENTS + 1))
-        fi
-    done
-
-    if [ "$VALID_AGENTS" -ge 5 ]; then
-        echo "✅ Agents: $VALID_AGENTS/$FOUND_AGENTS deployed"
-    else
-        echo "⚠️ Agents: $VALID_AGENTS/$FOUND_AGENTS deployed (expected at least 5 core agents)"
-    fi
-else
-    echo "❌ Agents: Directory not found"
-fi
-```
-
-### 5. Directory Structure Validation
-
-**What it checks:**
-- `.haunt/` project directory exists
-- Required subdirectories are present
-- Roadmap file exists
-
-**Expected Directories:**
-- `.haunt/plans/` - Roadmap and requirements
-- `.haunt/completed/` - Archived work
-- `.haunt/progress/` - Session tracking
-- `.haunt/tests/` - Pattern and behavior tests
-- `.haunt/docs/` - Documentation
-
-**Verification:**
-```bash
-HAUNT_DIR=".haunt"
-
-if [ -d "$HAUNT_DIR" ]; then
-    MISSING_DIRS=""
-
-    [ ! -d "$HAUNT_DIR/plans" ] && MISSING_DIRS="$MISSING_DIRS plans"
-    [ ! -d "$HAUNT_DIR/completed" ] && MISSING_DIRS="$MISSING_DIRS completed"
-    [ ! -d "$HAUNT_DIR/progress" ] && MISSING_DIRS="$MISSING_DIRS progress"
-    [ ! -d "$HAUNT_DIR/tests" ] && MISSING_DIRS="$MISSING_DIRS tests"
-    [ ! -d "$HAUNT_DIR/docs" ] && MISSING_DIRS="$MISSING_DIRS docs"
-
-    if [ -z "$MISSING_DIRS" ]; then
-        if [ -f "$HAUNT_DIR/plans/roadmap.md" ]; then
-            echo "✅ Directories: .haunt/ structure valid"
-        else
-            echo "⚠️ Directories: Structure exists, roadmap.md missing"
-        fi
-    else
-        echo "⚠️ Directories: Missing subdirectories:$MISSING_DIRS"
-    fi
-else
-    echo "⚠️ Directories: .haunt/ not found (run in project root or initialize with /seance)"
-fi
-```
-
-### 6. Commands Availability Check
-
-**What it checks:**
-- Commands directory exists: `~/.claude/commands/`
-- Expected Haunt commands are present
-- Commands are properly formatted
-
-**Expected Commands:**
-- `seance.md`
-- `summon.md`
-- `haunt.md`
-- `haunting.md`
-- `seer.md`
-- `exorcism.md`
-- `banish.md`
-- `ritual.md`
-- `cleanse.md`
-- `apparition.md`
-- `haunt-update.md`
-- `witching-hour.md`
-- `haunt-gather.md`
-- `checkup.md` (this command!)
+**Expected commands (3):**
+- `ship.md`
 - `qa.md`
-- `decompose.md`
+- `checkup.md`
 
-**Verification:**
 ```bash
 COMMANDS_DIR="$HOME/.claude/commands"
+CMD_COUNT=$(ls "$COMMANDS_DIR"/*.md 2>/dev/null | wc -l | tr -d ' ')
+echo "Commands: $CMD_COUNT deployed"
+```
 
-if [ -d "$COMMANDS_DIR" ]; then
-    FOUND_COMMANDS=$(ls "$COMMANDS_DIR"/*.md 2>/dev/null | wc -l)
+### 4. MCP Server Check
 
-    if [ "$FOUND_COMMANDS" -ge 16 ]; then
-        echo "✅ Commands: $FOUND_COMMANDS slash commands available"
-    else
-        echo "⚠️ Commands: $FOUND_COMMANDS slash commands found (expected at least 16)"
-    fi
+Verify MCP servers are configured:
+
+```bash
+# Check Claude Code settings for MCP
+MCP_CONFIG="$HOME/.claude/settings.json"
+if [ -f "$MCP_CONFIG" ]; then
+    echo "MCP: Settings file found"
 else
-    echo "❌ Commands: Directory not found"
+    echo "MCP: No settings file (check Claude Code config)"
 fi
 ```
 
-## Output Formats
-
-### All Systems Operational
+## Output Format
 
 ```
-🏚️  HAUNT CHECKUP COMPLETE  🏚️
+CHECKUP COMPLETE
 
-✅ Rules: 8/8 loaded
-✅ Skills: 10/10 available
-✅ MCP: context7 agent_memory connected (2/3)
-✅ Agents: 7/7 deployed
-✅ Directories: .haunt/ structure valid
-✅ Commands: 14 slash commands available
+Rules: 5/5 gco rules, 8/8 total
+Skills: 14 gco skills deployed
+Commands: 3/3 deployed
+MCP: context7 configured
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-🌙 The spirits are strong and responsive.
-   Haunt is properly installed and operational.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Next steps:
-  /seance          # Start a new haunting
-  /haunt           # View current status
-  /summon dev      # Call forth a specific spirit
+All systems operational.
 ```
 
-### Partial Issues Detected
+## Quick Mode (`/checkup --quick`)
 
+Only checks rules:
 ```
-🏚️  HAUNT CHECKUP COMPLETE  🏚️
+QUICK CHECKUP
 
-✅ Rules: 8/8 loaded
-✅ Skills: 10/10 available
-⚠️ MCP: context7 connected (1/3 - some servers missing)
-✅ Agents: 7/7 deployed
-⚠️ Directories: .haunt/ not found (run in project root)
-✅ Commands: 14 slash commands available
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⚠️ The spirits are present but weakened.
-   Some components need attention.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Issues detected:
-1. MCP servers partially configured
-   → Install agent_memory and playwright MCP servers
-   → See: Haunt/docs/BROWSER-MCP-SETUP.md
-
-2. .haunt/ directory not found
-   → Run this command from project root
-   → Or initialize with: /seance
-
-Troubleshooting:
-  bash Haunt/scripts/setup-haunt.sh --verify
-  cat Haunt/SETUP-GUIDE.md
+Rules: 5/5 gco rules, 8/8 total
 ```
 
-### Critical Failures
+## If Issues Found
 
 ```
-🏚️  HAUNT CHECKUP COMPLETE  🏚️
-
-❌ Rules: Directory not found
-❌ Skills: Directory not found
-⚠️ MCP: Configuration file not found
-❌ Agents: Directory not found
-⚠️ Directories: .haunt/ not found
-❌ Commands: Directory not found
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-💀 The spirits are silent. Haunt is not installed.
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-Installation required:
-  cd /path/to/ghost-county
+Setup required:
+  cd /path/to/haunt
   bash Haunt/scripts/setup-haunt.sh
-
-Documentation:
-  cat Haunt/SETUP-GUIDE.md
-  cat Haunt/QUICK-REFERENCE.md
 ```
-
-## Mode-Specific Behavior
-
-### Quick Mode (`/checkup --quick`)
-
-Only checks critical components:
-1. Rules (8 files)
-2. Agents (5+ files)
-
-Output is condensed:
-```
-🏚️  QUICK CHECKUP  🏚️
-
-✅ Rules: 8/8 loaded
-✅ Agents: 7/7 deployed
-
-The core spirits are present.
-```
-
-### Verbose Mode (`/checkup --verbose`)
-
-Includes detailed diagnostics:
-- List of missing files by category
-- File paths for all checked components
-- MCP server configuration details
-- Recommendations for each issue
-
-Example verbose output addition:
-```
-VERBOSE DIAGNOSTICS:
-
-Rules found:
-  ~/.claude/rules/gco-session-startup.md
-  ~/.claude/rules/gco-commit-conventions.md
-  ~/.claude/rules/gco-completion-checklist.md
-  ... (5 more)
-
-Agents found:
-  ~/.claude/agents/gco-dev.md
-  ~/.claude/agents/gco-research.md
-  ... (5 more)
-
-MCP Configuration:
-  Config file: ~/Library/Application Support/Claude/claude_desktop_config.json
-  Servers configured: context7, agent_memory
-  Missing servers: playwright (optional)
-```
-
-## Implementation Notes
-
-### Bash Script Approach
-
-Create a helper script `Haunt/scripts/checkup.sh` that performs the actual checks:
-
-```bash
-#!/bin/bash
-# Haunt framework health check
-# Usage: bash Haunt/scripts/checkup.sh [--quick|--verbose]
-
-set -e
-
-MODE="${1:-normal}"
-VERBOSE=false
-QUICK=false
-
-case "$MODE" in
-    --quick)
-        QUICK=true
-        ;;
-    --verbose)
-        VERBOSE=true
-        ;;
-esac
-
-# [Implementation of all 6 check phases above]
-# Output results in Ghost County themed format
-```
-
-### Claude Code Integration
-
-The `/checkup` command invokes the bash script:
-
-```bash
-bash Haunt/scripts/checkup.sh "$@"
-```
-
-## Exit Codes
-
-The checkup script returns meaningful exit codes:
-
-- **0** - All systems operational (all checks ✅)
-- **1** - Partial issues detected (some ⚠️ warnings)
-- **2** - Critical failures (any ❌ errors)
-
-## Troubleshooting
-
-### Rules/Skills/Agents/Commands Not Found
-
-**Cause:** Haunt not installed or setup script not run
-
-**Fix:**
-```bash
-cd /path/to/ghost-county
-bash Haunt/scripts/setup-haunt.sh
-```
-
-### MCP Servers Not Configured
-
-**Cause:** MCP servers not installed or not added to Claude Code config
-
-**Fix:**
-```bash
-# Install MCP servers
-npm install -g @modelcontextprotocol/server-context7
-npm install -g @modelcontextprotocol/server-memory
-
-# Configure in Claude Code settings
-# See: Haunt/docs/BROWSER-MCP-SETUP.md
-```
-
-### .haunt/ Directory Not Found
-
-**Cause:** Command run outside project root or project not initialized
-
-**Fix:**
-```bash
-# Run from project root
-cd /path/to/your/project
-
-# Or initialize with seance
-/seance "Build a task management app"
-```
-
-### Partial File Counts
-
-**Cause:** Some files missing from deployment
-
-**Fix:**
-```bash
-# Re-run setup script
-bash Haunt/scripts/setup-haunt.sh
-
-# Or check for manual modifications
-ls -la ~/.claude/rules/gco-*
-ls -la ~/.claude/agents/gco-*
-ls -la ~/.claude/skills/gco-*
-ls -la ~/.claude/commands/gco-*
-```
-
-## See Also
-
-- `/haunt-update` - Check for Haunt framework updates
-- `bash Haunt/scripts/setup-haunt.sh --verify` - Verify installation
-- `Haunt/SETUP-GUIDE.md` - Complete setup documentation
-- `Haunt/QUICK-REFERENCE.md` - Framework quick reference

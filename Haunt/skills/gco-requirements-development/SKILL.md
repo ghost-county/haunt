@@ -1,13 +1,13 @@
 ---
 name: gco-requirements-development
-description: Transform ideas into formal requirements. Phase 1 of idea-to-roadmap workflow.
+description: Transform ideas into clear, actionable requirements. Use when user describes a feature, enhancement, or fix that needs structured definition.
 ---
 
 # Requirements Development
 
-**Output:** `.haunt/plans/requirements-document.md`
+Transform ideas into clear, testable requirements.
 
-## Step 1: Understanding Checkpoint (Required)
+## Step 1: Understanding Checkpoint
 
 Before writing requirements, confirm with user:
 
@@ -16,74 +16,51 @@ Before writing requirements, confirm with user:
 **Scope:** [bullets]
 **Assumptions:** [bullets]
 
-Review each step, or run through to roadmap?
+Does this match your intent?
 ```
 
 Wait for confirmation.
 
-## Step 2: Apply 14-Dimension Rubric
+## Step 2: Write Requirements
 
-| # | Dimension | Key Questions |
-|---|-----------|---------------|
-| 1 | Introduction | Purpose? Scope? Audience? |
-| 2 | Goals | Business goals? User goals? Metrics? |
-| 3 | User Stories | Who? What? Why? |
-| 4 | Functional | What MUST system do? |
-| 5 | Non-Functional | Performance? Security? Usability? |
-| 6 | Technical | Platform? Stack? Integrations? |
-| 7 | Design | UI/UX? Accessibility? |
-| 8 | Testing | Strategy? Acceptance criteria? |
-| 9 | Deployment | Process? Release criteria? |
-| 10 | Maintenance | Support? SLAs? |
-| 11 | Future | Out-of-scope for later? |
-| 12 | Training | User/admin training needs? |
-| 13 | Stakeholders | Who approves? Who owns? |
-| 14 | Change Mgmt | How are changes handled? |
-
-Not all apply to every feature.
-
-## Step 3: Write Requirements
+For each requirement:
 
 ```markdown
-### REQ-XXX: [Action-oriented title]
+### [Action-oriented title]
 
 **Priority:** MUST | SHOULD | MAY
-**Description:** The system SHALL [specific, testable behavior].
+**Description:** [Specific, testable behavior]
 **Acceptance Criteria:**
-- [ ] [Condition 1]
-- [ ] [Condition 2]
-**Dependencies:** Depends on: [X] | Blocks: [Y]
-**Complexity:** S | M | L | XL
+- [ ] [Criterion 1]
+- [ ] [Criterion 2]
+**Dependencies:** [What this depends on or blocks]
+**Size:** XS | S | M (if larger, break down)
 ```
 
-## Step 4: Map Dependencies
+## Step 3: Map Dependencies
+
+Identify what must happen first:
 
 ```
-REQ-001 (Foundation)
-    ├──► REQ-002
-    └──► REQ-003
-              └──► REQ-004
+Requirement A (Foundation)
+    ├──> Requirement B
+    └──> Requirement C
+              └──> Requirement D
 ```
 
-## Step 5: Check Existing Roadmap
-
-- Continue REQ numbering from existing
-- Note dependencies on existing items
-- Flag conflicts with in-progress work
-
-## Complexity Sizing
+## Sizing Guide
 
 | Size | Duration | Characteristics |
 |------|----------|-----------------|
-| S | 1-4 hrs | Single file, clear scope |
-| M | 4-8 hrs | 2-3 files, some complexity |
-| L/XL | >1 week | **Must be broken down** |
+| XS | <1 hr | Single file, clear scope |
+| S | 1-2 hrs | 2-4 files, straightforward |
+| M | 2-4 hrs | 4-8 files, some complexity |
+| Too big | >4 hrs | **Must be broken down** |
 
 ## Quality Checklist
 
 - [ ] Understanding confirmed with user
-- [ ] Applicable dimensions addressed
-- [ ] Requirements atomic and testable
+- [ ] Requirements are atomic and testable
+- [ ] Acceptance criteria are specific (not vague)
 - [ ] Dependencies mapped
-- [ ] Complexity estimated
-- [ ] Existing roadmap checked
+- [ ] Size estimated

@@ -224,19 +224,6 @@ const result = expensiveCalc();
 
 ---
 
-## Integration with Roadmap Workflow
-
-When evaluating requirements during planning:
-
-1. **Apply decision framework to each task**
-2. **Mark deferred work as "Backlog" (not roadmap)**
-3. **Focus roadmap on user-visible, validated, real needs**
-4. **Revisit deferred decisions periodically** (quarterly review)
-
-**Benefit:** Prevents roadmap bloat from speculative work.
-
----
-
 ## Success Criteria
 
 You're using this framework correctly when:

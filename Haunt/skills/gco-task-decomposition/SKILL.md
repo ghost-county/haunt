@@ -1,78 +1,34 @@
 ---
 name: gco-task-decomposition
-description: Break down large requirements into atomic, parallelizable tasks with clear dependencies. Use when requirements are sized SPLIT (>4 hours, >8 files), when user says "decompose", "break down", "split this requirement", or when the /decompose command is invoked. Produces dependency DAG visualization and parallelization recommendations.
+description: Break down large tasks into atomic, parallelizable pieces. Use when work is too big for one session, when user says "decompose", "break down", or "split this up".
 ---
 
-# Task Decomposition: Breaking Down the Monolith
+# Task Decomposition
 
-When the spirits face a task too vast to complete in one haunting, the ancient art of decomposition must be invoked. This skill transforms overwhelming requirements into atomic, manageable pieces that can be executed efficiently - sometimes in parallel.
+When a task is too large to complete in one sitting, break it down into atomic pieces.
 
 ## When to Use
 
-- **SPLIT Requirements:** Any requirement sized as SPLIT (>4 hours, >8 files)
-- **Trigger Phrases:** "decompose", "break down", "split this requirement", "this is too big"
-- **Command:** `/decompose REQ-XXX`
-- **Proactive:** When you notice a requirement exceeds sizing limits during planning
+- Task involves >8 files
+- Task has >4 distinct steps
+- Task spans multiple domains (backend + frontend + infra)
+- User says "decompose", "break down", "split this up"
 
 ## The One Sitting Rule
 
-Every decomposed piece MUST be completable in one uninterrupted work session:
+Every piece MUST be completable in one work session:
 
-| Size | Time | Files | Lines | Use Case |
-|------|------|-------|-------|----------|
-| XS | 30min-1hr | 1-2 | <50 | Quick fixes, config changes |
-| S | 1-2 hours | 2-4 | 50-150 | Single component features |
-| M | 2-4 hours | 4-8 | 150-300 | Multi-component features |
+| Size | Files | Characteristics |
+|------|-------|-----------------|
+| XS | 1-2 | Quick fixes, config changes |
+| S | 2-4 | Single component features |
+| M | 4-8 | Multi-component features |
 
-**SPLIT triggers (must decompose):**
-- >4 hours estimated time
-- >8 files to create/modify
-- >300 lines of changes
-- >6 tasks in the task list
-
-## Reference Index
-
-When you need detailed guidance, consult these references:
-
-| When You Need | Read This |
-|---------------|-----------|
-| Decomposition example (full REQ-050) | `references/examples.md` |
-| DAG visualization patterns | `references/dag-patterns.md` |
-| ASCII vs Mermaid format guidance | `references/dag-patterns.md` |
-| Parallelization pattern examples | `references/examples.md` |
+If a piece is bigger than M, decompose further.
 
 ## Decomposition Process
 
-### Step 1: Analyze the Requirement
-
-Read the requirement and identify:
-
-```markdown
-## Decomposition Analysis: REQ-XXX
-
-**Original Title:** [requirement title]
-**Original Effort:** SPLIT (estimated X hours)
-**Original Files:** [count] files
-
-**Why SPLIT is needed:**
-- [ ] Time exceeds 4 hours
-- [ ] Files exceed 8
-- [ ] Tasks exceed 6
-- [ ] Complexity requires phased approach
-
-**Domain Coverage:**
-- [ ] Backend (APIs, services, models)
-- [ ] Frontend (UI, components, state)
-- [ ] Infrastructure (IaC, deployment, CI)
-- [ ] Database (schema, migrations)
-- [ ] Testing (unit, integration, E2E)
-```
-
-### Step 2: Identify Natural Boundaries
-
-Find the natural seams where the requirement can be split:
-
-**Decomposition Strategies:**
+### Step 1: Identify Natural Boundaries
 
 | Strategy | Best For | Example |
 |----------|----------|---------|
@@ -82,13 +38,9 @@ Find the natural seams where the requirement can be split:
 | **Risk Isolation** | Uncertain requirements | Spike -> Foundation -> Feature |
 | **Dependency Chain** | Sequential requirements | Data model -> Service -> API -> UI |
 
-### Step 3: Map Dependencies
+### Step 2: Map Dependencies
 
-Create a Directed Acyclic Graph (DAG) of task dependencies.
-
-⛔ **CONSULTATION GATE:** Before creating DAG, READ `references/dag-patterns.md` for visualization formats and examples.
-
-**Basic ASCII DAG Notation:**
+Create a dependency graph of tasks:
 
 ```
 A -> B, C     (A blocks both B and C)
@@ -96,183 +48,44 @@ B -> D        (B blocks D)
 C -> D        (C blocks D)
 ```
 
-This translates to roadmap format:
-- `REQ-XXX-B: Blocked by: REQ-XXX-A`
-- `REQ-XXX-C: Blocked by: REQ-XXX-A`
-- `REQ-XXX-D: Blocked by: REQ-XXX-B, REQ-XXX-C`
-
-### Step 4: Identify Parallelization Opportunities
+### Step 3: Identify Parallelization
 
 Tasks with no dependencies between them can run in parallel:
 
-```markdown
-## Parallelization Analysis
-
-**Sequential (must be in order):**
-A -> D  (A must complete before D can start)
-
-**Parallel Opportunities:**
-- B and C can run in parallel (both only depend on A)
-- No dependencies between B and C
-
-**Execution Schedule:**
-
+```
 Phase 1 (Sequential):  A
 Phase 2 (Parallel):    B || C
 Phase 3 (Sequential):  D
-
-**Parallelization Ratio:** 2/4 tasks (50% parallelizable)
 ```
 
-**Parallelization Markers:**
-
-| Marker | Meaning |
-|--------|---------|
-| `||` | Can run in parallel |
-| `->` | Must run sequentially |
-| `+ A` | Can start after A completes |
-| `@ Phase N` | Belongs to execution phase N |
-
-### Step 5: Size Each Piece
-
-Every decomposed piece must fit within sizing limits:
-
-```markdown
-## Decomposed Requirements
-
-### REQ-XXX-A: [Foundation Task]
-- **Effort:** S (1.5 hours)
-- **Files:** 2 files
-- **Tasks:** 3
-- **Blocked by:** None
-- **Parallelizable:** No (foundation)
-
-### REQ-XXX-B: [Backend API]
-- **Effort:** S (2 hours)
-- **Files:** 4 files
-- **Tasks:** 4
-- **Blocked by:** REQ-XXX-A
-- **Parallelizable:** Yes (with REQ-XXX-C)
-
-### REQ-XXX-C: [Data Models]
-- **Effort:** XS (45 min)
-- **Files:** 2 files
-- **Tasks:** 2
-- **Blocked by:** REQ-XXX-A
-- **Parallelizable:** Yes (with REQ-XXX-B)
-
-### REQ-XXX-D: [Frontend Integration]
-- **Effort:** M (3 hours)
-- **Files:** 6 files
-- **Tasks:** 5
-- **Blocked by:** REQ-XXX-B, REQ-XXX-C
-- **Parallelizable:** No (final integration)
-```
-
-### Step 6: Generate Roadmap Updates
-
-Format decomposed requirements for the roadmap:
-
-```markdown
-## Batch X: [Original Requirement Name] (Decomposed)
-
-### ⚪ REQ-XXX-A: [Foundation Task Title]
-
-**Type:** Enhancement
-**Reported:** YYYY-MM-DD
-**Source:** Decomposed from REQ-XXX
-
-**Description:**
-[What this piece does]
-
-**Tasks:**
-- [ ] Task 1
-- [ ] Task 2
-- [ ] Task 3
-
-**Files:**
-- `path/to/file1.ext` (create)
-- `path/to/file2.ext` (modify)
-
-**Effort:** S
-**Agent:** Dev-Backend
-**Completion:** [Testable criteria for this piece]
-**Blocked by:** None
-
----
-
-### ⚪ REQ-XXX-B: [Backend API Title]
-...
-**Blocked by:** REQ-XXX-A
-
-### ⚪ REQ-XXX-C: [Data Models Title]
-...
-**Blocked by:** REQ-XXX-A
-**Note:** Can run in parallel with REQ-XXX-B
-
-### ⚪ REQ-XXX-D: [Frontend Integration Title]
-...
-**Blocked by:** REQ-XXX-B, REQ-XXX-C
-```
-
-## Parallelization Recommendations
-
-### When to Parallelize
-
-**Good Candidates:**
+**Good parallel candidates:**
 - Different file sets (no overlap)
 - Different technical domains
 - No data dependencies
-- Independent outcomes
 
-**Poor Candidates:**
+**Poor parallel candidates:**
 - Shared database migrations
 - Same configuration files
 - Interdependent data structures
-- Sequential logic flow
 
-### Coordination Requirements
+### Step 4: Size Each Piece
 
-When recommending parallel execution:
-
-1. **Define contracts first** - Shared interfaces before parallel work
-2. **Assign file ownership** - No overlapping file modifications
-3. **Plan integration point** - Where parallel streams merge
-4. **Schedule sync points** - When to verify parallel work aligns
-
-⛔ **CONSULTATION GATE:** For complex parallelization patterns (domain, layer, feature), READ `references/examples.md` section "Parallelization Patterns".
+Every piece must fit within XS/S/M limits. If not, decompose further.
 
 ## Quality Checklist
 
-Before finalizing decomposition:
-
-- [ ] Every piece fits within XS/S/M sizing limits
-- [ ] No piece exceeds 8 files or 4 hours
+- [ ] Every piece fits within sizing limits
 - [ ] Dependencies form a valid DAG (no cycles)
 - [ ] Parallel opportunities identified
 - [ ] Each piece has testable completion criteria
-- [ ] Agent assignments are appropriate
-- [ ] File paths are specific (no overlap between parallel tasks)
-- [ ] Original requirement is marked as SPLIT or removed
+- [ ] No file overlap between parallel tasks
 
-## Anti-Patterns to Avoid
+## Anti-Patterns
 
 | Anti-Pattern | Problem | Fix |
 |--------------|---------|-----|
-| **Too granular** | XS pieces with no value alone | Combine related tasks |
+| **Too granular** | Tiny pieces with no standalone value | Combine related tasks |
 | **Circular deps** | A -> B -> C -> A | Break the cycle |
 | **Hidden deps** | Shared files not declared | Analyze file overlap |
-| **Uneven sizing** | 1 XS, 1 XS, 1 M, 1 L | Rebalance pieces |
-| **No integration piece** | Parallel work never merges | Add final integration task |
-| **Premature parallel** | Parallel before contract defined | Define interfaces first |
-
-## Need a Complete Example?
-
-⛔ **CONSULTATION GATE:** For a full worked example of decomposing REQ-050 (User Dashboard), READ `references/examples.md`.
-
-## Integration with Other Skills
-
-- **gco-roadmap-creation:** Use sizing rules and batch organization
-- **gco-haunt-mode:** Use for parallel execution coordination
-- **gco-orchestrator:** Invokes decomposition when SPLIT detected
-- **gco-roadmap-workflow:** Update roadmap with decomposed items
+| **Uneven sizing** | 1 XS + 1 XL | Rebalance pieces |
+| **No integration** | Parallel work never merges | Add final integration task |
