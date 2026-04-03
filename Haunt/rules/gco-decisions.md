@@ -62,7 +62,7 @@ Examples:
 
 ### 4. YAGNI - You Aren't Gonna Need It
 
-**Don't build for scale you don't have.**
+**Don't build for scale you don't have** BECAUSE every abstraction is a bet on future needs, and premature complexity makes code harder to change when real needs emerge.
 
 Examples of premature optimization:
 - Microservices for 100 users/month
@@ -215,12 +215,10 @@ const result = expensiveCalc();
 ## When to Ignore This Framework
 
 **Ignore YAGNI for:**
-- **Security:** Always validate input, encrypt secrets, enforce permissions
-- **Data Integrity:** Always use constraints, validate foreign keys, prevent corruption
-- **Error Handling:** Always catch exceptions, log errors, handle edge cases
-- **Legal/Compliance:** Always meet regulatory requirements (GDPR, HIPAA, etc.)
-
-**Why:** These are non-negotiable foundations. Fixing them later is expensive or impossible.
+- **Security:** Always validate input, encrypt secrets, enforce permissions BECAUSE security retrofits are 10x more expensive than building it in, and breaches are irreversible
+- **Data Integrity:** Always use constraints, validate foreign keys, prevent corruption BECAUSE data corruption compounds silently and may be unrecoverable by the time it's detected
+- **Error Handling:** Always catch exceptions, log errors, handle edge cases BECAUSE silent failures in production create debugging nightmares and erode user trust
+- **Legal/Compliance:** Always meet regulatory requirements (GDPR, HIPAA, etc.) BECAUSE compliance violations carry financial penalties and legal liability that dwarf dev costs
 
 ---
 

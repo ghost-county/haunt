@@ -15,10 +15,11 @@ Verify that dev guardrails are properly deployed.
 
 Verify rules are deployed to `~/.claude/rules/`:
 
-**Expected GCO rules (5):**
+**Expected GCO rules (6):**
 - `gco-communication.md`
 - `gco-completion-checklist.md`
 - `gco-decisions.md`
+- `gco-team-coordination.md`
 - `gco-ui-testing-reminder.md`
 - `gco-visual-verification.md`
 
@@ -38,11 +39,12 @@ echo "Rules: $GCO_COUNT gco rules, $TOTAL_COUNT total"
 
 Verify skills are deployed to `~/.claude/skills/`:
 
-**Expected GCO skills (~14):**
+**Expected GCO skills (~16):**
 - `gco-code-review`, `gco-commit-conventions`, `gco-code-patterns`
 - `gco-tdd-workflow`, `gco-playwright-tests`, `gco-ui-testing`, `gco-testing-mindset`
 - `gco-secure-coding`, `gco-python-standards`, `gco-react-standards`, `gco-ui-design`
 - `gco-task-decomposition`, `gco-requirements-development`, `gco-context7-usage`
+- `gco-team-protocol`, `gco-seance-orchestration`
 
 ```bash
 SKILLS_DIR="$HOME/.claude/skills"
@@ -54,7 +56,8 @@ echo "Skills: $GCO_SKILLS gco skills deployed"
 
 Verify commands are deployed to `~/.claude/commands/`:
 
-**Expected commands (3):**
+**Expected commands (4):**
+- `seance.md`
 - `ship.md`
 - `qa.md`
 - `checkup.md`
@@ -65,7 +68,23 @@ CMD_COUNT=$(ls "$COMMANDS_DIR"/*.md 2>/dev/null | wc -l | tr -d ' ')
 echo "Commands: $CMD_COUNT deployed"
 ```
 
-### 4. MCP Server Check
+### 4. Agents Check
+
+Verify agents are deployed to `~/.claude/agents/`:
+
+**Expected agents (4):**
+- `gco-project-manager.md`
+- `gco-dev.md`
+- `gco-research.md`
+- `gco-code-reviewer.md`
+
+```bash
+AGENTS_DIR="$HOME/.claude/agents"
+AGENT_COUNT=$(ls "$AGENTS_DIR"/gco-*.md 2>/dev/null | wc -l | tr -d ' ')
+echo "Agents: $AGENT_COUNT gco agents deployed"
+```
+
+### 5. MCP Server Check
 
 Verify MCP servers are configured:
 
@@ -84,9 +103,10 @@ fi
 ```
 CHECKUP COMPLETE
 
-Rules: 5/5 gco rules, 8/8 total
-Skills: 14 gco skills deployed
-Commands: 3/3 deployed
+Rules: 6/6 gco rules, 9/9 total
+Skills: 16 gco skills deployed
+Commands: 4/4 deployed
+Agents: 4/4 gco agents deployed
 MCP: context7 configured
 
 All systems operational.
@@ -98,7 +118,7 @@ Only checks rules:
 ```
 QUICK CHECKUP
 
-Rules: 5/5 gco rules, 8/8 total
+Rules: 6/6 gco rules, 9/9 total
 ```
 
 ## If Issues Found

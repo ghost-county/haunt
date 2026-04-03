@@ -1,4 +1,5 @@
 ---
+last-verified: 2026-04-03
 name: gco-testing-mindset
 description: Comprehensive testing guidance for complex features, teaching how to test from a user's perspective and professional accountability standards.
 ---

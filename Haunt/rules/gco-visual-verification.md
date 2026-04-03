@@ -67,9 +67,9 @@ Verified visually
 
 ## Non-Negotiable
 
-- **NEVER** claim CSS/styling is "fixed" without a screenshot
-- **NEVER** assume Tailwind classes work without visual proof
-- **NEVER** skip verification "because the code looks correct"
+- **NEVER** claim CSS/styling is "fixed" without a screenshot BECAUSE CSS variables can be defined but not applied, applied but overridden by specificity, or correct in dev but broken in production builds — only visual evidence confirms the fix
+- **NEVER** assume Tailwind classes work without visual proof BECAUSE Tailwind classes can be purged in production, overridden by component-scoped styles, or misapplied due to class ordering — the class existing in code doesn't mean it renders
+- **NEVER** skip verification "because the code looks correct" BECAUSE code review cannot catch visual bugs; the gap between "code that should work" and "pixels that rendered correctly" is where styling bugs live
 
 ## See Also
 

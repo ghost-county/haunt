@@ -31,7 +31,7 @@
 #     4. Run setup-haunt.sh --clean to remove deprecated objects
 
 version: "2.0"
-updated: "$(date +%Y-%m-%d)"
+updated: "2026-04-03"
 generated_by: "Haunt/scripts/utils/generate-manifest.sh"
 
 # ==============================================================================
@@ -39,10 +39,6 @@ generated_by: "Haunt/scripts/utils/generate-manifest.sh"
 # ==============================================================================
 
 agents:
-  - name: gco-code-reviewer-readonly
-    scope: global
-    source: agents/gco-code-reviewer-readonly.md
-
   - name: gco-code-reviewer
     scope: global
     source: agents/gco-code-reviewer.md
@@ -55,17 +51,17 @@ agents:
     scope: global
     source: agents/gco-project-manager.md
 
-  - name: gco-release-manager
-    scope: global
-    source: agents/gco-release-manager.md
-
-  - name: gco-research-critic
-    scope: global
-    source: agents/gco-research-critic.md
-
   - name: gco-research
     scope: global
     source: agents/gco-research.md
+
+  - name: gco-security-reviewer
+    scope: global
+    source: agents/gco-security-reviewer.md
+
+  - name: gco-quality-reviewer
+    scope: global
+    source: agents/gco-quality-reviewer.md
 
 # ==============================================================================
 # RULES - Invariant enforcement protocols

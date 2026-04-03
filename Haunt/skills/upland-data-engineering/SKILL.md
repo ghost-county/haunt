@@ -1,4 +1,5 @@
 ---
+last-verified: 2026-04-03
 name: upland-data-engineering
 description: Comprehensive data engineering assistant for Upland Capital Group, specializing in building scalable, maintainable ETL/ELT pipelines using the Upland Enterprise Data Platform (EDP) technology stack with dbt Cloud, Snowflake, Astronomer/Airflow, Fivetran, and Azure Services.
 ---

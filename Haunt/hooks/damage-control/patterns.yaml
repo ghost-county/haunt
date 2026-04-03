@@ -62,6 +62,7 @@ readOnlyPaths:
   - ~/.claude/rules/
   - ~/.claude/skills/
   - ~/.claude/commands/
+  - ~/.claude/agents/
   - ~/.claude/hooks/
 
 # ============================================================================
@@ -79,6 +80,7 @@ noDeletePaths:
   - packages/
 
   # Haunt framework (source)
+  - Haunt/agents/
   - Haunt/rules/
   - Haunt/skills/
   - Haunt/scripts/
@@ -86,6 +88,7 @@ noDeletePaths:
   - Haunt/hooks/
 
   # Deployed artifacts
+  - ~/.claude/agents/
   - ~/.claude/rules/
   - ~/.claude/skills/
   - ~/.claude/commands/

@@ -1,4 +1,5 @@
 ---
+last-verified: 2026-04-03
 name: gco-react-standards
 description: React/TypeScript architecture and coding standards for frontend work. Invoke when working on .tsx/.jsx files, implementing React components, or organizing React project structure.
 ---

@@ -1,4 +1,5 @@
 ---
+last-verified: 2026-04-03
 name: gco-task-decomposition
 description: Break down large tasks into atomic, parallelizable pieces. Use when work is too big for one session, when user says "decompose", "break down", or "split this up".
 ---

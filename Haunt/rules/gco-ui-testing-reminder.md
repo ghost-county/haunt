@@ -36,9 +36,9 @@ Ask yourself: **"Did I run `npx playwright test` and see it pass?"**
 
 ## Non-Negotiable
 
-- **NEVER** mark UI work 🟢 without running E2E tests
-- **NEVER** assume "it works" without `npx playwright test` output
-- **NEVER** skip tests "because it's simple" - simple bugs are embarrassing
+- **NEVER** mark UI work 🟢 without running E2E tests BECAUSE the completion-gate hook checks for verification evidence files; skipping tests will block the status change and waste a round-trip
+- **NEVER** assume "it works" without `npx playwright test` output BECAUSE CSS can be defined but not applied, event handlers can bind but not fire, and responsive layouts can pass visual inspection at one breakpoint while breaking at another
+- **NEVER** skip tests "because it's simple" BECAUSE simple UI bugs (broken links, missing focus states, wrong z-index) are the most embarrassing to ship and the cheapest to catch with a 30-second E2E run
 
 ## If E2E Tests Don't Exist
 

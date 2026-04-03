@@ -1,4 +1,5 @@
 ---
+last-verified: 2026-04-03
 name: gco-ui-design
 description: Comprehensive UI/UX design standards for frontend work. Invoke when generating UI components, creating layouts, or implementing visual elements. Contains 10 mandatory standards (8px grid, contrast ratios, interactive states, touch targets, accessibility).
 ---

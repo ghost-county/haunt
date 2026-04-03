@@ -24,7 +24,7 @@ fi
 # Create .haunt/ directory structure if it doesn't exist
 HAUNT_DIR="$PROJECT_DIR/.haunt"
 if [[ ! -d "$HAUNT_DIR" ]]; then
-    mkdir -p "$HAUNT_DIR"/{plans,progress,completed,tests,docs}
+    mkdir -p "$HAUNT_DIR"/{plans,progress,completed,tests,docs,logs}
 
     # Create subdirectories for tests
     mkdir -p "$HAUNT_DIR/tests"/{patterns,behavior,e2e}

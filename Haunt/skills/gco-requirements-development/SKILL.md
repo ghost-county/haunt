@@ -1,4 +1,5 @@
 ---
+last-verified: 2026-04-03
 name: gco-requirements-development
 description: Transform ideas into clear, actionable requirements. Use when user describes a feature, enhancement, or fix that needs structured definition.
 ---

@@ -4,9 +4,10 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Repository Purpose
 
-**Haunt** is a dev guardrails toolkit for Claude Code. It provides quality gates, coding standards, and testing enforcement that make Claude a better development partner — without the coordination overhead.
+**Haunt** is a dev guardrails and agent coordination toolkit for Claude Code. It provides quality gates, coding standards, testing enforcement, and a spec-driven development workflow (the seance) powered by Claude Code Agent Teams.
 
 Contents:
+- **Haunt/agents/** - Team-aware agent definitions (deployed to `~/.claude/agents/`)
 - **Haunt/rules/** - Always-loaded behavioral rules (deployed to `~/.claude/rules/`)
 - **Haunt/skills/** - On-demand methodology skills (deployed to `~/.claude/skills/`)
 - **Haunt/commands/** - Slash commands (deployed to `~/.claude/commands/`)
@@ -15,7 +16,7 @@ Contents:
 ## Setup
 
 ```bash
-bash Haunt/scripts/setup-haunt.sh          # Deploy rules + skills + commands
+bash Haunt/scripts/setup-haunt.sh          # Deploy agents + rules + skills + commands
 bash Haunt/scripts/setup-haunt.sh --verify  # Verify deployment
 ```
 
@@ -23,10 +24,12 @@ bash Haunt/scripts/setup-haunt.sh --verify  # Verify deployment
 
 ```
 haunt/
-├── Haunt/                     # Dev guardrails framework
-│   ├── rules/                # Always-loaded rules (5 gco rules)
-│   ├── skills/               # On-demand skills (~14 gco skills)
-│   ├── commands/             # Slash commands (ship, qa, checkup)
+├── Haunt/                     # Dev guardrails + agent coordination framework
+│   ├── agents/               # Team-aware agents (6 gco agents)
+│   ├── agents/archive/       # Archived original agent definitions (reference)
+│   ├── rules/                # Always-loaded rules (6 gco rules)
+│   ├── skills/               # On-demand skills (~16 gco skills)
+│   ├── commands/             # Slash commands (seance, ship, qa, checkup)
 │   ├── scripts/              # setup-haunt.sh
 │   ├── hooks/                # Damage control hooks
 │   └── docs/                 # Framework documentation
@@ -38,6 +41,17 @@ haunt/
 
 ## What's Included
 
+### Agents (team teammates for seance workflow)
+
+| Agent | Purpose |
+|-------|---------|
+| `gco-project-manager` | Requirements, strategic analysis, roadmap creation |
+| `gco-dev` | Code implementation across backend/frontend/infrastructure |
+| `gco-research` | Investigation, validation, adversarial requirements review |
+| `gco-code-reviewer` | Review router: single-pass for S, delegates to specialists for M+ |
+| `gco-security-reviewer` | Security-focused review: OWASP Top 10, STRIDE, CWE classification |
+| `gco-quality-reviewer` | Quality-focused review: anti-patterns, test coverage, conventions |
+
 ### Rules (always loaded, enforce behavior)
 
 | Rule | Purpose |
@@ -45,6 +59,7 @@ haunt/
 | `gco-communication.md` | Direct communication style, no glazing |
 | `gco-completion-checklist.md` | Tests pass + demo-ready before marking complete |
 | `gco-decisions.md` | YAGNI, 4-question decision filter |
+| `gco-team-coordination.md` | Task claiming, completion reporting, team behavior |
 | `gco-ui-testing-reminder.md` | E2E test enforcement for frontend work |
 | `gco-visual-verification.md` | Screenshot verification for CSS changes |
 
@@ -54,11 +69,13 @@ haunt/
 **Testing:** `gco-tdd-workflow`, `gco-playwright-tests`, `gco-ui-testing`, `gco-testing-mindset`
 **Standards:** `gco-secure-coding`, `gco-python-standards`, `gco-react-standards`, `gco-ui-design`
 **Methodology:** `gco-task-decomposition`, `gco-requirements-development`, `gco-context7-usage`
+**Orchestration:** `gco-seance-orchestration`, `gco-team-protocol`
 
 ### Commands
 
 | Command | Purpose |
 |---------|---------|
+| `/seance` | Complete dev ritual: planning -> execution -> archival |
 | `/ship` | Create PR and enable auto-merge |
 | `/qa` | Generate test scenarios (checklist, gherkin, playwright, charter) |
 | `/checkup` | Verify deployment health |

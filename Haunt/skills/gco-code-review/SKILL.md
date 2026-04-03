@@ -1,11 +1,40 @@
 ---
+last-verified: 2026-04-03
 name: gco-code-review
-description: Structured code review checklist with anti-pattern detection for quality gates. Use when reviewing PRs, code submissions, or validating code before merge. Triggers on "review this code", "PR review", "code review", "check this before merge", "is this code good", or quality validation requests.
+description: >-
+  Structured code review with anti-pattern detection, severity classification, and evidence-backed verdicts for quality gates.
+  Use when reviewing PRs, code submissions, or validating code before merge.
 ---
 
 # Code Review Checklist
 
-Systematic review process ensuring code quality before merge.
+## Vocabulary Payload
+
+| Term | Definition | Use When |
+|------|-----------|----------|
+| APPROVED | Code meets all standards, ready to merge | Final verdict, clean review |
+| CHANGES_REQUESTED | Issues found, Dev should fix and re-request | Actionable issues found |
+| BLOCKED | Critical issue, must not merge under any circumstances | Security, failing CI, unresolved conflicts |
+| severity:HIGH | Security risk or data loss potential — must fix | Hardcoded secrets, injection, silent data loss |
+| severity:MEDIUM | Maintainability or reliability issue — should fix | God functions, missing edge cases, brittle tests |
+| severity:LOW | Style or minor improvement — optional | Magic numbers, naming, documentation |
+| evidence-backed verdict | Verdict citing specific file:line references and patterns checked | Every APPROVED or CHANGES_REQUESTED |
+| quick rejection trigger | Pattern that auto-triggers CHANGES_REQUESTED | Hardcoded secrets, no tests, bare except |
+| test brittleness | Tests that break on unrelated changes | Assertions coupled to implementation details |
+| coverage gap | New functionality without corresponding tests | Code paths with no test coverage |
+
+## Anti-Patterns and Quick Rejection
+
+See `gco-code-patterns` for the full anti-pattern table with severity classifications and AI occurrence rates.
+
+**Quick rejection triggers** (auto-CHANGES_REQUESTED):
+1. Hardcoded secrets — API keys, passwords, tokens in source
+2. No tests for new functionality
+3. Bare `except:` without re-raising
+4. SQL string concatenation (injection risk)
+5. Unvalidated user input used directly
+
+For security-specific patterns, see `gco-secure-coding`.
 
 ## Review Checklist
 
@@ -31,22 +60,17 @@ Systematic review process ensuring code quality before merge.
 
 ### Patterns
 - [ ] Follows project conventions
-- [ ] No anti-patterns (see table below)
+- [ ] No anti-patterns (see table above)
 - [ ] Documentation updated if needed
 - [ ] Type annotations on public functions
 
-## Anti-Patterns to Reject
+## Severity Levels
 
-| Pattern | Example | Why Bad | Fix |
-|---------|---------|---------|-----|
-| Silent fallback | `.get(x, 0)` | Hides errors | Explicit validation |
-| God function | 200+ line function | Unmaintainable | Split into focused functions |
-| Magic numbers | `if x > 86400` | Unclear intent | `SECONDS_PER_DAY = 86400` |
-| Catch-all | `except Exception` | Swallows errors | Catch specific exceptions |
-| Single-letter vars | `for x in y` | Unreadable | Descriptive names |
-| Deep nesting | 4+ indent levels | Hard to follow | Early returns, extract functions |
-| Copy-paste code | Duplicated blocks | Maintenance burden | Extract to shared function |
-| Commented-out code | `# old_function()` | Clutter | Delete it (git has history) |
+| Level | Meaning | Action |
+|-------|---------|--------|
+| **High** | Security risk or data loss potential | Must fix before merge |
+| **Medium** | Maintainability or reliability issue | Should fix, can discuss |
+| **Low** | Style or minor improvement | Optional, note for future |
 
 ## Review Output Format
 
@@ -57,7 +81,7 @@ Systematic review process ensuring code quality before merge.
 
 ### Checklist
 - [x] Functionality verified
-- [x] Tests adequate  
+- [x] Tests adequate
 - [ ] Security concern (see below)
 - [x] Patterns followed
 
@@ -67,37 +91,10 @@ Systematic review process ensuring code quality before merge.
    File: `src/api/users.py:42`
    Code: `user_id = data.get("id", 0)`
    Fix: Validate required field explicitly
-   
-2. **[Medium]** Magic number
-   File: `src/utils/time.py:15`
-   Code: `if elapsed > 3600:`
-   Fix: Define `SECONDS_PER_HOUR = 3600`
-
-### Positive Notes
-- Good test coverage on happy path
-- Clean separation of concerns
 
 ### Summary
-Two issues to address before merge. Security concern is blocking.
+[Evidence-backed summary citing specific files and patterns checked]
 ```
-
-## Severity Levels
-
-| Level | Meaning | Action |
-|-------|---------|--------|
-| **High** | Security risk or data loss potential | Must fix before merge |
-| **Medium** | Maintainability or reliability issue | Should fix, can discuss |
-| **Low** | Style or minor improvement | Optional, note for future |
-
-## Quick Rejection Triggers
-
-Immediately request changes if you find:
-
-1. **Hardcoded secrets** - API keys, passwords, tokens
-2. **No tests** for new functionality
-3. **Bare `except:`** without re-raising
-4. **SQL string concatenation** (injection risk)
-5. **Unvalidated user input** used directly
 
 ## When to Block vs Request Changes
 
@@ -112,3 +109,14 @@ Immediately request changes if you find:
 - Missing tests
 - Documentation incomplete
 - Style violations
+
+## Questions This Skill Answers
+
+- Should I approve this code for merge?
+- What anti-patterns are present in this code?
+- Is this code secure enough to merge?
+- What severity level is this issue?
+- Does this PR have adequate test coverage?
+- What's the structured format for a code review?
+- When should I BLOCK vs request changes?
+- Is this code review finding high, medium, or low severity?
