@@ -1,94 +1,109 @@
-# Monorepo Roadmap
+# Framework Ergonomics Roadmap
 
-> Single source of truth for all project work items. See `.haunt/completed/` for archived work.
+> Source: n-agentic-harnesses evaluation deferred items (2026-04-04)
+> Single source of truth for all work items. See `.haunt/completed/` for archived work.
 
 ---
 
 ## Current Focus
 
-**Status:** All requirements complete. Roadmap clear.
+**Status:** All requirements complete. Ready to banish.
 
-Run `/seance` to start new work.
-
----
-
-## Cross-Project Work
-
-*Requirements affecting multiple projects go here.*
+**Batch 1 (P2 — parallel):** REQ-411, REQ-412 (independent — different files)
+**Batch 2 (P3):** REQ-413 (independent but lower priority)
 
 ---
 
 ## Haunt Framework
 
-*Haunt agent framework and SDLC tooling.*
-
-### 🟢 REQ-381: Create gco-secure-coding Skill
+### 🟢 REQ-411: Agent Composition via Base Templates
 
 **Type:** Enhancement
-**Reported:** 2026-01-20
-**Source:** User planning session
-**Description:** On-demand security skill providing production security patterns for TypeScript/Python. Adapts TikiTribe framework (agent security, AI security, OWASP) into single skill with keyword auto-suggest.
+**Priority:** P2
+**Size:** S
+**Agent:** Dev
+
+**Description:** Create base template files that define shared agent configuration. Update setup-haunt.sh to resolve `extends:` inheritance at deploy time, merging base tools/skills into agent definitions.
 
 **Tasks:**
-- [x] Create skill file with YAML frontmatter and auto-suggest keywords
-- [x] Add Agent Security section (tool validation, permission boundaries, output validation)
-- [x] Add AI Security section (prompt injection, input sanitization)
-- [x] Add OWASP/Web Security section and checklist
+- [ ] Create `Haunt/agents/bases/base-teammate.yaml` with universal tools (TaskUpdate, TaskList, SendMessage, Read, Grep, Glob) + universal skill (gco-team-protocol)
+- [ ] Create `Haunt/agents/bases/base-reviewer.yaml` extending teammate with Bash + gco-code-patterns
+- [ ] Add `extends:` field to all 6 agent frontmatter; remove duplicated tools/skills from each
+- [ ] Update `setup-haunt.sh` deploy section to resolve extends chains before copying
+- [ ] Test: deploy, then `--verify`; compare deployed agents against pre-composition versions to confirm identical output
 
 **Files:**
-- `Haunt/skills/gco-secure-coding/SKILL.md` (created)
+- `Haunt/agents/bases/base-teammate.yaml` (new)
+- `Haunt/agents/bases/base-reviewer.yaml` (new)
+- `Haunt/agents/gco-*.md` (update)
+- `Haunt/scripts/setup-haunt.sh` (update)
 
 **Effort:** S
-**Complexity:** SIMPLE
-**Agent:** Dev-Backend
-**Completion:** Skill deploys via setup-haunt.sh --verify; provides security patterns without blocking local dev
 **Blocked by:** None
 
-**Completed:** 2026-01-20
-**Implementation Notes:**
-- Created comprehensive skill with 13 security patterns (Do/Don't/Why format)
-- 4 main sections: Agent Security, AI Security, Web Security (OWASP), Quick Checklist
-- 13 TypeScript + 13 Python code examples
-- Auto-suggest keywords in description trigger on production, deploy, auth, security, payments, PII, public API
-- Deployed to ~/.claude/skills/gco-secure-coding/ via setup-haunt.sh
-- Verified all patterns follow Do/Don't/Why/code example format
+---
+
+### 🟢 REQ-412: Hook Registry in Manifest
+
+**Type:** Enhancement
+**Priority:** P2
+**Size:** S
+**Agent:** Dev
+
+**Description:** Declare hooks in manifest.yaml with trigger/matcher/timeout. Update setup-haunt.sh to deploy hook scripts and generate the settings.json hook section from the manifest.
+
+**Tasks:**
+- [ ] Add `hooks:` section to `manifest.yaml` with all current hooks (7+ entries)
+- [ ] Update `setup-haunt.sh` to copy hook scripts to `~/.claude/hooks/`
+- [ ] Add settings.json generation from manifest hooks (merge into existing settings.json preserving non-hook keys)
+- [ ] Add hook verification to `--verify` mode
+- [ ] Remove static `settings.hooks.json` template
+- [ ] Test: deploy, verify hooks in `~/.claude/hooks/` and settings.json match manifest
+
+**Files:**
+- `Haunt/manifest.yaml` (update)
+- `Haunt/scripts/setup-haunt.sh` (update)
+- `Haunt/templates/settings.hooks.json` (remove)
+
+**Effort:** S
+**Blocked by:** None
 
 ---
 
-## TrueSight
+### 🟢 REQ-413: Skill Versioning
 
-*ADHD productivity dashboard.*
+**Type:** Enhancement
+**Priority:** P3
+**Size:** S
+**Agent:** Dev
 
----
+**Description:** Add `version:` to skill frontmatter, create a version report script, and track versions in manifest.
 
-## Familiar
+**Tasks:**
+- [ ] Add `version: 1.0` to all gco skill SKILL.md frontmatter
+- [ ] Create `Haunt/scripts/haunt-skill-versions.sh` — compares source vs deployed versions, flags mismatches
+- [ ] Add version field to manifest skill entries
+- [ ] Update `haunt-doc-freshness.sh` to show version alongside last-verified date
+- [ ] Test: run version report, verify it detects intentional mismatch
 
-*Personal command center and knowledge management.*
+**Files:**
+- `Haunt/skills/gco-*/SKILL.md` (update — all skills)
+- `Haunt/scripts/haunt-skill-versions.sh` (new)
+- `Haunt/manifest.yaml` (update)
+- `Haunt/scripts/haunt-doc-freshness.sh` (update)
+
+**Effort:** S
+**Blocked by:** None
 
 ---
 
 ## Summary
 
-| Project | ⚪ | 🟡 | 🟢 |
-|---------|---|---|---|
-| Cross-Project | 0 | 0 | 0 |
-| Haunt | 0 | 0 | 1 |
-| TrueSight | 0 | 0 | 0 |
-| Familiar | 0 | 0 | 0 |
-| **Total** | 0 | 0 | 1 |
+| REQ | Title | Size | Status | Batch |
+|-----|-------|------|--------|-------|
+| REQ-411 | Agent Composition | S | ⚪ | 1 |
+| REQ-412 | Hook Registry | S | ⚪ | 1 |
+| REQ-413 | Skill Versioning | S | ⚪ | 2 |
 
-**Archived:** 84 requirements → See `.haunt/completed/`
-
----
-
-## Recent Archives
-
-- **2026-01-08:** Context Rot Improvements + Ralph Wiggum Integration (8 requirements) → `2026-01-08-context-rot-and-ralph.md`
-- **2026-01-07:** Git Workflow Integration (7 requirements) → `roadmap-archive.md`
-- **2026-01-06:** Mandatory Solution Critique (4 requirements) → `mandatory-solution-critique.md`
-- **2026-01-06:** Haunt Manifest System (1 requirement) → `roadmap-archive.md`
-- **2026-01-05:** Repository Cleanup Batch (8 requirements) → `repo-cleanup-batch.md`
-- **2026-01-05:** Damage Control Hooks (7 requirements) → `damage-control-hooks.md`
-- **2026-01-05:** Secrets Management Core (6 requirements) → `secrets-management-batch1.md`
-- **2026-01-05:** Skill Compression Seance (15 requirements) → `skill-compression-seance.md`
-- **2026-01-03:** Various batches (28 requirements) → See `2026-01/`
+**Total: 3 requirements, 2 batches**
+**Team strategy:** S-sized individually → solo Dev agents in parallel

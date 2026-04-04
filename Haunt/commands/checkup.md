@@ -49,7 +49,12 @@ Verify skills are deployed to `~/.claude/skills/`:
 ```bash
 SKILLS_DIR="$HOME/.claude/skills"
 GCO_SKILLS=$(ls -d "$SKILLS_DIR"/gco-*/ 2>/dev/null | wc -l | tr -d ' ')
-echo "Skills: $GCO_SKILLS gco skills deployed"
+EXPECTED_SKILLS=17
+if [[ "$GCO_SKILLS" -lt "$EXPECTED_SKILLS" ]]; then
+    echo "Skills: $GCO_SKILLS/$EXPECTED_SKILLS gco skills (WARNING: missing skills)"
+else
+    echo "Skills: $GCO_SKILLS gco skills deployed"
+fi
 ```
 
 ### 3. Commands Check
@@ -72,16 +77,23 @@ echo "Commands: $CMD_COUNT deployed"
 
 Verify agents are deployed to `~/.claude/agents/`:
 
-**Expected agents (4):**
+**Expected agents (6):**
 - `gco-project-manager.md`
 - `gco-dev.md`
 - `gco-research.md`
 - `gco-code-reviewer.md`
+- `gco-security-reviewer.md`
+- `gco-quality-reviewer.md`
 
 ```bash
 AGENTS_DIR="$HOME/.claude/agents"
 AGENT_COUNT=$(ls "$AGENTS_DIR"/gco-*.md 2>/dev/null | wc -l | tr -d ' ')
-echo "Agents: $AGENT_COUNT gco agents deployed"
+EXPECTED_AGENTS=6
+if [[ "$AGENT_COUNT" -lt "$EXPECTED_AGENTS" ]]; then
+    echo "Agents: $AGENT_COUNT/$EXPECTED_AGENTS gco agents (WARNING: missing agents)"
+else
+    echo "Agents: $AGENT_COUNT gco agents deployed"
+fi
 ```
 
 ### 5. MCP Server Check
@@ -98,6 +110,21 @@ else
 fi
 ```
 
+### 6. Approval Log Check
+
+Check for approval audit trail:
+
+```bash
+APPROVAL_LOG="$PROJECT_DIR/.haunt/logs/approvals.jsonl"
+if [ -f "$APPROVAL_LOG" ]; then
+    ENTRY_COUNT=$(wc -l < "$APPROVAL_LOG" | tr -d ' ')
+    LAST_ENTRY=$(tail -1 "$APPROVAL_LOG" | jq -r '.timestamp + " " + .event' 2>/dev/null || echo "unparseable")
+    echo "Approvals: $ENTRY_COUNT logged (last: $LAST_ENTRY)"
+else
+    echo "Approvals: No log found (created on first seance approval)"
+fi
+```
+
 ## Output Format
 
 ```
@@ -106,8 +133,9 @@ CHECKUP COMPLETE
 Rules: 6/6 gco rules, 9/9 total
 Skills: 16 gco skills deployed
 Commands: 4/4 deployed
-Agents: 4/4 gco agents deployed
+Agents: 6/6 gco agents deployed
 MCP: context7 configured
+Approvals: 5 logged (last: 2026-04-04T12:00:00Z plan_approved)
 
 All systems operational.
 ```

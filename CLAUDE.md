@@ -139,8 +139,10 @@ See [SKILL-ARCHITECTURE.md](Haunt/docs/SKILL-ARCHITECTURE.md) for the full stand
 
 - **Tool usage logs:** `.haunt/logs/tool-usage.jsonl` (written by observability hook)
 - **Review verdicts:** `.haunt/logs/review-verdicts.jsonl` (written by code reviewer)
+- **Cost logs:** `.haunt/logs/cost-log.jsonl` (written by haunt-cost-logger.sh)
 - **Metrics:** `bash Haunt/scripts/review-metrics.sh` (approval rates, rubber-stamp detection)
 - **Freshness:** `bash Haunt/scripts/haunt-doc-freshness.sh` (stale skill detection)
+- **Cost report:** `bash Haunt/scripts/haunt-cost-report.sh` (per-session costs, outlier detection)
 
 ## Key Documentation
 

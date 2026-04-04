@@ -7,48 +7,19 @@ set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
 HAUNT_DIR="$REPO_ROOT/Haunt"
-PASS=0
-FAIL=0
-
-check() {
-    local desc="$1"
-    local condition="$2"
-    if eval "$condition"; then
-        echo "  ok  $desc"
-        PASS=$((PASS + 1))
-    else
-        echo "  FAIL $desc"
-        FAIL=$((FAIL + 1))
-    fi
-}
+source "$(dirname "${BASH_SOURCE[0]}")/eval-lib.sh"
 
 echo "Scenario: XS Solo Task Infrastructure"
 echo "Checking harness structure for solo-mode seance..."
 
-# 1. Haunt directory structure
-check ".haunt spec doc exists" "[[ -f '$HAUNT_DIR/docs/HAUNT-DIRECTORY-SPEC.md' ]]"
+check_file ".haunt spec doc exists" "$HAUNT_DIR/docs/HAUNT-DIRECTORY-SPEC.md"
+check_file "seance command exists" "$HAUNT_DIR/commands/seance.md"
+check_file "gco-dev agent exists" "$HAUNT_DIR/agents/gco-dev.md"
+check_file "completion-gate.sh exists" "$HAUNT_DIR/hooks/completion-gate.sh"
+check_exec "completion-gate.sh is executable" "$HAUNT_DIR/hooks/completion-gate.sh"
+check_file "observability-logger.sh exists" "$HAUNT_DIR/hooks/observability-logger.sh"
+check_file "setup-haunt.sh exists" "$HAUNT_DIR/scripts/setup-haunt.sh"
+check_exec "setup-haunt.sh is executable" "$HAUNT_DIR/scripts/setup-haunt.sh"
+check_file "CLAUDE.md exists" "$REPO_ROOT/CLAUDE.md"
 
-# 2. Seance command is present (solo mode is part of seance)
-check "seance command exists" "[[ -f '$HAUNT_DIR/commands/seance.md' ]]"
-
-# 3. Dev agent definition present
-check "gco-dev agent exists" "[[ -f '$HAUNT_DIR/agents/gco-dev.md' ]]"
-
-# 4. Completion gate hook deployed
-check "completion-gate.sh exists" "[[ -f '$HAUNT_DIR/hooks/completion-gate.sh' ]]"
-check "completion-gate.sh is executable" "[[ -x '$HAUNT_DIR/hooks/completion-gate.sh' ]]"
-
-# 5. Observability logger hook deployed
-check "observability-logger.sh exists" "[[ -f '$HAUNT_DIR/hooks/observability-logger.sh' ]]"
-
-# 6. Setup script can be located (drives solo deployment)
-check "setup-haunt.sh exists" "[[ -f '$HAUNT_DIR/scripts/setup-haunt.sh' ]]"
-check "setup-haunt.sh is executable" "[[ -x '$HAUNT_DIR/scripts/setup-haunt.sh' ]]"
-
-# 7. CLAUDE.md present (root context for solo agent)
-check "CLAUDE.md exists" "[[ -f '$REPO_ROOT/CLAUDE.md' ]]"
-
-echo ""
-echo "Results: $PASS passed, $FAIL failed"
-
-[[ $FAIL -eq 0 ]]
+report_results

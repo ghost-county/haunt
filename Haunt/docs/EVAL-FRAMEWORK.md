@@ -26,7 +26,7 @@ bash Haunt/tests/eval/run-evals.sh
 # Run a specific scenario by name filter
 bash Haunt/tests/eval/run-evals.sh scrying
 bash Haunt/tests/eval/run-evals.sh xs-solo
-bash Haunt/tests/eval/run-evals.sh cli-flag
+bash Haunt/tests/eval/run-evals.sh completion-gate
 ```
 
 Exit code is 0 if all scenarios pass, non-zero if any fail.
@@ -36,39 +36,32 @@ Exit code is 0 if all scenarios pass, non-zero if any fail.
 | File | What It Tests |
 |------|---------------|
 | `scenario-xs-solo.sh` | Solo-mode seance infrastructure: agent, hooks, setup script, CLAUDE.md |
-| `scenario-s-cli-flag.sh` | Completion gate: syntax validity, stale verification rejection, fresh acceptance |
+| `scenario-completion-gate.sh` | Completion gate: syntax validity, stale verification rejection, fresh acceptance |
 | `scenario-scrying.sh` | Planning phase: PM agent, requirements/task skills, seance command — source and deployed |
 
 ## Adding New Scenarios
 
 1. Create `Haunt/tests/eval/scenario-{name}.sh`
-2. Follow the pattern:
+2. Source the shared helpers and follow the pattern:
 
 ```bash
 #!/bin/bash
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-PASS=0
-FAIL=0
+source "$(dirname "${BASH_SOURCE[0]}")/eval-lib.sh"
 
-check() {
-    local desc="$1"
-    local condition="$2"
-    if eval "$condition"; then
-        echo "  ok  $desc"
-        PASS=$((PASS + 1))
-    else
-        echo "  FAIL $desc"
-        FAIL=$((FAIL + 1))
-    fi
-}
+echo "Scenario: My Scenario Name"
 
-# ... your checks ...
+# Use check_file, check_exec, check_syntax from eval-lib.sh
+check_file "some file exists" "$REPO_ROOT/path/to/file"
+check_exec "script is executable" "$REPO_ROOT/path/to/script.sh"
+check_syntax "script has valid syntax" "$REPO_ROOT/path/to/script.sh"
 
-echo ""
-echo "Results: $PASS passed, $FAIL failed"
-[[ $FAIL -eq 0 ]]
+# For custom conditions, use check() with eval (less preferred)
+check "custom check" "[[ -d '$REPO_ROOT/some/dir' ]]"
+
+report_results
 ```
 
 3. Make it executable: `chmod +x Haunt/tests/eval/scenario-{name}.sh`

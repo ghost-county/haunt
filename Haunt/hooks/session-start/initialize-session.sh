@@ -21,48 +21,38 @@ if [[ -z "$PROJECT_DIR" || "$PROJECT_DIR" == "null" ]]; then
     exit 0
 fi
 
-# Create .haunt/ directory structure if it doesn't exist
 HAUNT_DIR="$PROJECT_DIR/.haunt"
+HANDOFF_MAX_AGE_SECONDS=86400
+
+# Capture epoch once — reuse for all time comparisons
+NOW=$(date +%s)
+TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+# Create all required directories idempotently (mkdir -p is a no-op if they exist)
+FIRST_INIT=false
 if [[ ! -d "$HAUNT_DIR" ]]; then
-    mkdir -p "$HAUNT_DIR"/{plans,progress,completed,tests,docs,logs}
-
-    # Create subdirectories for tests
-    mkdir -p "$HAUNT_DIR/tests"/{patterns,behavior,e2e}
-
-    # Create UOCS history structure
-    mkdir -p "$HAUNT_DIR/history"/{sessions,learnings,research,decisions,events,metadata}
-
-    # Log initialization
-    echo "[$(date -u +"%Y-%m-%dT%H:%M:%SZ")] Initialized .haunt/ directory structure with UOCS history" >> "$HAUNT_DIR/session-history.log"
+    FIRST_INIT=true
 fi
-
-# Ensure history directories exist even if .haunt/ already present
-HISTORY_DIR="$HAUNT_DIR/history"
-if [[ ! -d "$HISTORY_DIR" ]]; then
-    mkdir -p "$HISTORY_DIR"/{sessions,learnings,research,decisions,events,metadata}
-    echo "[$(date -u +"%Y-%m-%dT%H:%M:%SZ")] Created UOCS history directories" >> "$HAUNT_DIR/session-history.log"
-fi
+mkdir -p "$HAUNT_DIR"/{plans,progress,completed,tests/{patterns,behavior,e2e},docs,logs,history/{sessions,learnings,research,decisions,events,metadata},state}
 
 # Log session start
 SESSION_LOG="$HAUNT_DIR/session-history.log"
-TIMESTAMP=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+if [[ "$FIRST_INIT" == true ]]; then
+    echo "[$TIMESTAMP] Initialized .haunt/ directory structure" >> "$SESSION_LOG"
+fi
 echo "[$TIMESTAMP] Session started in: $PROJECT_DIR" >> "$SESSION_LOG"
 
 # Check for session handoff file
 HANDOFF_FILE="$HAUNT_DIR/state/continue-here.md"
 if [[ -f "$HANDOFF_FILE" ]]; then
-    # Check if file is recent (modified within last 24 hours = 86400 seconds)
     FILE_MOD=$(stat -f %m "$HANDOFF_FILE" 2>/dev/null || echo 0)
-    NOW=$(date +%s)
     FILE_AGE=$((NOW - FILE_MOD))
 
-    if [[ $FILE_AGE -lt 86400 ]]; then
-        # Extract first meaningful line (skip template header if present)
+    if [[ $FILE_AGE -lt $HANDOFF_MAX_AGE_SECONDS ]]; then
         HANDOFF_TITLE=$(grep -m1 "^# " "$HANDOFF_FILE" 2>/dev/null | sed 's/^# //' || echo "Incomplete work")
         HANDOFF_STATUS=$(grep -m1 "^\*\*Status:\*\*" "$HANDOFF_FILE" 2>/dev/null | sed 's/\*\*Status:\*\* //' || echo "Unknown")
         AGE_MINUTES=$((FILE_AGE / 60))
 
-        # Output reminder to Claude (this appears in conversation)
         cat <<EOF
 
 📋 SESSION HANDOFF DETECTED
@@ -75,6 +65,63 @@ Age: ${AGE_MINUTES} minutes ago
 ⚠️ ACTION REQUIRED: Read .haunt/state/continue-here.md before starting new work.
 
 EOF
+    fi
+fi
+
+# REQ-401: Idempotency Checkpoint — detect incomplete tasks
+PROGRESS_DIR="$HAUNT_DIR/progress"
+if [[ -d "$PROGRESS_DIR" ]]; then
+    INCOMPLETE_REQS=()
+    for STARTED_FILE in "$PROGRESS_DIR"/*-started.txt; do
+        [[ -e "$STARTED_FILE" ]] || break
+        BASENAME="${STARTED_FILE##*/}"
+        BASENAME="${BASENAME%-started.txt}"
+        if [[ ! -f "$PROGRESS_DIR/${BASENAME}-verified.txt" ]]; then
+            read -r STARTED_TS < "$STARTED_FILE" 2>/dev/null || STARTED_TS="unknown"
+            INCOMPLETE_REQS+=("${BASENAME} (started: ${STARTED_TS})")
+        fi
+    done
+
+    if [[ ${#INCOMPLETE_REQS[@]} -gt 0 ]]; then
+        echo ""
+        echo "⚠️ INCOMPLETE TASKS DETECTED"
+        echo ""
+        echo "The following tasks were started but never verified:"
+        for REQ in "${INCOMPLETE_REQS[@]}"; do
+            echo "  - $REQ"
+        done
+        echo ""
+        echo "Review these before re-executing to avoid duplicate side effects."
+        echo ""
+    fi
+fi
+
+# REQ-402: Staleness check — warn if commits landed since roadmap was written
+ROADMAP_FILE="$HAUNT_DIR/plans/roadmap.md"
+STALENESS_FLAG="$HAUNT_DIR/state/staleness-checked-${TIMESTAMP:0:4}${TIMESTAMP:5:2}${TIMESTAMP:8:2}.flag"
+if [[ -f "$ROADMAP_FILE" && ! -f "$STALENESS_FLAG" ]]; then
+    if ! grep -q "All requirements complete" "$ROADMAP_FILE" 2>/dev/null; then
+        ROADMAP_MOD=$(stat -f %m "$ROADMAP_FILE" 2>/dev/null || echo 0)
+        ROADMAP_DATE=$(date -u -r "$ROADMAP_MOD" +"%Y-%m-%dT%H:%M:%SZ" 2>/dev/null || echo "")
+
+        if [[ -n "$ROADMAP_DATE" && -d "$PROJECT_DIR/.git" ]]; then
+            COMMITS_SINCE=$(git -C "$PROJECT_DIR" log --oneline --since="$ROADMAP_DATE" 2>/dev/null || echo "")
+            if [[ -n "$COMMITS_SINCE" ]]; then
+                COMMIT_COUNT=0
+                while IFS= read -r _; do COMMIT_COUNT=$((COMMIT_COUNT + 1)); done <<< "$COMMITS_SINCE"
+                echo ""
+                echo "⚠️ ROADMAP STALENESS WARNING"
+                echo ""
+                echo "${COMMIT_COUNT} commit(s) landed since roadmap was written (${ROADMAP_DATE}):"
+                echo ""
+                echo "$COMMITS_SINCE" | head -10 | sed 's/^/  /'
+                echo ""
+                echo "Review git log and confirm the plan is still valid before resuming."
+                echo ""
+            fi
+            # Debounce: don't repeat this check today
+            touch "$STALENESS_FLAG"
+        fi
     fi
 fi
 
