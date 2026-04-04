@@ -32,15 +32,16 @@ fi
 # Handle: -m "message", -m 'message', -m "$(cat <<'EOF'..."
 MESSAGE=""
 
-# Pattern 1: -m "message" or -m 'message'
-if [[ "$COMMAND" =~ -m[[:space:]]+\"([^\"]+)\" ]]; then
+# Pattern 1: HEREDOC pattern -m "$(cat <<'EOF' ... EOF )" — check FIRST since
+# the simple -m "..." regex greedily matches the outer quotes around heredocs
+if [[ "$COMMAND" =~ -m[[:space:]]+\"\$\(cat ]]; then
+    # The command has literal newlines — extract first non-empty line between EOF markers
+    MESSAGE=$(echo "$COMMAND" | sed -n '/<<.*EOF/,/^[[:space:]]*EOF/{//d;p;}' | sed '/^[[:space:]]*$/d' | head -1 | sed 's/^[[:space:]]*//' || true)
+# Pattern 2: -m "message" or -m 'message'
+elif [[ "$COMMAND" =~ -m[[:space:]]+\"([^\"]+)\" ]]; then
     MESSAGE="${BASH_REMATCH[1]}"
 elif [[ "$COMMAND" =~ -m[[:space:]]+\'([^\']+)\' ]]; then
     MESSAGE="${BASH_REMATCH[1]}"
-# Pattern 2: HEREDOC pattern -m "$(cat <<'EOF'
-elif [[ "$COMMAND" =~ -m[[:space:]]+\"\$\(cat ]]; then
-    # Extract first line after the HEREDOC marker
-    MESSAGE=$(echo "$COMMAND" | grep -oP "EOF\n\K[^\n]+" | head -1 || true)
 fi
 
 # If we couldn't extract the message, allow (don't block on parse failure)
