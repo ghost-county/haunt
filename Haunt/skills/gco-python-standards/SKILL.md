@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-python-standards
 description: Python coding standards and pytest patterns. Invoke when working on .py files or pytest tests.
 ---

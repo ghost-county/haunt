@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-code-review
 description: >-
   Structured code review with anti-pattern detection, severity classification, and evidence-backed verdicts for quality gates.

@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-commit-conventions
 description: Advanced commit scenarios - WIP tracking, multi-requirement commits, breaking changes, and special git operations. Invoke for complex commit scenarios beyond basic format.
 ---

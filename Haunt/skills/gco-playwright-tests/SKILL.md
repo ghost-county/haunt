@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-playwright-tests
 description: Generate Playwright E2E tests for UI features. Invoke when implementing frontend features, user flows, or interactive components that need browser-based testing.
 ---

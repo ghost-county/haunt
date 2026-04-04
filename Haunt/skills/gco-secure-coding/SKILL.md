@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-secure-coding
 description: >-
   OWASP Top 10 audit, STRIDE threat modeling, CWE classification, prompt injection prevention, and agent security patterns for production code.

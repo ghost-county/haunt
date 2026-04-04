@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-seance-orchestration
 description: Orchestration logic for the seance command. Defines delegation gates, team management, phase transitions, and task creation patterns.
 ---
@@ -84,6 +85,8 @@ Spawn teammates based on phase needs:
 6. **Read roadmap** from `.haunt/plans/roadmap.md` when PM reports completion
 7. **Present roadmap to user** with summary of REQ items, batches, and estimates
 8. **Ask user**: "Ready to summon?" -- this is the approval gate
+9. **Log approval** when user approves: append to `.haunt/logs/approvals.jsonl`:
+   `{"timestamp":"<UTC>","event":"plan_approved","phase":"scrying","context":"Roadmap approved with N requirements"}`
 
 ## Phase 2: Summoning (Execution)
 
@@ -92,6 +95,8 @@ Spawn teammates based on phase needs:
    - Task title: `REQ-XXX: {title}`
    - Task description: acceptance criteria + files + effort from roadmap
    - Set dependencies: `addBlockedBy` for items with "Blocked by" in roadmap
+   - Before dispatching each task, write a checkpoint: `echo $(date -u) > .haunt/progress/{REQ}-started.txt`
+   - After verifying a task is complete, write: `echo $(date -u) > .haunt/progress/{REQ}-verified.txt`
 3. **Spawn Dev teammates** (one per parallel batch, or one for sequential work)
 4. **Spawn Code Reviewer** if any M-sized items exist
 5. **Monitor via TaskList** -- check periodically for:
@@ -145,6 +150,8 @@ BECAUSE M-sized work involves 4-10 files and warrants human oversight before int
    - **APPROVE** → proceed to Banishing
    - **REJECT** → create fix tasks, return to Summoning
    - **DEFER** → save state to `.haunt/state/continue-here.md`, suggest /clear
+5. **Log gate decision** — append to `.haunt/logs/approvals.jsonl`:
+   `{"timestamp":"<UTC>","event":"gate_approved|gate_rejected|gate_deferred","phase":"summoning","context":"<brief reason>"}`
 
 ### Skip Conditions
 - XS/S work: skip gate (single-agent, low risk)
@@ -180,3 +187,10 @@ If a seance is interrupted (session lost, teammate crash):
 - The roadmap file persists with last-known status
 - `/seance --summon` creates a fresh team and re-creates tasks for incomplete items
 - Status icons in roadmap serve as recovery checkpoint
+- Started-but-not-verified tasks are flagged on session start — review before re-executing
+
+### Staleness Protocol
+
+On resume, the session-start hook checks for git activity since the roadmap was written:
+- **If changes detected**: review the git log, decide whether to proceed, re-plan, or abort
+- **If no changes**: proceed normally

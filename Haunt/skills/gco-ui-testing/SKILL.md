@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-ui-testing
 description: UI testing protocol enforcing Playwright E2E tests for all frontend features. Invoke when implementing user-facing UI, forms, navigation, or interactive components. Contains TDD workflow, user journey mapping, and testing requirements.
 ---

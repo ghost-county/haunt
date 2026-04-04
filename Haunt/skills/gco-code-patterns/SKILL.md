@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-code-patterns
 description: >-
   Anti-pattern detection, error handling conventions, and code quality assessment with severity classification and AI-specific occurrence rates.

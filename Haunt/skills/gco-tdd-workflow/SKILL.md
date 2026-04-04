@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-tdd-workflow
 description: Test-driven development workflow guidance. Invoke when implementing new features, writing tests, or following Red-Green-Refactor cycle. Covers testing commands for Python, JavaScript, and Go.
 ---

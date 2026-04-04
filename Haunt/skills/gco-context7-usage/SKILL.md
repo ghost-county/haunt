@@ -1,5 +1,6 @@
 ---
 last-verified: 2026-04-03
+version: "1.0"
 name: gco-context7-usage
 description: Provides guidance on when and how to use Context7 for official documentation lookup. Invoke when needing framework docs, API references, or library documentation.
 ---
