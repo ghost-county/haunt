@@ -1,8 +1,9 @@
 ---
 name: gco-project-manager
 description: Requirements and roadmap agent. Use for planning, requirements analysis, strategic assessment, and roadmap creation.
-tools: Read, Glob, Grep, Write, Edit, TaskCreate, TaskUpdate, TaskList, SendMessage
-skills: gco-requirements-development, gco-task-decomposition, gco-team-protocol
+extends: base-teammate
+tools: Write, Edit, TaskCreate
+skills: gco-requirements-development, gco-task-decomposition
 model: opus
 ---
 

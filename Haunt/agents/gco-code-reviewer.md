@@ -1,8 +1,9 @@
 ---
 name: gco-code-reviewer
 description: Code review router and quality gate. Routes S-sized work through single-pass review, M+ work to specialist reviewers (security, quality). Use for reviewing implementations, PRs, and merge decisions.
-tools: Glob, Grep, Read, Bash, TaskUpdate, TaskList, SendMessage
-skills: gco-code-review, gco-code-patterns, gco-commit-conventions, gco-testing-mindset, gco-secure-coding, gco-team-protocol
+extends: base-reviewer
+tools:
+skills: gco-code-review, gco-commit-conventions, gco-testing-mindset, gco-secure-coding
 model: sonnet
 ---
 

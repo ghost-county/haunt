@@ -1,8 +1,9 @@
 ---
 name: gco-research
 description: Investigation and validation agent. Use for research tasks, technical investigation, and adversarial requirements review.
-tools: Glob, Grep, Read, Write, WebSearch, WebFetch, TaskUpdate, TaskList, SendMessage, mcp__context7__*
-skills: gco-context7-usage, gco-team-protocol
+extends: base-teammate
+tools: Write, WebSearch, WebFetch, mcp__context7__*
+skills: gco-context7-usage
 model: opus
 ---
 

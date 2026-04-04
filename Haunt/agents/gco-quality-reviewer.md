@@ -1,8 +1,9 @@
 ---
 name: gco-quality-reviewer
 description: Code quality and maintainability review specialist. Anti-pattern detection, test coverage analysis, complexity assessment, convention adherence. Use for pattern review, refactoring assessment, and test quality evaluation.
-tools: Glob, Grep, Read, Bash, TaskUpdate, TaskList, SendMessage
-skills: gco-code-review, gco-code-patterns, gco-testing-mindset, gco-team-protocol
+extends: base-reviewer
+tools:
+skills: gco-code-review, gco-testing-mindset
 model: sonnet
 ---
 

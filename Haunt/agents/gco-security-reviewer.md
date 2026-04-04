@@ -1,8 +1,9 @@
 ---
 name: gco-security-reviewer
 description: Security-focused code review specialist. OWASP Top 10 audit, STRIDE threat modeling, CWE classification, secrets detection, input validation analysis. Use for reviewing auth, deployment, API, and production code.
-tools: Glob, Grep, Read, Bash, TaskUpdate, TaskList, SendMessage
-skills: gco-secure-coding, gco-code-patterns, gco-team-protocol
+extends: base-reviewer
+tools:
+skills: gco-secure-coding
 model: sonnet
 ---
 

@@ -1,0 +1,11 @@
+# Base configuration shared by ALL Haunt teammates
+tools:
+  - Glob
+  - Grep
+  - Read
+  - TaskUpdate
+  - TaskList
+  - SendMessage
+
+skills:
+  - gco-team-protocol

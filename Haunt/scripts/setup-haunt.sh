@@ -105,34 +105,60 @@ mkdir -p "$CLAUDE_DIR/rules" "$CLAUDE_DIR/skills" "$CLAUDE_DIR/commands" "$CLAUD
 
 # --- Agent composition helpers ---
 
-# Extract a frontmatter field value from a YAML or Markdown file.
-# Handles both inline format ("field: value") and block list format ("field:\n  - item").
-# Usage: fm_get_field "tools" "$file"
-fm_get_field() {
+# Extract a field value from a YAML or Markdown file.
+# Works with both plain YAML files (no --- markers) and Markdown with frontmatter.
+# Handles inline format ("field: value") and block list format ("field:\n  - item").
+# Usage: yaml_get_field "tools" "$file"
+yaml_get_field() {
     local field="$1"
     local file="$2"
-    # Try inline format: "field: value" (non-empty value on same line)
-    local inline
-    inline=$(awk -v f="$field" '
-        /^---$/ { if (++fm == 2) exit }
-        fm == 1 && $0 ~ "^"f":[[:space:]]+[^[:space:]]" {
-            sub("^"f":[[:space:]]*", ""); print; exit
-        }
-    ' "$file")
-    if [[ -n "$inline" ]]; then
-        echo "$inline"
-        return
+    # Detect if file has frontmatter markers
+    local has_frontmatter
+    has_frontmatter=$(grep -c "^---$" "$file" || true)
+
+    if [[ "$has_frontmatter" -ge 2 ]]; then
+        # Markdown with frontmatter: only scan between first and second ---
+        local inline
+        inline=$(awk -v f="$field" '
+            /^---$/ { if (++fm == 2) exit }
+            fm == 1 && $0 ~ "^"f":[[:space:]]+[^[:space:]]" {
+                sub("^"f":[[:space:]]*", ""); print; exit
+            }
+        ' "$file")
+        if [[ -n "$inline" ]]; then
+            echo "$inline"
+            return
+        fi
+        awk -v f="$field" '
+            /^---$/ { if (++fm == 2) exit }
+            fm == 1 {
+                if ($0 ~ "^"f":") { found=1; next }
+                if (found && /^  - /) { sub(/^  - /, ""); printf "%s,", $0; next }
+                if (found) { exit }
+            }
+        ' "$file" | sed 's/,$//'
+    else
+        # Plain YAML: scan the whole file
+        local inline
+        inline=$(awk -v f="$field" '
+            $0 ~ "^"f":[[:space:]]+[^[:space:]]" {
+                sub("^"f":[[:space:]]*", ""); print; exit
+            }
+        ' "$file")
+        if [[ -n "$inline" ]]; then
+            echo "$inline"
+            return
+        fi
+        awk -v f="$field" '
+            $0 ~ "^"f":" { found=1; next }
+            found && /^  - / { sub(/^  - /, ""); printf "%s,", $0; next }
+            found { exit }
+        ' "$file" | sed 's/,$//'
     fi
-    # Try block list format: "field:\n  - item"
-    awk -v f="$field" '
-        /^---$/ { if (++fm == 2) exit }
-        fm == 1 {
-            if ($0 ~ "^"f":") { found=1; next }
-            if (found && /^  - /) { sub(/^  - /, ""); printf "%s,", $0; next }
-            if (found) { exit }
-        }
-    ' "$file" | sed 's/,$//'
 }
+
+# Alias for backward compat within this script
+fm_get_field() { yaml_get_field "$@"; }
 
 # Resolve a base YAML file, following extends chain recursively.
 # Prints two lines: "TOOLS:<csv>" and "SKILLS:<csv>"

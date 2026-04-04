@@ -1,8 +1,9 @@
 ---
 name: gco-dev
 description: Development agent for backend, frontend, and infrastructure implementation. Use for writing code, tests, and features.
-tools: Glob, Grep, Read, Edit, Write, Bash, TaskUpdate, TaskList, SendMessage, mcp__context7__*, mcp__playwright__*
-skills: gco-tdd-workflow, gco-commit-conventions, gco-code-patterns, gco-code-review, gco-context7-usage, gco-playwright-tests, gco-ui-testing, gco-testing-mindset, gco-team-protocol
+extends: base-teammate
+tools: Edit, Write, Bash, mcp__context7__*, mcp__playwright__*
+skills: gco-tdd-workflow, gco-commit-conventions, gco-code-patterns, gco-code-review, gco-context7-usage, gco-playwright-tests, gco-ui-testing, gco-testing-mindset
 model: sonnet
 ---
 
