@@ -1,0 +1,19 @@
+{
+  "name": "haunt",
+  "description": "Dev guardrails and agent coordination toolkit. Quality gates, coding standards, testing enforcement, and the seance spec-driven development workflow.",
+  "version": "1.0.0",
+  "author": {
+    "name": "heckatron"
+  },
+  "homepage": "https://github.com/ghost-county/haunt",
+  "repository": "https://github.com/ghost-county/haunt",
+  "license": "MIT",
+  "keywords": [
+    "guardrails",
+    "agent-coordination",
+    "quality-gates",
+    "testing",
+    "seance",
+    "code-review"
+  ]
+}
