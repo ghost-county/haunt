@@ -362,13 +362,7 @@ Present in `hooks/` directory but NOT wired in `hooks.json`. Users opt-in by add
 
 ### Detection
 
-The script identifies Haunt-owned files by checking for a marker comment in each file. All files deployed by the old `setup-haunt.sh` contain:
-
-```
-# Deployed by setup-haunt.sh
-```
-
-If the marker is absent, the file is skipped (user-created or from another source).
+The script identifies Haunt-owned files by the `gco-*` filename prefix — Haunt's unique namespace. No other plugin uses this prefix, making it a reliable detection method. The old `setup-haunt.sh` only deployed `gco-*` named files to `~/.claude/{agents,rules,skills,commands}/`.
 
 ### Migration Steps
 
