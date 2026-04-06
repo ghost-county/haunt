@@ -229,7 +229,7 @@ Concrete schema based on hookify and superpowers reference implementations.
         ]
       },
       {
-        "matcher": "TaskUpdate",
+        "matcher": "Agent",
         "hooks": [
           {
             "type": "command",
@@ -286,7 +286,7 @@ Wired in `hooks.json` but self-gate on `.haunt/active-session` sentinel file. Ou
 |------|---------|---------|
 | `damage-control/` | PreToolUse | Block destructive operations |
 | `completion-gate.sh` | PreToolUse | Block completion without test evidence |
-| `phase-enforcement.sh` | PreToolUse | Block dev before planning approval |
+| `phase-enforcement.sh` | PreToolUse (Agent) | Block dev agents before planning approval |
 | `file-location-enforcer.sh` | PreToolUse | Enforce `.haunt/` artifact paths |
 
 **Gate mechanism:** Each seance-gated hook checks for the sentinel at the top:
