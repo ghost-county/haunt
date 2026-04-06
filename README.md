@@ -4,50 +4,28 @@
 
 ## Quick Install
 
-No cloning required — downloads a tarball, deploys, cleans up automatically:
+1. Add the Haunt marketplace (one-time):
+   ```
+   /plugin marketplace add ghost-county/haunt
+   ```
+
+2. Install the plugin:
+   ```
+   /plugin install haunt@ghost-county-haunt
+   ```
+
+That's it. Updates are automatic — when changes are pushed to `main`, Claude Code picks them up on its next marketplace refresh.
+
+### Migrating from setup-haunt.sh
+
+If you previously used `setup-haunt.sh`:
 
 ```bash
-# Install globally (recommended)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash
-
-# Start Claude Code and run the seance workflow
-claude
-/seance
+bash scripts/migrate-to-plugin.sh          # Preview what gets cleaned up
+bash scripts/migrate-to-plugin.sh --execute # Remove old file copies
 ```
 
-### Installation Options
-
-```bash
-# Install globally with minimal output
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --quiet
-
-# Install to current project only (deploys to .claude/ instead of ~/.claude/)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --scope=project
-
-# Preview what would be installed
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --dry-run
-
-# Verify an existing installation
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --verify
-```
-
-| Flag | Effect |
-|------|--------|
-| `--scope=global` | Deploy to `~/.claude/` (default) |
-| `--scope=project` | Deploy to `.claude/` in current directory |
-| `--quiet` | Suppress non-error output |
-| `--dry-run` | List what would be deployed without writing |
-| `--verify` | Check an existing installation for completeness |
-
-### Quick Uninstall
-
-```bash
-# Remove project-level Haunt
-rm -rf .claude .haunt
-
-# Remove global Haunt artifacts
-rm -rf ~/.claude/agents/gco-* ~/.claude/skills/gco-* ~/.claude/rules/gco-* ~/.claude/commands/gco-*
-```
+Then follow the Quick Install steps above.
 
 ## What Gets Installed
 
@@ -97,17 +75,14 @@ claude -a Project-Manager
 
 ## Starting a New Project
 
-After running setup in a new project directory, kick off the Haunt workflow:
+After installing Haunt, kick off the workflow in your project directory:
 
 ```bash
 # 1. Navigate to your new project
 cd /path/to/your/project
 git init  # if not already a git repo
 
-# 2. Install Haunt
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash
-
-# 3. Start Claude Code
+# 2. Start Claude Code
 claude
 ```
 
