@@ -14,13 +14,13 @@ FOUND=()
 
 # Scan for gco-* files in agents, rules, commands
 for dir in agents rules commands; do
-    for f in "$CLAUDE_DIR/$dir"/gco-* 2>/dev/null; do
+    for f in "$CLAUDE_DIR/$dir"/gco-*; do
         [[ -e "$f" ]] && FOUND+=("$f")
     done
 done
 
 # Scan for gco-* skill directories
-for d in "$CLAUDE_DIR/skills"/gco-* 2>/dev/null; do
+for d in "$CLAUDE_DIR/skills"/gco-*; do
     [[ -d "$d" ]] && FOUND+=("$d")
 done
 
