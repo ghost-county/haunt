@@ -1,7 +1,0 @@
-# Reviewer base — extends base-teammate with reviewer-specific tools and skills
-extends: base-teammate
-tools:
-  - Bash
-
-skills:
-  - gco-code-patterns
