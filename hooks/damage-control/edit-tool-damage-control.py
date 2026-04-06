@@ -29,17 +29,12 @@ Protected Paths:
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Dict, List, Any
 
 import yaml
-
-import os as _os
-if not _os.path.exists(_os.path.join(_os.getcwd(), '.haunt', 'active-session')):
-    import sys as _sys
-    _sys.exit(0)
-
 
 def load_patterns() -> Dict[str, Any]:
     """Load protection patterns from patterns.yaml in same directory as script."""
@@ -88,12 +83,16 @@ def is_protected(file_path: str, protected_paths: List[str]) -> bool:
 
 def main():
     """Main hook logic: parse input, check protections, return exit code."""
+    # Seance gate: only enforce during active seance
+    if not os.path.exists(os.path.join(os.getcwd(), '.haunt', 'active-session')):
+        sys.exit(0)
+
     # Read JSON input from stdin
     try:
         input_data = json.load(sys.stdin)
     except json.JSONDecodeError as e:
         print(f"ERROR: Invalid JSON input: {e}", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(2)
 
     # Extract file_path from tool_input
     tool_input = input_data.get("tool_input", {})

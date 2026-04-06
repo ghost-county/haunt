@@ -39,7 +39,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/damage-control/bash-tool-damage-control.py\"",
+            "command": "uv run \"${CLAUDE_PLUGIN_ROOT}/hooks/damage-control/bash-tool-damage-control.py\"",
             "timeout": 5
           }
         ]
@@ -49,7 +49,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/damage-control/edit-tool-damage-control.py\"",
+            "command": "uv run \"${CLAUDE_PLUGIN_ROOT}/hooks/damage-control/edit-tool-damage-control.py\"",
             "timeout": 5
           },
           {
@@ -64,7 +64,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/damage-control/write-tool-damage-control.py\"",
+            "command": "uv run \"${CLAUDE_PLUGIN_ROOT}/hooks/damage-control/write-tool-damage-control.py\"",
             "timeout": 5
           }
         ]

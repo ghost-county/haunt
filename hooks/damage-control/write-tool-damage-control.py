@@ -20,15 +20,10 @@ Pattern File: patterns.yaml (same directory as this script)
 """
 
 import json
+import os
 import sys
 from pathlib import Path
 import yaml
-
-import os as _os
-if not _os.path.exists(_os.path.join(_os.getcwd(), '.haunt', 'active-session')):
-    import sys as _sys
-    _sys.exit(0)
-
 
 def load_patterns(script_path: Path) -> dict:
     """Load patterns.yaml from the same directory as this script."""
@@ -77,12 +72,16 @@ def main():
     4. Check if file_path matches zeroAccessPaths
     5. Exit 2 (BLOCK) if match, exit 0 (ALLOW) otherwise
     """
+    # Seance gate: only enforce during active seance
+    if not os.path.exists(os.path.join(os.getcwd(), '.haunt', 'active-session')):
+        sys.exit(0)
+
     # Read JSON input from stdin
     try:
         hook_input = json.load(sys.stdin)
     except json.JSONDecodeError as e:
         print(f"ERROR: Invalid JSON input: {e}", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(2)
 
     # Extract file_path from tool_input
     tool_input = hook_input.get("tool_input", {})

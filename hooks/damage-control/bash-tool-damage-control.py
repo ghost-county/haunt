@@ -28,11 +28,6 @@ import sys
 from pathlib import Path
 from typing import Any
 
-import os as _os
-if not _os.path.exists(_os.path.join(_os.getcwd(), '.haunt', 'active-session')):
-    import sys as _sys
-    _sys.exit(0)
-
 try:
     import yaml
 except ImportError:
@@ -160,6 +155,10 @@ def check_no_delete_paths(command: str, no_delete_paths: list[str]) -> tuple[boo
 
 def main():
     """Main hook entry point."""
+    # Seance gate: only enforce during active seance
+    if not os.path.exists(os.path.join(os.getcwd(), '.haunt', 'active-session')):
+        sys.exit(0)
+
     try:
         # Read hook input from stdin
         input_data = json.load(sys.stdin)
