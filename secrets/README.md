@@ -36,7 +36,7 @@ Tag-based secret management for `.env` files using 1Password. Store secrets in 1
 
 ```bash
 # 1. Install the package
-cd Haunt/secrets
+cd secrets
 pip install -e .
 
 # 2. Create a service account token in 1Password
@@ -148,7 +148,7 @@ STRIPE_SECRET_KEY=sk_test_placeholder
 
 ```bash
 # Load secrets into current shell
-source Haunt/scripts/haunt-secrets.sh .env
+source scripts/haunt-secrets.sh .env
 
 # Now all variables are available
 echo $APP_NAME      # Works (plaintext variable)
@@ -161,7 +161,7 @@ echo $DB_PASSWORD   # Works (fetched from 1Password)
 #!/bin/bash
 
 # Load secrets at start of script
-source /path/to/Haunt/scripts/haunt-secrets.sh .env
+source /path/to/scripts/haunt-secrets.sh .env
 
 # Use variables normally
 psql "$DATABASE_URL" -c "SELECT 1"
@@ -182,7 +182,7 @@ The bash script exits with specific codes:
 ```bash
 #!/bin/bash
 
-if ! source Haunt/scripts/haunt-secrets.sh .env; then
+if ! source scripts/haunt-secrets.sh .env; then
     case $? in
         1) echo "ERROR: Set OP_SERVICE_ACCOUNT_TOKEN" ;;
         2) echo "ERROR: Failed to fetch secrets from 1Password" ;;
@@ -349,7 +349,7 @@ See [MIGRATION.md](docs/MIGRATION.md) for step-by-step guide to migrating existi
 
 ```bash
 # Run all tests
-cd Haunt/secrets
+cd secrets
 pytest
 
 # Run with coverage

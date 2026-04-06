@@ -192,7 +192,7 @@ Based on review verdict, Code Reviewer updates roadmap status:
 
 **Context:**
 - Effort: M/SPLIT (automatic review required)
-- Files changed: 5 files (Haunt/agents/gco-dev.md, Haunt/agents/gco-code-reviewer.md, etc.)
+- Files changed: 5 files (agents/gco-dev.md, agents/gco-code-reviewer.md, etc.)
 - Tests: All passing (infrastructure verification complete)
 
 **Changes Summary:**
@@ -231,9 +231,9 @@ REQ-XXX approved and marked 🟢 Complete in roadmap.
 CHANGES_REQUESTED
 
 Issues found:
-[HIGH] Haunt/agents/gco-dev.md:47 - Missing error handling for Code Reviewer spawn failure
-[MEDIUM] Haunt/rules/gco-completion-checklist.md:89 - Unclear guidance on re-submission after CHANGES_REQUESTED
-[LOW] Haunt/docs/CODE-REVIEW-WORKFLOW.md - Missing example of iterative review cycle
+[HIGH] agents/gco-dev.md:47 - Missing error handling for Code Reviewer spawn failure
+[MEDIUM] rules/gco-completion-checklist.md:89 - Unclear guidance on re-submission after CHANGES_REQUESTED
+[LOW] docs/CODE-REVIEW-WORKFLOW.md - Missing example of iterative review cycle
 
 Test coverage: All tests passing, but missing integration test for auto-spawn workflow
 
@@ -347,8 +347,8 @@ Code review is the FINAL quality gate, not a replacement for self-refinement.
 
 ## See Also
 
-- `Haunt/agents/gco-dev.md` - Dev agent with automatic review handoff logic
-- `Haunt/agents/gco-code-reviewer.md` - Code Reviewer agent with auto-spawned review handling
-- `Haunt/rules/gco-completion-checklist.md` - Complete checklist including self-validation and code review steps
-- `Haunt/skills/gco-code-review/SKILL.md` - Detailed code review checklist and patterns
-- `Haunt/skills/gco-code-patterns/SKILL.md` - Anti-patterns and error handling standards
+- `agents/gco-dev.md` - Dev agent with automatic review handoff logic
+- `agents/gco-code-reviewer.md` - Code Reviewer agent with auto-spawned review handling
+- `rules/gco-completion-checklist.md` - Complete checklist including self-validation and code review steps
+- `skills/gco-code-review/SKILL.md` - Detailed code review checklist and patterns
+- `skills/gco-code-patterns/SKILL.md` - Anti-patterns and error handling standards

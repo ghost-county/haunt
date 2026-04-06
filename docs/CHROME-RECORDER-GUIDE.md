@@ -253,7 +253,7 @@ await page.click('[data-testid="submit-button"]');
 After generating and refining tests with Chrome Recorder:
 1. Run tests locally: `npx playwright test`
 2. Verify tests pass: `npx playwright test --ui` (interactive mode)
-3. Add tests to CI/CD (see `Haunt/skills/gco-ui-testing/SKILL.md` for GitHub Actions config)
+3. Add tests to CI/CD (see `skills/gco-ui-testing/SKILL.md` for GitHub Actions config)
 4. Commit refined tests to version control
 
 **Remember:** Chrome Recorder is a tool to accelerate test creation, not replace careful test design.

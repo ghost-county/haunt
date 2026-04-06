@@ -112,7 +112,7 @@ source .haunt/scripts/haunt-secrets.sh
 load_secrets .env
 
 # Or from source (during development)
-source Haunt/scripts/haunt-secrets.sh
+source scripts/haunt-secrets.sh
 load_secrets .env
 
 echo $GITHUB_TOKEN  # Actual secret from 1Password
@@ -464,7 +464,7 @@ The shell wrapper (`haunt-secrets.sh`) provides functions for loading secrets in
 **Source and load:**
 ```bash
 # Source the script to make functions available
-source Haunt/scripts/haunt-secrets.sh
+source scripts/haunt-secrets.sh
 
 # Load secrets from .env file
 load_secrets .env
@@ -477,10 +477,10 @@ curl -H "Authorization: token $GITHUB_TOKEN" https://api.github.com/user
 **Direct execution:**
 ```bash
 # Run as standalone script (loads and exports in current shell)
-bash Haunt/scripts/haunt-secrets.sh .env
+bash scripts/haunt-secrets.sh .env
 
 # NOTE: Exports only work if you source the script
-source Haunt/scripts/haunt-secrets.sh .env
+source scripts/haunt-secrets.sh .env
 ```
 
 #### Validation Mode: Check Resolvability
@@ -489,7 +489,7 @@ Verify all secrets are accessible WITHOUT loading them:
 
 ```bash
 # Validate secrets exist and are accessible
-bash Haunt/scripts/haunt-secrets.sh --validate .env
+bash scripts/haunt-secrets.sh --validate .env
 
 # Output:
 # ✓ Validated 3 secret(s): GITHUB_TOKEN, STRIPE_SECRET_KEY, DATABASE_PASSWORD
@@ -498,7 +498,7 @@ bash Haunt/scripts/haunt-secrets.sh --validate .env
 **Debug mode:**
 ```bash
 # Show detailed diagnostics during validation
-bash Haunt/scripts/haunt-secrets.sh --validate --debug .env
+bash scripts/haunt-secrets.sh --validate --debug .env
 
 # Output:
 # DEBUG: Checking GITHUB_TOKEN → op://my-vault/api-keys/github-token
@@ -512,7 +512,7 @@ bash Haunt/scripts/haunt-secrets.sh --validate --debug .env
 
 ```bash
 # Source the script
-source Haunt/scripts/haunt-secrets.sh
+source scripts/haunt-secrets.sh
 
 # Fetch a single secret
 secret=$(fetch_secret "my-vault" "api-keys" "github-token")
@@ -689,7 +689,7 @@ The haunt-secrets wrapper provides **comprehensive anti-leak protection**:
 
 **Shell example:**
 ```bash
-bash Haunt/scripts/haunt-secrets.sh .env
+bash scripts/haunt-secrets.sh .env
 # Output: Loaded: GITHUB_TOKEN, STRIPE_SECRET_KEY
 # Note: Only variable NAMES, never values
 ```
@@ -728,7 +728,7 @@ ERROR: Secret not found in 1Password
 Validation mode checks resolvability **without exposing values**:
 
 ```bash
-bash Haunt/scripts/haunt-secrets.sh --validate --debug .env
+bash scripts/haunt-secrets.sh --validate --debug .env
 
 # Output shows metadata only:
 # DEBUG: Checking GITHUB_TOKEN → op://my-vault/api-keys/github-token
@@ -1184,7 +1184,7 @@ LOG_LEVEL=info
 
 ```bash
 # Validate secrets without loading them
-bash Haunt/scripts/haunt-secrets.sh --validate --debug .env
+bash scripts/haunt-secrets.sh --validate --debug .env
 
 # Output should show all secrets as resolvable:
 # DEBUG: Checking GITHUB_TOKEN → op://my-vault/api-keys/github-token
@@ -1245,7 +1245,7 @@ steps:
 
   - name: Load secrets
     run: |
-      source Haunt/scripts/haunt-secrets.sh
+      source scripts/haunt-secrets.sh
       load_secrets .env
 
   - name: Run tests
@@ -1293,7 +1293,7 @@ git push
    ```bash
    git clone repo
    cd repo
-   source Haunt/scripts/haunt-secrets.sh
+   source scripts/haunt-secrets.sh
    load_secrets .env
 
    # Ready to develop!
@@ -1336,7 +1336,7 @@ SENDGRID_API_KEY=placeholder
 
 **4. Validate:**
 ```bash
-bash Haunt/scripts/haunt-secrets.sh --validate --debug .env
+bash scripts/haunt-secrets.sh --validate --debug .env
 
 # Output:
 # DEBUG: Checking SENDGRID_API_KEY → op://my-vault/sendgrid-credentials/api-key
@@ -1374,11 +1374,11 @@ git push
 
 - **1Password CLI Documentation:** https://developer.1password.com/docs/cli
 - **1Password Service Accounts:** https://developer.1password.com/docs/service-accounts
-- **Haunt Framework:** `Haunt/README.md`
+- **Haunt Framework:** `README.md`
 - **Implementation Details:**
-  - Shell: `Haunt/scripts/haunt-secrets.sh`
-  - Python: `Haunt/scripts/haunt_secrets.py`
-  - Tests: `Haunt/tests/test-haunt-secrets.sh`, `Haunt/tests/test_haunt_secrets.py`
+  - Shell: `scripts/haunt-secrets.sh`
+  - Python: `scripts/haunt_secrets.py`
+  - Tests: `tests/test-haunt-secrets.sh`, `tests/test_haunt_secrets.py`
 
 ---
 

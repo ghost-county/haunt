@@ -6,7 +6,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)"
-GATE_SCRIPT="$REPO_ROOT/Haunt/hooks/completion-gate.sh"
+GATE_SCRIPT="$REPO_ROOT/hooks/completion-gate.sh"
 source "$(dirname "${BASH_SOURCE[0]}")/eval-lib.sh"
 
 echo "Scenario: Completion Gate Enforcement"

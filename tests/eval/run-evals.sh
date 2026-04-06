@@ -1,7 +1,7 @@
 #!/bin/bash
 # Haunt Evaluation Runner
 # Runs golden task scenarios and reports pass/fail
-# Usage: bash Haunt/tests/eval/run-evals.sh [scenario-name]
+# Usage: bash tests/eval/run-evals.sh [scenario-name]
 
 set -euo pipefail
 

@@ -64,7 +64,7 @@ if [[ ! -f "$VERIFY_FILE" ]]; then
     echo "Completion gate: Cannot mark $REQ_MATCH complete without test verification." >&2
     echo "" >&2
     echo "To fix:" >&2
-    echo "1. Run: bash Haunt/scripts/verify-tests.sh $REQ_MATCH <frontend|backend|infrastructure>" >&2
+    echo "1. Run: bash scripts/verify-tests.sh $REQ_MATCH <frontend|backend|infrastructure>" >&2
     echo "2. This creates: $VERIFY_FILE" >&2
     echo "3. Then retry marking the requirement complete" >&2
     echo "" >&2
@@ -92,7 +92,7 @@ if [[ $VERIFY_AGE -gt 3600 ]]; then
     echo "" >&2
     echo "Verification was $MINUTES_AGO minutes ago (max: 60 minutes)." >&2
     echo "" >&2
-    echo "Re-run: bash Haunt/scripts/verify-tests.sh $REQ_MATCH <agent-type>" >&2
+    echo "Re-run: bash scripts/verify-tests.sh $REQ_MATCH <agent-type>" >&2
     echo "" >&2
     echo "This ensures tests still pass before marking complete." >&2
     exit 2  # Blocking error
@@ -118,7 +118,7 @@ if [[ -n "$IS_FRONTEND" ]]; then
         echo "Visual verification is required to catch CSS bugs that code review misses." >&2
         echo "" >&2
         echo "To fix:" >&2
-        echo "1. Run: bash Haunt/scripts/verify-visual.sh $REQ_MATCH <url>" >&2
+        echo "1. Run: bash scripts/verify-visual.sh $REQ_MATCH <url>" >&2
         echo "2. Confirm the screenshot shows correct styling" >&2
         echo "3. This creates: $VISUAL_VERIFY_FILE" >&2
         echo "4. Then retry marking the requirement complete" >&2
@@ -142,7 +142,7 @@ if [[ -n "$IS_FRONTEND" ]]; then
         echo "" >&2
         echo "Visual verification was $VISUAL_MINUTES_AGO minutes ago (max: 60 minutes)." >&2
         echo "" >&2
-        echo "Re-run: bash Haunt/scripts/verify-visual.sh $REQ_MATCH <url>" >&2
+        echo "Re-run: bash scripts/verify-visual.sh $REQ_MATCH <url>" >&2
         exit 2  # Blocking error
     fi
 fi

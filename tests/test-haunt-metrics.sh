@@ -2,7 +2,7 @@
 #
 # test-haunt-metrics.sh - Unit tests for haunt-metrics.sh parsing functions
 #
-# Usage: bash Haunt/tests/test-haunt-metrics.sh
+# Usage: bash tests/test-haunt-metrics.sh
 #
 
 set -e

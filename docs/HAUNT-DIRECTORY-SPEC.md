@@ -259,8 +259,8 @@ These remain at project root or in their current locations:
 | `.claude/agents/` | Project-specific agent overrides (part of project config) |
 | `.claude/settings.json` | Claude Code configuration (not Ghost County-specific) |
 | `Skills/` | Reusable skills library (shared across projects) |
-| `Haunt/skills/` | Ghost County-specific skills (roadmap-workflow, feature-contracts, etc.) |
-| `Haunt/` | Framework definitions and global agents (templates) |
+| `skills/` | Ghost County-specific skills (roadmap-workflow, feature-contracts, etc.) |
+| haunt repo root | Framework definitions and global agents (templates) |
 | `Agentic_SDLC_Framework/` | Legacy v1.0 framework (archived) |
 | `Knowledge/` | Educational curriculum (deliverable content) |
 | `CLAUDE.md` | Project-level Claude Code instructions (config) |
@@ -341,7 +341,7 @@ Add this to project root `.gitignore`:
 - [ ] Provide rollback capability
 
 ### Stage 4: Ritual Scripts (REQ-087)
-- [ ] Copy ritual scripts to `Haunt/scripts/`
+- [ ] Copy ritual scripts to `scripts/`
 - [ ] Update paths in scripts
 - [ ] Test scripts in `.haunt/scripts/` location
 - [ ] Add to setup script installation

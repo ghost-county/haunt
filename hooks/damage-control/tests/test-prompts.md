@@ -74,7 +74,7 @@ These commands should **prompt for user confirmation** before proceeding.
 |---------|------------------|--------------|
 | `rm -rf ./node_modules` | ASK - Prompt user to confirm | User must approve or deny |
 | `rm -rf /tmp/test-dir` | ASK - Prompt user to confirm | User must approve or deny |
-| `rm -rf Haunt/skills/old-skill` | ASK - Prompt user to confirm | User must approve or deny |
+| `rm -rf skills/old-skill` | ASK - Prompt user to confirm | User must approve or deny |
 | `rm -rf .haunt/completed/archive` | ASK - Prompt user to confirm | User must approve or deny |
 
 **Test Prompt Example:**
@@ -174,17 +174,17 @@ Updated README.md with installation instructions.
 ## Automated Test Script
 
 ### Location
-`Haunt/hooks/damage-control/tests/test-hooks.sh`
+`hooks/damage-control/tests/test-hooks.sh`
 
 ### Usage
 ```bash
 # Run all tests
-bash Haunt/hooks/damage-control/tests/test-hooks.sh
+bash hooks/damage-control/tests/test-hooks.sh
 
 # Run specific category
-bash Haunt/hooks/damage-control/tests/test-hooks.sh block
-bash Haunt/hooks/damage-control/tests/test-hooks.sh ask
-bash Haunt/hooks/damage-control/tests/test-hooks.sh allow
+bash hooks/damage-control/tests/test-hooks.sh block
+bash hooks/damage-control/tests/test-hooks.sh ask
+bash hooks/damage-control/tests/test-hooks.sh allow
 ```
 
 ### Test Script Implementation
@@ -372,7 +372,7 @@ ls -la ~/.claude/hooks/damage-control/
 [ -x ~/.claude/hooks/damage-control/edit-write-tool-damage-control.py ] && echo "Edit/Write hook OK"
 
 # Run automated test suite
-bash Haunt/hooks/damage-control/tests/test-hooks.sh
+bash hooks/damage-control/tests/test-hooks.sh
 ```
 
 ---

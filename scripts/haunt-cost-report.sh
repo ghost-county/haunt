@@ -14,7 +14,7 @@ LOG_FILE="${1:-.haunt/logs/cost-log.jsonl}"
 
 if [[ ! -f "$LOG_FILE" ]]; then
     echo "No cost data logged yet."
-    echo "Run: bash Haunt/scripts/haunt-cost-logger.sh --tokens-in N --tokens-out N"
+    echo "Run: bash scripts/haunt-cost-logger.sh --tokens-in N --tokens-out N"
     exit 0
 fi
 

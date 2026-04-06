@@ -63,7 +63,7 @@ The subagent type maps to a predefined set of tools that Claude Code enforces.
 
 ### 3. Agent YAML Frontmatter (Documentation Only)
 
-Agent character sheets in `Haunt/agents/` include a `tools` field in their YAML frontmatter. This serves **only as documentation** of intended tool access, helping humans understand what each agent should be able to do.
+Agent character sheets in `agents/` include a `tools` field in their YAML frontmatter. This serves **only as documentation** of intended tool access, helping humans understand what each agent should be able to do.
 
 ```yaml
 ---

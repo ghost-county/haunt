@@ -8,7 +8,7 @@ No cloning required — downloads a tarball, deploys, cleans up automatically:
 
 ```bash
 # Install globally (recommended)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash
 
 # Start Claude Code and run the seance workflow
 claude
@@ -19,16 +19,16 @@ claude
 
 ```bash
 # Install globally with minimal output
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --quiet
 
 # Install to current project only (deploys to .claude/ instead of ~/.claude/)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --scope=project
 
 # Preview what would be installed
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --dry-run
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --dry-run
 
 # Verify an existing installation
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --verify
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --verify
 ```
 
 | Flag | Effect |
@@ -105,7 +105,7 @@ cd /path/to/your/project
 git init  # if not already a git repo
 
 # 2. Install Haunt
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash
 
 # 3. Start Claude Code
 claude
@@ -139,41 +139,39 @@ The Project Manager will:
 ## Repository Structure
 
 ```
-ghost-county/
-├── Haunt/                    # v2.0 Framework (recommended)
-│   ├── agents/               # Agent character sheets
-│   ├── skills/               # Haunt methodology skills
-│   ├── scripts/              # Setup and automation
-│   ├── docs/                 # Detailed documentation
-│   │   ├── WHITE-PAPER.md              # Framework design philosophy
-│   │   ├── SDK-INTEGRATION.md          # SDK integration details
-│   │   ├── TOOL-PERMISSIONS.md         # Agent tool access
-│   │   ├── SKILLS-REFERENCE.md         # Skills catalog
-│   │   ├── PATTERN-DETECTION.md        # Pattern detection methodology
-│   │   └── HAUNT-DIRECTORY-SPEC.md     # Directory structure
-│   ├── README.md             # Architecture overview
-│   ├── SETUP-GUIDE.md        # Detailed setup instructions
-│   └── QUICK-REFERENCE.md    # Quick reference card
-└── Skills/                   # Domain-specific skills (optional)
+haunt/
+├── agents/               # Agent character sheets
+├── skills/               # Haunt methodology skills
+├── scripts/              # Setup and automation
+├── docs/                 # Detailed documentation
+│   ├── WHITE-PAPER.md              # Framework design philosophy
+│   ├── SDK-INTEGRATION.md          # SDK integration details
+│   ├── TOOL-PERMISSIONS.md         # Agent tool access
+│   ├── SKILLS-REFERENCE.md         # Skills catalog
+│   ├── PATTERN-DETECTION.md        # Pattern detection methodology
+│   └── HAUNT-DIRECTORY-SPEC.md     # Directory structure
+├── README.md             # This file
+├── docs/SETUP-GUIDE.md   # Detailed setup instructions
+└── docs/QUICK-REFERENCE.md # Quick reference card
 ```
 
 ## Documentation
 
 **Getting Started:**
-- [Setup Guide](Haunt/SETUP-GUIDE.md) - Complete setup instructions
-- [Quick Reference](Haunt/QUICK-REFERENCE.md) - Command cheat sheet
-- [Architecture Overview](Haunt/README.md) - How agents and skills work together
+- [Setup Guide](docs/SETUP-GUIDE.md) - Complete setup instructions
+- [Quick Reference](docs/QUICK-REFERENCE.md) - Command cheat sheet
+- [Architecture Overview](README.md) - How agents and skills work together
 
 **Deep Dive:**
-- [White Paper](Haunt/docs/WHITE-PAPER.md) - **Start here** - Comprehensive overview of Haunt's design and philosophy
-- [SDK Integration](Haunt/docs/SDK-INTEGRATION.md) - SDK integration details
-- [Tool Permissions](Haunt/docs/TOOL-PERMISSIONS.md) - Agent tool access reference
-- [Skills Reference](Haunt/docs/SKILLS-REFERENCE.md) - Complete skills catalog
-- [Pattern Detection](Haunt/docs/PATTERN-DETECTION.md) - Pattern detection methodology
-- [Directory Specification](Haunt/docs/HAUNT-DIRECTORY-SPEC.md) - Directory structure
+- [White Paper](docs/WHITE-PAPER.md) - **Start here** - Comprehensive overview of Haunt's design and philosophy
+- [SDK Integration](docs/SDK-INTEGRATION.md) - SDK integration details
+- [Tool Permissions](docs/TOOL-PERMISSIONS.md) - Agent tool access reference
+- [Skills Reference](docs/SKILLS-REFERENCE.md) - Complete skills catalog
+- [Pattern Detection](docs/PATTERN-DETECTION.md) - Pattern detection methodology
+- [Directory Specification](docs/HAUNT-DIRECTORY-SPEC.md) - Directory structure
 
 **Scripts:**
-- [Scripts Reference](Haunt/scripts/README.md) - All available scripts
+- [Scripts Reference](scripts/README.md) - All available scripts
 
 ## Local Development
 
@@ -181,16 +179,16 @@ If you've cloned this repository:
 
 ```bash
 # Full setup
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # Preview changes
-bash Haunt/scripts/setup-haunt.sh --dry-run
+bash scripts/setup-haunt.sh --dry-run
 
 # Verify installation
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 
 # Update agents only
-bash Haunt/scripts/setup-haunt.sh --agents-only
+bash scripts/setup-haunt.sh --agents-only
 ```
 
 ## Requirements

@@ -490,7 +490,7 @@ All Haunt framework assets use the `gco-*` prefix ("Ghost County" namespace):
 Haunt follows a **deploy-from-source** architecture:
 
 ```
-Haunt/ (Source - Version Controlled)
+haunt/ (Source - Version Controlled)
   ├── agents/          ← Edit here
   │   ├── gco-dev.md
   │   ├── gco-project-manager.md
@@ -505,30 +505,30 @@ Haunt/ (Source - Version Controlled)
       └── setup-haunt.sh  ← Deployment script
          ↓
 ~/.claude/ (Global Deployment - User Home)
-  ├── agents/          ← Copied from Haunt/agents/
-  ├── rules/           ← Copied from Haunt/rules/
-  └── skills/          ← Copied from Haunt/skills/
+  ├── agents/          ← Copied from agents/
+  ├── rules/           ← Copied from rules/
+  └── skills/          ← Copied from skills/
          ↓
 .claude/ (Project Deployment - Project Root)
   ├── agents/          ← Optional overrides
   └── rules/           ← Optional overrides
 ```
 
-**Critical principle:** ALWAYS edit source files in `Haunt/`, then deploy. Editing deployed copies (`~/.claude/`) leads to inconsistency when setup script runs again.
+**Critical principle:** ALWAYS edit source files in the repo root, then deploy. Editing deployed copies (`~/.claude/`) leads to inconsistency when setup script runs again.
 
 **Deployment commands:**
 ```bash
 # Full setup (global + project)
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # Update only global agents
-bash Haunt/scripts/setup-haunt.sh --agents-only
+bash scripts/setup-haunt.sh --agents-only
 
 # Setup only project structure (skip global agents)
-bash Haunt/scripts/setup-haunt.sh --project-only
+bash scripts/setup-haunt.sh --project-only
 
 # Verify installation
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 ```
 
 ---
@@ -551,10 +551,10 @@ pytest tests/ -v  # Parses human-readable output
 Wrapper workflow (token-efficient):
 ```bash
 # Get specific requirement as JSON
-bash Haunt/scripts/haunt-roadmap.sh get REQ-XXX  # Returns ~30 lines JSON
+bash scripts/haunt-roadmap.sh get REQ-XXX  # Returns ~30 lines JSON
 
 # Run tests with structured output
-bash Haunt/scripts/haunt-run.sh test  # Returns JSON with pass/fail/coverage
+bash scripts/haunt-run.sh test  # Returns JSON with pass/fail/coverage
 ```
 
 **Token savings:** 60-98% reduction for common operations.
@@ -585,7 +585,7 @@ grep -A 30 "REQ-042" .haunt/plans/roadmap.md  # Manual parsing
 **With wrapper (optimized):**
 ```bash
 # Get structured JSON output
-$ bash Haunt/scripts/haunt-roadmap.sh get REQ-042
+$ bash scripts/haunt-roadmap.sh get REQ-042
 
 {
   "id": "REQ-042",
@@ -620,7 +620,7 @@ pytest tests/ -v
 
 **With wrapper:**
 ```bash
-$ bash Haunt/scripts/haunt-run.sh test
+$ bash scripts/haunt-run.sh test
 
 {
   "success": true,
@@ -651,7 +651,7 @@ $ bash Haunt/scripts/haunt-run.sh test
 
 **With wrapper:**
 ```bash
-$ bash Haunt/scripts/haunt-verify.sh REQ-042 backend
+$ bash scripts/haunt-verify.sh REQ-042 backend
 
 {
   "success": true,
@@ -690,7 +690,7 @@ metrics.record("feature_time", time.time() - start_time)
 **Haunt metrics (transparent):**
 ```bash
 # Wrapper script handles metrics automatically
-$ bash Haunt/scripts/haunt-run.sh test
+$ bash scripts/haunt-run.sh test
 
 # Emits metrics to .haunt/metrics/metrics.jsonl:
 {"timestamp": "2025-12-31T10:30:00Z", "operation": "test", "duration_seconds": 4.2, "success": true}
@@ -722,7 +722,7 @@ $ bash Haunt/scripts/haunt-run.sh test
 
 ```bash
 # Generate summary report
-$ bash Haunt/scripts/haunt-metrics.sh report --last-week
+$ bash scripts/haunt-metrics.sh report --last-week
 
 Framework Performance (Last 7 Days):
 - Average test execution: 4.3s
@@ -929,7 +929,7 @@ Each Séance phase includes verification gates to ensure deterministic progressi
 - Advanced usage (batch execution, roadmap sharding)
 - Troubleshooting and best practices
 
-**See:** `Haunt/docs/SEANCE-EXPLAINED.md` - The definitive Séance guide
+**See:** `docs/SEANCE-EXPLAINED.md` - The definitive Séance guide
 
 ---
 
@@ -971,7 +971,7 @@ Example anti-pattern: "Implementation summary in wrong location"
 
 **Step 1: Pattern Found**
 ```
-Agent created: Haunt/scripts/REQ-042-IMPLEMENTATION.md
+Agent created: scripts/REQ-042-IMPLEMENTATION.md
 Violates: .claude/rules/gco-file-conventions.md
   "Implementation summaries go to .haunt/completed/"
 ```
@@ -981,7 +981,7 @@ Violates: .claude/rules/gco-file-conventions.md
 # .haunt/tests/patterns/test_file_conventions.py
 def test_implementation_summary_location():
     """Verify implementation summaries go to .haunt/completed/"""
-    summaries = glob.glob("Haunt/scripts/*IMPLEMENTATION.md")
+    summaries = glob.glob("scripts/*IMPLEMENTATION.md")
     assert len(summaries) == 0, \
         f"Found summaries in wrong location: {summaries}"
 ```
@@ -992,7 +992,7 @@ Update `.claude/rules/gco-file-conventions.md`:
 ## Prohibitions
 
 NEVER put implementation summaries in source directories:
-- NEVER: Haunt/scripts/REQ-XXX-IMPLEMENTATION.md
+- NEVER: scripts/REQ-XXX-IMPLEMENTATION.md
 - ALWAYS: .haunt/completed/REQ-XXX-implementation-summary.md
 ```
 
@@ -1013,10 +1013,10 @@ git clone https://github.com/ghost-county/haunt.git
 cd haunt
 
 # 2. Run setup
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # 3. Verify installation
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 ```
 
 **What setup does:**
@@ -1303,13 +1303,13 @@ Haunt provides the **scaffolding for AI teams to work autonomously while maintai
 ### Next Steps
 
 **Explore the Framework:**
-1. Read `Haunt/README.md` - Architecture overview
-2. Review `Haunt/SETUP-GUIDE.md` - Complete installation guide
-3. Browse `Haunt/agents/` - Agent character sheets
-4. Study `Haunt/skills/` - Reusable workflows
+1. Read `README.md` - Architecture overview
+2. Review `docs/SETUP-GUIDE.md` - Complete installation guide
+3. Browse `agents/` - Agent character sheets
+4. Study `skills/` - Reusable workflows
 
 **Start Your First Project:**
-1. Run setup: `bash Haunt/scripts/setup-haunt.sh`
+1. Run setup: `bash scripts/setup-haunt.sh`
 2. Spawn PM: `claude -a project-manager`
 3. Describe what you want to build
 4. Watch as PM creates roadmap with sized requirements
@@ -1345,7 +1345,7 @@ Haunt provides the **scaffolding for AI teams to work autonomously while maintai
 
 **Start in 3 commands:**
 ```bash
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 claude -a project-manager  # Describe what you want to build
 claude -a dev              # Implement first requirement
 ```
@@ -1358,9 +1358,9 @@ claude -a dev              # Implement first requirement
 
 ```bash
 # Setup and verification
-bash Haunt/scripts/setup-haunt.sh              # Full setup
-bash Haunt/scripts/setup-haunt.sh --verify     # Verify installation
-bash Haunt/scripts/setup-haunt.sh --agents-only # Update agents only
+bash scripts/setup-haunt.sh              # Full setup
+bash scripts/setup-haunt.sh --verify     # Verify installation
+bash scripts/setup-haunt.sh --agents-only # Update agents only
 
 # Spawn agents
 claude -a project-manager    # Roadmap coordination
@@ -1380,12 +1380,11 @@ ls .haunt/completed/         # Archived work
 ### Key File Locations
 
 ```
-ghost-county/
-├── Haunt/                          # Framework source
-│   ├── agents/gco-*.md             # Agent character sheets
-│   ├── rules/gco-*.md              # Invariant enforcement
-│   ├── skills/gco-*/SKILL.md       # Reusable workflows
-│   └── scripts/setup-haunt.sh      # Deployment script
+haunt/
+├── agents/gco-*.md             # Agent character sheets
+├── rules/gco-*.md              # Invariant enforcement
+├── skills/gco-*/SKILL.md       # Reusable workflows
+├── scripts/setup-haunt.sh      # Deployment script
 ├── .haunt/                         # Haunt project artifacts
 │   ├── plans/roadmap.md            # Active requirements
 │   ├── completed/                  # Archived work
@@ -1410,4 +1409,4 @@ ghost-county/
 **Version:** Haunt v2.0
 **Last Updated:** 2025-12-31
 **License:** MIT
-**Documentation:** `Haunt/README.md`, `Haunt/SETUP-GUIDE.md`, `Haunt/docs/SEANCE-EXPLAINED.md`
+**Documentation:** `README.md`, `docs/SETUP-GUIDE.md`, `docs/SEANCE-EXPLAINED.md`

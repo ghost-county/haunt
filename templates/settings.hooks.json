@@ -1,5 +1,5 @@
 {
-  "_deprecated": "This file is no longer the source of truth. Hook configuration is now declared in Haunt/manifest.yaml (hooks: section) and auto-generated into ~/.claude/settings.json by setup-haunt.sh. This file is kept for reference only.",
+  "_deprecated": "This file is no longer the source of truth. Hook configuration is now declared in manifest.yaml (hooks: section) and auto-generated into ~/.claude/settings.json by setup-haunt.sh. This file is kept for reference only.",
   "hooks": {
     "PostToolUse": [
       {

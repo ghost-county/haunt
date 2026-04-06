@@ -488,6 +488,6 @@ Choose your vibe (mystical or practical), but trust the process. The spirits kno
 
 - **\`/summon <agent>\`** - Directly spawn a specific agent (no séance needed)
 - **\`/banish --all\`** - Quick archive command (same as \`/seance --banish\`)
-- **\`Haunt/skills/gco-orchestrator/SKILL.md\`** - Technical implementation details
-- **\`Haunt/skills/gco-project-manager/SKILL.md\`** - Planning workflow details
+- **\`skills/gco-orchestrator/SKILL.md\`** - Technical implementation details
+- **\`skills/gco-project-manager/SKILL.md\`** - Planning workflow details
 - **\`.haunt/plans/roadmap.md\`** - Your active roadmap

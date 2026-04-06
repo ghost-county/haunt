@@ -9,7 +9,7 @@
 ## Pre-Demo Checklist
 
 - [ ] Terminal window maximized, font size readable from back of room
-- [ ] Demo script ready: `bash Haunt/scripts/demo/haunt-demo.sh`
+- [ ] Demo script ready: `bash scripts/demo/haunt-demo.sh`
 - [ ] Backup plan: Have QUICK-REFERENCE.md open in case of questions
 - [ ] Time check: Know your time limit (5 min = quick, 10 min = detailed)
 
@@ -43,11 +43,11 @@
 # Option 1: Manual installation (recommended, works on all platforms)
 git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
-bash Haunt/scripts/setup-haunt.sh --scope=project
+bash scripts/setup-haunt.sh --scope=project
 cd .. && rm -rf ghost-county
 
 # Option 2: One-liner (may fail on some networks)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 
 **Windows users:** Use Git Bash or WSL, not PowerShell. See [SETUP-GUIDE.md Issue 11](../SETUP-GUIDE.md#issue-11-failed-to-clone-repository-during-remote-installation) if clone fails.
@@ -284,7 +284,7 @@ Your choice: [1]
 ### Expected Questions
 
 **Q:** "Can I customize rituals?"
-**A:** "Yes. Edit the ritual command (Haunt/commands/ritual.md) to add/remove checks."
+**A:** "Yes. Edit the ritual command (commands/ritual.md) to add/remove checks."
 
 **Q:** "Do rituals run automatically?"
 **A:** "Not yet. Currently manual invocation, but could be hooked into CI or cron jobs."
@@ -306,8 +306,8 @@ Your choice: [1]
 
 ### Call to Action
 
-- **Get started:** `bash Haunt/scripts/setup-haunt.sh`
-- **Read docs:** Haunt/SETUP-GUIDE.md
+- **Get started:** `bash scripts/setup-haunt.sh`
+- **Read docs:** docs/SETUP-GUIDE.md
 - **Try séance:** `/seance idea` in your own project
 
 ---
@@ -396,9 +396,9 @@ Your choice: [1]
 ## Post-Demo Follow-Up
 
 **Share these resources:**
-- Haunt/SETUP-GUIDE.md - Complete setup instructions
-- Haunt/QUICK-REFERENCE.md - Command cheat sheet
-- Haunt/docs/WHITE-PAPER.md - Design philosophy
+- docs/SETUP-GUIDE.md - Complete setup instructions
+- docs/QUICK-REFERENCE.md - Command cheat sheet
+- docs/WHITE-PAPER.md - Design philosophy
 - Demo recording (if available)
 
 **Encourage experimentation:**

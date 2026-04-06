@@ -22,14 +22,14 @@ Quick reference table for all workflow skills in the Ghost County framework.
 
 ## See Also
 
-- **Full Skill Definitions**: `Haunt/skills/gco-[skill-name]/SKILL.md`
-- **Agent Definitions**: `Haunt/agents/` (references these skills)
-- **Framework README**: `Haunt/README.md` (architecture overview)
+- **Full Skill Definitions**: `skills/gco-[skill-name]/SKILL.md`
+- **Agent Definitions**: `agents/` (references these skills)
+- **Framework README**: `README.md` (architecture overview)
 
 ## Skills Directory Structure
 
 ```
-Haunt/skills/
+skills/
 ├── gco-roadmap-workflow/SKILL.md
 ├── gco-commit-conventions/SKILL.md
 ├── gco-feature-contracts/SKILL.md

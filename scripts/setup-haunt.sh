@@ -2,11 +2,11 @@
 #
 # setup-haunt.sh - Deploy Haunt dev guardrails to ~/.claude/
 #
-# Copies rules, skills, commands, agents, and hooks from Haunt/ source to Claude Code config.
+# Copies rules, skills, commands, agents, and hooks from source to Claude Code config.
 #
 # Usage:
-#   Local:  bash Haunt/scripts/setup-haunt.sh [OPTIONS]
-#   Remote: curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- [OPTIONS]
+#   Local:  bash scripts/setup-haunt.sh [OPTIONS]
+#   Remote: curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- [OPTIONS]
 #
 # Options:
 #   --verify        Verify existing deployment
@@ -468,7 +468,7 @@ ok "Settings: hooks merged into settings.json"
 echo ""
 ok "Haunt deployed to $CLAUDE_DIR ($SCOPE scope)"
 if [[ -n "$TEMP_DIR" ]]; then
-    $QUIET || echo "  Verify with: bash -c \"\$(curl -fsSL $REMOTE_REPO/raw/main/Haunt/scripts/setup-haunt.sh)\" -- --verify"
+    $QUIET || echo "  Verify with: bash -c \"\$(curl -fsSL $REMOTE_REPO/raw/main/scripts/setup-haunt.sh)\" -- --verify"
 else
-    $QUIET || echo "  Verify with: bash Haunt/scripts/setup-haunt.sh --verify"
+    $QUIET || echo "  Verify with: bash scripts/setup-haunt.sh --verify"
 fi

@@ -115,7 +115,7 @@ Rules are loaded in this order (highest to lowest):
 4. **Global rules** (`~/.claude/rules/`)
    - Haunt-deployed rules
 
-5. **Haunt defaults** (`Haunt/rules/`)
+5. **Haunt defaults** (`rules/`)
    - Framework source rules
 
 **Example:**
@@ -124,7 +124,7 @@ Rules are loaded in this order (highest to lowest):
 You have:
 - .haunt/bindings/gco-commit-conventions.md (project binding)
 - ~/.haunt/bindings/gco-commit-conventions.md (user binding)
-- Haunt/rules/gco-commit-conventions.md (default)
+- rules/gco-commit-conventions.md (default)
 
 Agents use: .haunt/bindings/gco-commit-conventions.md (priority 1)
 ```
@@ -324,7 +324,7 @@ git commit -m "Add team commit conventions"
 
 ## See Also
 
-- `/bind` command documentation: `Haunt/commands/bind.md`
-- `/unbind` command documentation: `Haunt/commands/unbind.md`
-- `/bind-list` command documentation: `Haunt/commands/bind-list.md`
-- Rule development guide: `Haunt/docs/RULE-DEVELOPMENT.md` (if exists)
+- `/bind` command documentation: `commands/bind.md`
+- `/unbind` command documentation: `commands/unbind.md`
+- `/bind-list` command documentation: `commands/bind-list.md`
+- Rule development guide: `docs/RULE-DEVELOPMENT.md` (if exists)

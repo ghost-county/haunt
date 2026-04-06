@@ -5,7 +5,7 @@ set -euo pipefail
 # Compare source vs deployed skill versions, flag mismatches.
 #
 # Usage:
-#   bash Haunt/scripts/haunt-skill-versions.sh
+#   bash scripts/haunt-skill-versions.sh
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 HAUNT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -62,5 +62,5 @@ echo "No version: $NO_VERSION"
 
 if [[ $MISMATCH -gt 0 ]]; then
     echo ""
-    echo "Run 'bash Haunt/scripts/setup-haunt.sh' to sync deployed versions."
+    echo "Run 'bash scripts/setup-haunt.sh' to sync deployed versions."
 fi

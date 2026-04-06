@@ -154,5 +154,5 @@ Rules: 6/6 gco rules, 9/9 total
 ```
 Setup required:
   cd /path/to/haunt
-  bash Haunt/scripts/setup-haunt.sh
+  bash scripts/setup-haunt.sh
 ```

@@ -58,7 +58,7 @@ zeroAccessPaths:
 # ============================================================================
 
 readOnlyPaths:
-  # Deployed assets - edit Haunt/ source, then run setup-haunt.sh
+  # Deployed assets - edit source, then run setup-haunt.sh
   - ~/.claude/rules/
   - ~/.claude/skills/
   - ~/.claude/commands/
@@ -80,12 +80,12 @@ noDeletePaths:
   - packages/
 
   # Haunt framework (source)
-  - Haunt/agents/
-  - Haunt/rules/
-  - Haunt/skills/
-  - Haunt/scripts/
-  - Haunt/docs/
-  - Haunt/hooks/
+  - agents/
+  - rules/
+  - skills/
+  - scripts/
+  - docs/
+  - hooks/
 
   # Deployed artifacts
   - ~/.claude/agents/

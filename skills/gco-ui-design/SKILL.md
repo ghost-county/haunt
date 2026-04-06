@@ -511,4 +511,4 @@ button:focus {
 
 - `.haunt/checklists/ui-generation-checklist.md` - Detailed validation checklist
 - `.haunt/docs/research/req-252-ui-ux-summary.md` - Research report
-- `Haunt/agents/gco-dev.md` - Dev agent Frontend Mode guidance
+- `agents/gco-dev.md` - Dev agent Frontend Mode guidance

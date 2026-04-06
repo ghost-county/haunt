@@ -7,37 +7,36 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 **Haunt** is a dev guardrails and agent coordination toolkit for Claude Code. It provides quality gates, coding standards, testing enforcement, and a spec-driven development workflow (the seance) powered by Claude Code Agent Teams. Designed around JD Forsythe's [10 Claude Code Principles](https://jdforsythe.github.io/10-principles/overview/).
 
 Contents:
-- **Haunt/agents/** - Team-aware agent definitions (deployed to `~/.claude/agents/`)
-- **Haunt/rules/** - Always-loaded behavioral rules with BECAUSE clauses (deployed to `~/.claude/rules/`)
-- **Haunt/skills/** - On-demand methodology skills with attention-optimized layout (deployed to `~/.claude/skills/`)
-- **Haunt/commands/** - Slash commands (deployed to `~/.claude/commands/`)
-- **Haunt/hooks/** - Deterministic enforcement hooks (damage control, observability, completion gates)
-- **Haunt/templates/** - Reusable templates (gate outputs, institutional memory)
-- **Haunt/docs/** - Architecture standards, evaluation docs, task profiles
+- **agents/** - Team-aware agent definitions (deployed to `~/.claude/agents/`)
+- **rules/** - Always-loaded behavioral rules with BECAUSE clauses (deployed to `~/.claude/rules/`)
+- **skills/** - On-demand methodology skills with attention-optimized layout (deployed to `~/.claude/skills/`)
+- **commands/** - Slash commands (deployed to `~/.claude/commands/`)
+- **hooks/** - Deterministic enforcement hooks (damage control, observability, completion gates)
+- **templates/** - Reusable templates (gate outputs, institutional memory)
+- **docs/** - Architecture standards, evaluation docs, task profiles
 
 ## Setup
 
 ```bash
-bash Haunt/scripts/setup-haunt.sh          # Deploy agents + rules + skills + commands + hooks
-bash Haunt/scripts/setup-haunt.sh --verify  # Verify deployment
-bash Haunt/scripts/haunt-doc-freshness.sh   # Check skill freshness (flags >90 days stale)
+bash scripts/setup-haunt.sh          # Deploy agents + rules + skills + commands + hooks
+bash scripts/setup-haunt.sh --verify  # Verify deployment
+bash scripts/haunt-doc-freshness.sh   # Check skill freshness (flags >90 days stale)
 ```
 
 ## Repository Structure
 
 ```
 haunt/
-├── Haunt/                     # Dev guardrails + agent coordination framework
-│   ├── agents/               # Team-aware agents (6 gco agents)
-│   ├── agents/archive/       # Archived original agent definitions (reference)
-│   ├── rules/                # Always-loaded rules (6 gco rules, all with BECAUSE clauses)
-│   ├── skills/               # On-demand skills (~17 gco skills, attention-optimized layout)
-│   ├── commands/             # Slash commands (seance, ship, qa, checkup)
-│   ├── hooks/                # Enforcement hooks (damage control, observability, gates)
-│   ├── scripts/              # setup-haunt.sh, review-metrics.sh, cost/freshness/version tools
-│   ├── templates/            # Gate output, institutional memory, settings, charter templates
-│   └── docs/                 # Architecture standards, evaluations, white paper, guides
-└── CLAUDE.md                  # This file
+├── agents/               # Team-aware agents (6 gco agents)
+├── agents/archive/       # Archived original agent definitions (reference)
+├── rules/                # Always-loaded rules (6 gco rules, all with BECAUSE clauses)
+├── skills/               # On-demand skills (~17 gco skills, attention-optimized layout)
+├── commands/             # Slash commands (seance, ship, qa, checkup)
+├── hooks/                # Enforcement hooks (damage control, observability, gates)
+├── scripts/              # setup-haunt.sh, review-metrics.sh, cost/freshness/version tools
+├── templates/            # Gate output, institutional memory, settings, charter templates
+├── docs/                 # Architecture standards, evaluations, white paper, guides
+└── CLAUDE.md             # This file
 ```
 
 ## What's Included
@@ -70,7 +69,7 @@ All rules include BECAUSE clauses explaining *why* each directive exists, enabli
 
 ### Skills (on-demand, attention-optimized layout)
 
-Skills follow the [Skill Architecture Standard](Haunt/docs/SKILL-ARCHITECTURE.md): vocabulary payload FIRST, anti-patterns SECOND, instructions in MIDDLE, retrieval anchors LAST. Each has `last-verified` freshness dates.
+Skills follow the [Skill Architecture Standard](docs/SKILL-ARCHITECTURE.md): vocabulary payload FIRST, anti-patterns SECOND, instructions in MIDDLE, retrieval anchors LAST. Each has `last-verified` freshness dates.
 
 **Code quality:** `gco-code-review`, `gco-commit-conventions`, `gco-code-patterns`
 **Testing:** `gco-tdd-workflow`, `gco-playwright-tests`, `gco-ui-testing`, `gco-testing-mindset`
@@ -140,33 +139,33 @@ last-verified: YYYY-MM-DD
 ---
 ```
 
-See [SKILL-ARCHITECTURE.md](Haunt/docs/SKILL-ARCHITECTURE.md) for the full standard.
+See [SKILL-ARCHITECTURE.md](docs/SKILL-ARCHITECTURE.md) for the full standard.
 
 ## Observability
 
 - **Tool usage logs:** `.haunt/logs/tool-usage.jsonl` (written by observability hook)
 - **Review verdicts:** `.haunt/logs/review-verdicts.jsonl` (written by code reviewer)
 - **Cost logs:** `.haunt/logs/cost-log.jsonl` (written by haunt-cost-logger.sh)
-- **Metrics:** `bash Haunt/scripts/review-metrics.sh` (approval rates, rubber-stamp detection)
-- **Freshness:** `bash Haunt/scripts/haunt-doc-freshness.sh` (stale skill detection)
-- **Skill versions:** `bash Haunt/scripts/haunt-skill-versions.sh` (deployed vs source version check)
-- **Cost logging:** `bash Haunt/scripts/haunt-cost-logger.sh` (per-session cost capture)
-- **Cost report:** `bash Haunt/scripts/haunt-cost-report.sh` (per-session costs, outlier detection)
+- **Metrics:** `bash scripts/review-metrics.sh` (approval rates, rubber-stamp detection)
+- **Freshness:** `bash scripts/haunt-doc-freshness.sh` (stale skill detection)
+- **Skill versions:** `bash scripts/haunt-skill-versions.sh` (deployed vs source version check)
+- **Cost logging:** `bash scripts/haunt-cost-logger.sh` (per-session cost capture)
+- **Cost report:** `bash scripts/haunt-cost-report.sh` (per-session costs, outlier detection)
 
 ## Key Documentation
 
 | Doc | Purpose |
 |-----|---------|
-| [SKILL-ARCHITECTURE.md](Haunt/docs/SKILL-ARCHITECTURE.md) | Attention-optimized skill layout standard |
-| [TASK-PROFILES.md](Haunt/docs/TASK-PROFILES.md) | Minimal context configs per session type |
-| [HOOKS.md](Haunt/docs/HOOKS.md) | Hook system architecture and configuration |
-| [HAUNT-DIRECTORY-SPEC.md](Haunt/docs/HAUNT-DIRECTORY-SPEC.md) | `.haunt/` runtime directory specification |
-| [CODE-REVIEW-WORKFLOW.md](Haunt/docs/CODE-REVIEW-WORKFLOW.md) | Code review cascade and workflow |
-| [SEANCE-EXPLAINED.md](Haunt/docs/SEANCE-EXPLAINED.md) | Seance workflow deep dive |
-| [WHITE-PAPER.md](Haunt/docs/WHITE-PAPER.md) | Haunt architecture white paper |
-| [SKILLS-REFERENCE.md](Haunt/docs/SKILLS-REFERENCE.md) | Full skills catalog reference |
-| [10-principles-evaluation.md](Haunt/docs/haunt-10-principles-evaluation.md) | Gap analysis against 10 Claude Code Principles |
-| [10-principles-refactor.md](Haunt/docs/10-principles-refactor.md) | Implementation plan for closing gaps |
+| [SKILL-ARCHITECTURE.md](docs/SKILL-ARCHITECTURE.md) | Attention-optimized skill layout standard |
+| [TASK-PROFILES.md](docs/TASK-PROFILES.md) | Minimal context configs per session type |
+| [HOOKS.md](docs/HOOKS.md) | Hook system architecture and configuration |
+| [HAUNT-DIRECTORY-SPEC.md](docs/HAUNT-DIRECTORY-SPEC.md) | `.haunt/` runtime directory specification |
+| [CODE-REVIEW-WORKFLOW.md](docs/CODE-REVIEW-WORKFLOW.md) | Code review cascade and workflow |
+| [SEANCE-EXPLAINED.md](docs/SEANCE-EXPLAINED.md) | Seance workflow deep dive |
+| [WHITE-PAPER.md](docs/WHITE-PAPER.md) | Haunt architecture white paper |
+| [SKILLS-REFERENCE.md](docs/SKILLS-REFERENCE.md) | Full skills catalog reference |
+| [10-principles-evaluation.md](docs/haunt-10-principles-evaluation.md) | Gap analysis against 10 Claude Code Principles |
+| [10-principles-refactor.md](docs/10-principles-refactor.md) | Implementation plan for closing gaps |
 
 ## Infrastructure Dependencies
 

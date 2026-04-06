@@ -8,8 +8,8 @@
 
 ```bash
 cd /path/to/ghost-county
-bash /Users/heckatron/github_repos/ghost-county/Haunt/scripts/setup-haunt.sh
-bash /Users/heckatron/github_repos/ghost-county/Haunt/scripts/setup-haunt.sh --verify
+bash /Users/heckatron/github_repos/ghost-county/scripts/setup-haunt.sh
+bash /Users/heckatron/github_repos/ghost-county/scripts/setup-haunt.sh --verify
 ```
 
 ## Your First Command
@@ -44,7 +44,7 @@ claude -a dev
 - `weekly-refactor` - Weekly maintenance
 - `roadmap-planning` - Roadmap creation
 
-All skills located in: `Haunt/skills/`
+All skills located in: `skills/`
 
 ---
 
@@ -64,7 +64,7 @@ Rules auto-load from `.claude/rules/` and enforce invariants:
 
 Rules vs Skills: Rules = "MUST always" (auto-loaded), Skills = "HOW to" (on-demand)
 
-All rules located in: `Haunt/rules/`
+All rules located in: `rules/`
 
 ---
 
@@ -121,9 +121,9 @@ claude -a research
 ~/.claude/rules/               # Global rules (auto-enforced protocols)
 ./.claude/agents/              # Project agents (override global)
 ./.claude/rules/               # Project rules (override global)
-Haunt/agents/                  # Agent source files
-Haunt/rules/                   # Rules source files
-Haunt/skills/                  # Haunt methodology skills
+agents/                  # Agent source files
+rules/                   # Rules source files
+skills/                  # Haunt methodology skills
 ├── session-startup/
 ├── commit-conventions/
 ├── tdd-workflow/
@@ -154,7 +154,7 @@ bash scripts/setup-haunt.sh --agents-only
 
 ### Skills not loading
 ```bash
-ls Haunt/skills/
+ls skills/
 bash scripts/validation/validate-skills.sh
 bash scripts/validation/validate-agent-skills.sh
 ```
@@ -219,7 +219,7 @@ Main Agent:
 
 **Why it works:** Separate agents prevent "review your own work" bias.
 
-**See:** `Haunt/docs/INTEGRATION-PATTERNS.md` for detailed examples and anti-patterns.
+**See:** `docs/INTEGRATION-PATTERNS.md` for detailed examples and anti-patterns.
 
 ---
 
@@ -273,8 +273,8 @@ vim .claude/agents/gco-dev.md
 ### Create Custom Skill
 ```bash
 # Create new Haunt skill
-mkdir -p Haunt/skills/my-skill
-vim Haunt/skills/my-skill/SKILL.md
+mkdir -p skills/my-skill
+vim skills/my-skill/SKILL.md
 
 # Add YAML frontmatter + content
 bash scripts/validation/validate-skills.sh

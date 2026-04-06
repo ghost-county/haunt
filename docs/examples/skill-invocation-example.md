@@ -44,7 +44,7 @@ git commit -m "Add authentication endpoints"
 
 **Agent Action:**
 ```
-Reading: Haunt/skills/gco-commit-conventions/SKILL.md
+Reading: skills/gco-commit-conventions/SKILL.md
 Loading: Commit message format rules
 ```
 

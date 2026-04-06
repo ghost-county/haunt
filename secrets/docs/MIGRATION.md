@@ -166,7 +166,7 @@ For each secret tag, verify:
 ### Install Package
 
 ```bash
-cd Haunt/secrets
+cd secrets
 pip install -e .
 ```
 
@@ -180,7 +180,7 @@ export OP_SERVICE_ACCOUNT_TOKEN="ops_xxxxxx..."
 
 ```bash
 # Test sourcing the script
-source Haunt/scripts/haunt-secrets.sh .env
+source scripts/haunt-secrets.sh .env
 
 # Verify secrets loaded
 echo "DB_PASSWORD length: ${#DB_PASSWORD}"  # Should show length, not value
@@ -269,7 +269,7 @@ API_KEY = os.environ['API_KEY']
 **Setup:** Just source the script before running app:
 
 ```bash
-source Haunt/scripts/haunt-secrets.sh .env
+source scripts/haunt-secrets.sh .env
 python app.py
 ```
 
@@ -341,7 +341,7 @@ jobs:
         env:
           OP_SERVICE_ACCOUNT_TOKEN: ${{ secrets.OP_SERVICE_ACCOUNT_TOKEN }}
         run: |
-          source Haunt/scripts/haunt-secrets.sh .env
+          source scripts/haunt-secrets.sh .env
 
       - name: Run tests
         run: pytest
@@ -362,7 +362,7 @@ test:
     - apt-get update && apt-get install -y curl
     - curl -sSO https://downloads.1password.com/linux/debian/amd64/stable/1password-cli-amd64-latest.deb
     - dpkg -i 1password-cli-amd64-latest.deb
-    - source Haunt/scripts/haunt-secrets.sh .env
+    - source scripts/haunt-secrets.sh .env
   script:
     - pytest
   variables:
@@ -394,7 +394,7 @@ WORKDIR /app
 RUN pip install -r requirements.txt
 
 # Load secrets and run app
-CMD source Haunt/scripts/haunt-secrets.sh .env && python app.py
+CMD source scripts/haunt-secrets.sh .env && python app.py
 ```
 
 **Usage:**
@@ -455,7 +455,7 @@ Create or update project documentation:
 
 3. Load secrets and run:
    ```bash
-   source Haunt/scripts/haunt-secrets.sh .env
+   source scripts/haunt-secrets.sh .env
    python app.py
    ```
 
@@ -479,7 +479,7 @@ op --version
 
 ```bash
 # Verify everything works with new setup
-source Haunt/scripts/haunt-secrets.sh .env
+source scripts/haunt-secrets.sh .env
 python app.py  # Should start normally
 
 # If all good, remove backup
@@ -580,7 +580,7 @@ git show HEAD~1:.env > .env.old
 3. **Use interactive login** (if they have 1Password account):
    ```bash
    eval $(op signin)  # Interactive login
-   source Haunt/scripts/haunt-secrets.sh .env
+   source scripts/haunt-secrets.sh .env
    ```
 
 ### "Secrets work locally but fail in CI"
@@ -609,10 +609,10 @@ DATABASE_URL=placeholder
 
 ```bash
 # Development
-source Haunt/scripts/haunt-secrets.sh .env.development
+source scripts/haunt-secrets.sh .env.development
 
 # Production
-source Haunt/scripts/haunt-secrets.sh .env.production
+source scripts/haunt-secrets.sh .env.production
 ```
 
 ## Next Steps

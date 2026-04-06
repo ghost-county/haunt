@@ -13,7 +13,7 @@
 #       - global: Deploy to ~/.claude/ only
 #       - project: Deploy to .claude/ only (project-specific customization)
 #       - both: Deploy to both locations
-#     - source: Relative path from Haunt/ directory to source file/directory
+#     - source: Relative path from repo root to source file/directory
 #
 #   Deprecated Section:
 #     - type: Type of object (agent | rule | skill | command)
@@ -22,17 +22,17 @@
 #     - reason: Brief explanation of why deprecated
 #
 # MAINTENANCE:
-#   - Active sections: Auto-generated via `bash Haunt/scripts/utils/generate-manifest.sh`
+#   - Active sections: Auto-generated via `bash scripts/utils/generate-manifest.sh`
 #   - Deprecated section: MANUALLY maintained (never auto-generated)
 #   - Update workflow:
-#     1. Add/remove files in Haunt/agents/, rules/, skills/, commands/
+#     1. Add/remove files in agents/, rules/, skills/, commands/
 #     2. Run generator to update active sections
 #     3. Manually add deprecated entries when removing objects
 #     4. Run setup-haunt.sh --clean to remove deprecated objects
 
 version: "2.0"
 updated: "2026-04-03"
-generated_by: "Haunt/scripts/utils/generate-manifest.sh"
+generated_by: "scripts/utils/generate-manifest.sh"
 
 # ==============================================================================
 # AGENTS - Character sheets for agent personas

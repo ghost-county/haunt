@@ -345,8 +345,8 @@ server.use(http.get('/api/user', () => HttpResponse.error()))
 
 ## See Also
 
-- `Haunt/skills/gco-playwright-tests/SKILL.md` - Detailed test patterns and examples
-- `Haunt/skills/gco-tdd-workflow/SKILL.md` - General TDD guidance
-- `Haunt/commands/qa.md` - Generate test scenarios from requirements
+- `skills/gco-playwright-tests/SKILL.md` - Detailed test patterns and examples
+- `skills/gco-tdd-workflow/SKILL.md` - General TDD guidance
+- `commands/qa.md` - Generate test scenarios from requirements
 - `.claude/rules/gco-completion-checklist.md` - General completion requirements
-- `Haunt/docs/BROWSER-MCP-SETUP.md` - Browser MCP installation guide
+- `docs/BROWSER-MCP-SETUP.md` - Browser MCP installation guide

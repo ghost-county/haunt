@@ -53,7 +53,7 @@ When blocking issues occur, brief context is appropriate:
 
 ### ACCEPTABLE
 ```
-Cannot deploy - setup script missing. Need to create Haunt/scripts/setup-haunt.sh first.
+Cannot deploy - setup script missing. Need to create scripts/setup-haunt.sh first.
 ```
 
 ## Non-Negotiable

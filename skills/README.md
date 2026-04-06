@@ -100,6 +100,6 @@ User: "I want to add user authentication"
 
 ## Related Documentation
 
-- [Ghost County README](../../Haunt/README.md) - Architecture overview
-- [Skills Reference](../../Haunt/docs/SKILLS-REFERENCE.md) - Quick reference table
-- [Setup Guide](../../Haunt/SETUP-GUIDE.md) - Complete setup instructions
+- [Haunt README](../../README.md) - Architecture overview
+- [Skills Reference](../../docs/SKILLS-REFERENCE.md) - Quick reference table
+- [Setup Guide](../../docs/SETUP-GUIDE.md) - Complete setup instructions

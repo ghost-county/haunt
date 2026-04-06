@@ -13,7 +13,7 @@ This directory contains visual workflow diagrams for the Haunt framework.
 - Phase 2: Requirements Analysis (Kano, RICE, complexity estimation)
 - Phase 3: Roadmap Creation (REQ-XXX items, sizing, agent assignment)
 
-**Referenced in:** `Haunt/README.md`
+**Referenced in:** `README.md`
 
 ### 2. Agent Coordination Diagram (`agent-coordination.mmd`)
 
@@ -26,7 +26,7 @@ This directory contains visual workflow diagrams for the Haunt framework.
 - Task checkbox updates
 - Implementation notes sharing
 
-**Referenced in:** `Haunt/docs/WHITE-PAPER.md`
+**Referenced in:** `docs/WHITE-PAPER.md`
 
 ### 3. Session Startup Protocol Diagram (`session-startup.mmd`)
 
@@ -37,7 +37,7 @@ This directory contains visual workflow diagrams for the Haunt framework.
 2. Test validation (run tests, fix if failing)
 3. Assignment lookup (priority order: Direct → Active Work → Roadmap → Ask PM)
 
-**Referenced in:** `Haunt/SETUP-GUIDE.md`
+**Referenced in:** `docs/SETUP-GUIDE.md`
 
 ## File Formats
 
@@ -48,9 +48,9 @@ This directory contains visual workflow diagrams for the Haunt framework.
 
 ### Option 1: Open HTML Files Locally
 ```bash
-open Haunt/docs/assets/seance-workflow.html
-open Haunt/docs/assets/agent-coordination.html
-open Haunt/docs/assets/session-startup.html
+open docs/assets/seance-workflow.html
+open docs/assets/agent-coordination.html
+open docs/assets/session-startup.html
 ```
 
 ### Option 2: View Mermaid Source in GitHub

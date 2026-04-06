@@ -17,19 +17,19 @@ Pattern Found → Test Written → Agent Trained → Pattern Defeated
 
 ```bash
 cd /path/to/your/repo
-./Haunt/scripts/rituals/hunt-patterns --dry-run --auto hunt
+./scripts/rituals/hunt-patterns --dry-run --auto hunt
 ```
 
 ### Interactive Mode (Recommended)
 
 ```bash
-./Haunt/scripts/rituals/hunt-patterns hunt
+./scripts/rituals/hunt-patterns hunt
 ```
 
 ### Automated Mode (CI/CD)
 
 ```bash
-./Haunt/scripts/rituals/hunt-patterns --auto hunt
+./scripts/rituals/hunt-patterns --auto hunt
 ```
 
 ## How It Works
@@ -413,7 +413,7 @@ jobs:
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
-          ./Haunt/scripts/rituals/hunt-patterns --auto --no-color hunt
+          ./scripts/rituals/hunt-patterns --auto --no-color hunt
 
       - name: Create Pull Request
         if: success()

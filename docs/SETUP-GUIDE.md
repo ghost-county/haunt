@@ -29,10 +29,10 @@ git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 
 # 2. Run setup script
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # 3. Verify installation
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 
 # 4. (Optional) Remove repository clone
 cd .. && rm -rf ghost-county
@@ -41,7 +41,7 @@ cd .. && rm -rf ghost-county
 **Alternative: Remote installation (one-liner)**
 ```bash
 # Quick install via curl (may fail on some networks - see Troubleshooting Issue 11)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 **Note:** If the curl command fails with "Failed to clone repository", use the manual method above instead.
 
@@ -54,10 +54,10 @@ git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 
 # 2. Run setup script
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # 3. Verify installation
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 
 # 4. (Optional) Remove repository clone
 cd .. && rm -rf ghost-county
@@ -248,7 +248,7 @@ op --version
    op vault list  # Should list your vaults
    ```
 
-**See:** [Haunt/docs/SECRETS-MANAGEMENT.md](docs/SECRETS-MANAGEMENT.md) for complete integration guide.
+**See:** [docs/SECRETS-MANAGEMENT.md](docs/SECRETS-MANAGEMENT.md) for complete integration guide.
 
 ---
 
@@ -274,13 +274,13 @@ The setup script handles MCP configuration automatically:
 
 ```bash
 # Full setup includes MCP configuration
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # Or MCP-only setup
-bash Haunt/scripts/setup-haunt.sh --mcp-only
+bash scripts/setup-haunt.sh --mcp-only
 
 # Skip MCP setup
-bash Haunt/scripts/setup-haunt.sh --no-mcp
+bash scripts/setup-haunt.sh --no-mcp
 ```
 
 **What the script does:**
@@ -310,7 +310,7 @@ uv pip install mcp
 ```bash
 # Copy server to MCP directory
 mkdir -p ~/.claude/mcp-servers
-cp Haunt/scripts/utils/agent-memory-server.py ~/.claude/mcp-servers/
+cp scripts/utils/agent-memory-server.py ~/.claude/mcp-servers/
 
 # Make executable
 chmod +x ~/.claude/mcp-servers/agent-memory-server.py
@@ -352,7 +352,7 @@ Check that the MCP server is working:
 python3 ~/.claude/mcp-servers/agent-memory-server.py --test
 
 # Or use the verification script
-python3 Haunt/scripts/utils/test-mcp-server.py
+python3 scripts/utils/test-mcp-server.py
 
 # Check settings.json configuration
 jq '.mcpServers["agent-memory"]' ~/.claude/settings.json
@@ -431,11 +431,11 @@ apt-get install jq  # Ubuntu/Debian
 **Issue: settings.json is corrupt after setup**
 - Backup is automatically created at `~/.claude/settings.json.backup`
 - Restore with: `cp ~/.claude/settings.json.backup ~/.claude/settings.json`
-- Re-run setup: `bash Haunt/scripts/setup-haunt.sh`
+- Re-run setup: `bash scripts/setup-haunt.sh`
 
 ### MCP Resources
 
-- **Agent Memory Server Source:** `Haunt/scripts/utils/agent-memory-server.py`
+- **Agent Memory Server Source:** `scripts/utils/agent-memory-server.py`
 - **Best Practices:** `.haunt/docs/research/agent-memory-best-practices.md`
 - **MCP Specification:** https://modelcontextprotocol.io
 
@@ -468,7 +468,7 @@ claude -a dev
 
 ```powershell
 # Quick install - downloads and runs setup automatically
-irm https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.ps1 | iex
+irm https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.ps1 | iex
 ```
 
 #### Method 3: WSL (Windows Subsystem for Linux)
@@ -482,7 +482,7 @@ wsl --install
 # After restart, open Ubuntu and run:
 git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 ```
 
 #### PowerShell Script Options
@@ -528,16 +528,16 @@ Get-Help .\setup-haunt.ps1 -Detailed
 cd /path/to/ghost-county
 
 # 2. Run full setup
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # 3. Verify installation
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 
 # 4. Review installed agents
 ls -la ~/.claude/agents/
 
 # 5. Review available skills
-ls -1 Haunt/skills/
+ls -1 skills/
 
 # 6. Start your first session
 claude -a dev
@@ -572,7 +572,7 @@ claude -a dev
   - gco-research.md
   - gco-code-reviewer.md
   - gco-release-manager.md
-- Haunt skills verified in `Haunt/skills/`
+- Haunt skills verified in `skills/`
 - Directory structure created: `.haunt/plans/`, `.haunt/progress/`, `.haunt/completed/`, `.haunt/tests/`, `.claude/`
 
 ### Scenario 2: Updating Agents After Git Pull
@@ -585,13 +585,13 @@ claude -a dev
 git pull origin master
 
 # 2. Update agents only (skip project setup)
-bash Haunt/scripts/setup-haunt.sh --agents-only
+bash scripts/setup-haunt.sh --agents-only
 
 # 3. Verify update
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 
 # 4. Check agent versions/changes
-diff ~/.claude/agents/gco-dev.md Haunt/agents/gco-dev.md
+diff ~/.claude/agents/gco-dev.md agents/gco-dev.md
 ```
 
 ### Scenario 3: Adding to Existing Project
@@ -604,13 +604,13 @@ diff ~/.claude/agents/gco-dev.md Haunt/agents/gco-dev.md
 cd /path/to/your-project
 
 # 2. Run project-only setup (skip global agents)
-bash /path/to/ghost-county/Haunt/scripts/setup-haunt.sh --project-only
+bash /path/to/ghost-county/scripts/setup-haunt.sh --project-only
 
 # 3. (Optional) Create project-specific agent overrides
 mkdir -p .claude/agents
 
 # 4. (Optional) Copy and customize agents
-cp /path/to/ghost-county/Haunt/agents/gco-dev.md .claude/agents/gco-dev.md
+cp /path/to/ghost-county/agents/gco-dev.md .claude/agents/gco-dev.md
 # Edit .claude/agents/gco-dev.md for project-specific customization
 
 # 5. Start session
@@ -628,13 +628,13 @@ claude -a dev
 **Steps:**
 ```bash
 # Preview full setup
-bash Haunt/scripts/setup-haunt.sh --dry-run
+bash scripts/setup-haunt.sh --dry-run
 
 # Preview agents-only update
-bash Haunt/scripts/setup-haunt.sh --agents-only --dry-run
+bash scripts/setup-haunt.sh --agents-only --dry-run
 
 # Preview with verbose output
-bash Haunt/scripts/setup-haunt.sh --dry-run --verbose
+bash scripts/setup-haunt.sh --dry-run --verbose
 ```
 
 ---
@@ -645,10 +645,10 @@ bash Haunt/scripts/setup-haunt.sh --dry-run --verbose
 
 ```bash
 # Run all verification checks
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 
 # Verify and auto-fix issues
-bash Haunt/scripts/setup-haunt.sh --verify --fix
+bash scripts/setup-haunt.sh --verify --fix
 ```
 
 ### Manual Verification
@@ -666,7 +666,7 @@ ls -la ~/.claude/agents/
 
 **Check 2: Skills directory exists**
 ```bash
-ls -1 Haunt/skills/
+ls -1 skills/
 # Expected output (partial list):
 # session-startup/
 # commit-conventions/
@@ -684,13 +684,13 @@ claude --list-agents
 **Check 4: Agent files are valid**
 ```bash
 # Validate agent format
-bash Haunt/scripts/validation/validate-agents.sh
+bash scripts/validation/validate-agents.sh
 
 # Validate skills format
-bash Haunt/scripts/validation/validate-skills.sh
+bash scripts/validation/validate-skills.sh
 
 # Validate agent-skill references
-bash Haunt/scripts/validation/validate-agent-skills.sh
+bash scripts/validation/validate-agent-skills.sh
 ```
 
 **Check 5: Test agent session**
@@ -719,7 +719,7 @@ claude -a dev --session test-session
 npm install --offline @anthropic-ai/claude-code
 
 # 4. Point to local agent files instead of global
-export CLAUDE_AGENTS_DIR=/path/to/ghost-county/Haunt/agents
+export CLAUDE_AGENTS_DIR=/path/to/haunt/agents
 claude -a dev
 ```
 
@@ -734,7 +734,7 @@ git init team-agents
 cd team-agents
 
 # 2. Copy base agents
-cp /path/to/ghost-county/Haunt/agents/*.md ./
+cp /path/to/ghost-county/agents/*.md ./
 
 # 3. Customize for team standards
 vim gco-dev.md  # Add team-specific coding standards
@@ -838,7 +838,7 @@ echo $CLAUDE_AGENTS_DIR
 **Fix:**
 ```bash
 # Option A: Re-run setup
-bash Haunt/scripts/setup-haunt.sh --agents-only
+bash scripts/setup-haunt.sh --agents-only
 
 # Option B: Point to agents directory explicitly
 export CLAUDE_AGENTS_DIR=~/.claude/agents
@@ -858,10 +858,10 @@ source ~/.bashrc
 **Diagnostic:**
 ```bash
 # Validate skills exist
-ls -la Haunt/skills/gco-session-startup/SKILL.md
+ls -la skills/gco-session-startup/SKILL.md
 
 # Validate skill format
-bash Haunt/scripts/validation/validate-skills.sh
+bash scripts/validation/validate-skills.sh
 
 # Check agent references
 grep "session-startup" ~/.claude/agents/gco-dev.md
@@ -869,12 +869,12 @@ grep "session-startup" ~/.claude/agents/gco-dev.md
 
 **Fix:**
 ```bash
-# Ensure Haunt/skills/ exists
+# Ensure skills/ exists
 pwd  # Should show project root
-ls Haunt/skills/  # Should list skill directories
+ls skills/  # Should list skill directories
 
 # Re-run setup to reinstall skills
-bash Haunt/scripts/setup-haunt.sh --skills-only
+bash scripts/setup-haunt.sh --skills-only
 ```
 
 ### Issue 4: Setup script fails with "command not found"
@@ -895,11 +895,11 @@ pwd
 cd /path/to/Claude
 
 # Use full path to script
-bash /path/to/ghost-county/Haunt/scripts/setup-haunt.sh
+bash /path/to/ghost-county/scripts/setup-haunt.sh
 
 # Or make script executable and run directly
-chmod +x Haunt/scripts/setup-haunt.sh
-./Haunt/scripts/setup-haunt.sh
+chmod +x scripts/setup-haunt.sh
+./scripts/setup-haunt.sh
 ```
 
 ### Issue 5: Verification fails with missing directories
@@ -914,13 +914,13 @@ chmod +x Haunt/scripts/setup-haunt.sh
 **Fix:**
 ```bash
 # Option A: Use fix mode
-bash Haunt/scripts/setup-haunt.sh --verify --fix
+bash scripts/setup-haunt.sh --verify --fix
 
 # Option B: Manual fix
 mkdir -p .haunt/plans .haunt/progress .haunt/completed .haunt/tests .claude/agents
 
 # Option C: Re-run full setup
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 ```
 
 ### Issue 6: Git user not configured
@@ -1027,7 +1027,7 @@ claude --version
 **Diagnostic:**
 ```bash
 # Run with verbose flag
-bash Haunt/scripts/setup-haunt.sh --verbose
+bash scripts/setup-haunt.sh --verbose
 
 # Check script variables
 echo "HOME: $HOME"
@@ -1035,16 +1035,16 @@ echo "Expected: ~/.claude/agents/ = $HOME/.claude/agents/"
 ls -la $HOME/.claude/
 
 # Check for dry-run mode accidentally enabled
-bash Haunt/scripts/setup-haunt.sh  # Should NOT say "DRY RUN"
+bash scripts/setup-haunt.sh  # Should NOT say "DRY RUN"
 ```
 
 **Fix:**
 ```bash
 # Ensure not running in dry-run mode
-bash Haunt/scripts/setup-haunt.sh  # Without --dry-run
+bash scripts/setup-haunt.sh  # Without --dry-run
 
 # Check that TODOs in script are implemented
-grep -n "TODO" Haunt/scripts/setup-haunt.sh
+grep -n "TODO" scripts/setup-haunt.sh
 # If TODOs exist, agent copying may not be implemented yet
 ```
 
@@ -1060,7 +1060,7 @@ grep -n "TODO" Haunt/scripts/setup-haunt.sh
 
 **When:** Running the one-liner curl install command:
 ```bash
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 ```
 
 **Diagnostic:**
@@ -1108,7 +1108,7 @@ git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
 
 # 2. Run setup script locally
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # 3. (Optional) Remove clone after setup
 cd ..
@@ -1121,7 +1121,7 @@ rm -rf ghost-county
 export GIT_SSL_NO_VERIFY=false
 git clone --depth 1 --branch main https://github.com/ghost-county/haunt.git /tmp/haunt-setup
 cd /tmp/haunt-setup
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 cd -
 rm -rf /tmp/haunt-setup
 ```
@@ -1133,7 +1133,7 @@ git config --global http.proxy http://proxy.example.com:8080
 git config --global https.proxy https://proxy.example.com:8080
 
 # Then retry curl install
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
 
 # Remove proxy after install (if needed)
 git config --global --unset http.proxy
@@ -1143,7 +1143,7 @@ git config --global --unset https.proxy
 **Option D: Download script and run with explicit clone**
 ```bash
 # 1. Download script
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh -o setup-haunt.sh
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/scripts/setup-haunt.sh -o setup-haunt.sh
 
 # 2. Make executable
 chmod +x setup-haunt.sh
@@ -1165,7 +1165,7 @@ rm -rf ghost-county setup-haunt.sh
 # Clone with gh (respects GitHub credentials)
 gh repo clone ghost-county/haunt
 cd ghost-county
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 cd ..
 rm -rf ghost-county
 ```
@@ -1180,18 +1180,18 @@ If on Windows and getting clone errors:
 # Open Git Bash and run:
 git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # Option 2: WSL (Windows Subsystem for Linux)
 wsl
 git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 
 # Option 3: PowerShell with manual steps
 git clone https://github.com/ghost-county/haunt.git
 cd ghost-county
-bash Haunt/scripts/setup-haunt.sh
+bash scripts/setup-haunt.sh
 ```
 
 **Verification after any fix:**
@@ -1206,7 +1206,7 @@ ls -la ~/.claude/agents/gco-*.md
 # ... etc
 
 # Verify setup worked
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 ```
 
 **Still not working?**
@@ -1249,8 +1249,8 @@ vim .claude/agents/gco-dev.md
 
 **1. Create skill directory and file:**
 ```bash
-mkdir -p Haunt/skills/my-custom-skill
-touch Haunt/skills/my-custom-skill/SKILL.md
+mkdir -p skills/my-custom-skill
+touch skills/my-custom-skill/SKILL.md
 ```
 
 **2. Add YAML frontmatter:**
@@ -1283,8 +1283,8 @@ vim ~/.claude/agents/gco-dev.md
 
 **4. Validate:**
 ```bash
-bash Haunt/scripts/validation/validate-skills.sh
-bash Haunt/scripts/validation/validate-agent-skills.sh
+bash scripts/validation/validate-skills.sh
+bash scripts/validation/validate-agent-skills.sh
 ```
 
 ### Environment Variables
@@ -1504,17 +1504,17 @@ The complete protocol is defined in `.claude/rules/gco-session-startup.md` and e
 - **SETUP-GUIDE.md** - This document
 - **docs/SKILLS-REFERENCE.md** - All available skills
 - **Validation Scripts:**
-  - `bash Haunt/scripts/validation/validate-agents.sh`
-  - `bash Haunt/scripts/validation/validate-skills.sh`
-  - `bash Haunt/scripts/validation/validate-agent-skills.sh`
+  - `bash scripts/validation/validate-agents.sh`
+  - `bash scripts/validation/validate-skills.sh`
+  - `bash scripts/validation/validate-agent-skills.sh`
 
 **Common Commands:**
 ```bash
 # Get help on setup script
-bash Haunt/scripts/setup-haunt.sh --help
+bash scripts/setup-haunt.sh --help
 
 # Verify setup
-bash Haunt/scripts/setup-haunt.sh --verify
+bash scripts/setup-haunt.sh --verify
 
 # List installed agents
 claude --list-agents

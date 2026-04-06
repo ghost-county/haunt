@@ -21,12 +21,12 @@ A lightweight eval suite that verifies Haunt's harness infrastructure is intact 
 
 ```bash
 # Run all scenarios
-bash Haunt/tests/eval/run-evals.sh
+bash tests/eval/run-evals.sh
 
 # Run a specific scenario by name filter
-bash Haunt/tests/eval/run-evals.sh scrying
-bash Haunt/tests/eval/run-evals.sh xs-solo
-bash Haunt/tests/eval/run-evals.sh completion-gate
+bash tests/eval/run-evals.sh scrying
+bash tests/eval/run-evals.sh xs-solo
+bash tests/eval/run-evals.sh completion-gate
 ```
 
 Exit code is 0 if all scenarios pass, non-zero if any fail.
@@ -41,7 +41,7 @@ Exit code is 0 if all scenarios pass, non-zero if any fail.
 
 ## Adding New Scenarios
 
-1. Create `Haunt/tests/eval/scenario-{name}.sh`
+1. Create `tests/eval/scenario-{name}.sh`
 2. Source the shared helpers and follow the pattern:
 
 ```bash
@@ -64,8 +64,8 @@ check "custom check" "[[ -d '$REPO_ROOT/some/dir' ]]"
 report_results
 ```
 
-3. Make it executable: `chmod +x Haunt/tests/eval/scenario-{name}.sh`
-4. Run `bash Haunt/tests/eval/run-evals.sh` to verify it runs
+3. Make it executable: `chmod +x tests/eval/scenario-{name}.sh`
+4. Run `bash tests/eval/run-evals.sh` to verify it runs
 
 Rules:
 - Must exit 0 on success, non-zero on failure

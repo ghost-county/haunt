@@ -321,4 +321,4 @@ After exploratory sessions, record significant findings for pattern detection:
 - `/qa` - Generate test scenarios from requirements
 - `/seer` - Pattern detection across codebase
 - `/witching-hour` - Intensive debugging mode
-- `Haunt/skills/gco-tdd-workflow/SKILL.md` - Test-driven development
+- `skills/gco-tdd-workflow/SKILL.md` - Test-driven development

@@ -421,5 +421,5 @@ Read this file when:
 
 - `.haunt/docs/lessons-learned.md` - AI Code Anti-Patterns section (examples and prevention)
 - `.haunt/docs/research/req-255-ai-coding-best-practices.md` - Full research report with 25 sources
-- `Haunt/skills/gco-code-quality/SKILL.md` - Iterative refinement patterns for fixing these issues
-- `Haunt/agents/gco-dev.md` - Iterative Code Refinement Protocol (systematic quality improvement)
+- `skills/gco-code-quality/SKILL.md` - Iterative refinement patterns for fixing these issues
+- `agents/gco-dev.md` - Iterative Code Refinement Protocol (systematic quality improvement)

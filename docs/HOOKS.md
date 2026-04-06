@@ -70,7 +70,7 @@ Hooks are deployed by `setup-haunt.sh` to:
 **Workflow:**
 ```bash
 # 1. Run tests
-bash Haunt/scripts/verify-tests.sh REQ-123 frontend
+bash scripts/verify-tests.sh REQ-123 frontend
 
 # 2. Evidence created at .haunt/progress/REQ-123-verified.txt
 
@@ -150,7 +150,7 @@ Not currently supported. Use global disable or edit settings.json.
 
 **Fix:**
 ```bash
-bash Haunt/scripts/verify-tests.sh REQ-XXX frontend|backend|infrastructure
+bash scripts/verify-tests.sh REQ-XXX frontend|backend|infrastructure
 ```
 
 ### Hook not running
@@ -164,8 +164,8 @@ bash Haunt/scripts/verify-tests.sh REQ-XXX frontend|backend|infrastructure
 
 ### Adding new hooks
 
-1. Create script in `Haunt/hooks/new-hook.sh`
-2. Add configuration to `Haunt/templates/settings.hooks.json`
+1. Create script in `hooks/new-hook.sh`
+2. Add configuration to `templates/settings.hooks.json`
 3. Run `setup-haunt.sh` to deploy
 
 ### Hook script template
@@ -207,7 +207,7 @@ exit 0  # Allow the tool call
 ```bash
 # Test with sample input
 echo '{"tool_input":{"subagent_type":"gco-dev-backend"},"cwd":"/path/to/project"}' | \
-  bash Haunt/hooks/phase-enforcement.sh
+  bash hooks/phase-enforcement.sh
 echo "Exit code: $?"
 ```
 
