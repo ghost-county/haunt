@@ -17,26 +17,40 @@ Contents:
 
 ## Setup
 
+Install as a Claude Code plugin:
+
 ```bash
-bash scripts/setup-haunt.sh          # Deploy agents + rules + skills + commands + hooks
-bash scripts/setup-haunt.sh --verify  # Verify deployment
-bash scripts/haunt-doc-freshness.sh   # Check skill freshness (flags >90 days stale)
+# Add marketplace (one-time)
+/plugin marketplace add ghost-county/haunt
+
+# Install plugin
+/plugin install haunt@ghost-county-haunt
+```
+
+Updates pull automatically. For existing `setup-haunt.sh` users, run the migration first:
+
+```bash
+bash scripts/migrate-to-plugin.sh          # Preview cleanup
+bash scripts/migrate-to-plugin.sh --execute # Execute cleanup
 ```
 
 ## Repository Structure
 
 ```
 haunt/
-├── agents/               # Team-aware agents (6 gco agents)
-├── agents/archive/       # Archived original agent definitions (reference)
-├── rules/                # Always-loaded rules (6 gco rules, all with BECAUSE clauses)
-├── skills/               # On-demand skills (~17 gco skills, attention-optimized layout)
-├── commands/             # Slash commands (seance, ship, qa, checkup)
-├── hooks/                # Enforcement hooks (damage control, observability, gates)
-├── scripts/              # setup-haunt.sh, review-metrics.sh, cost/freshness/version tools
-├── templates/            # Gate output, institutional memory, settings, charter templates
-├── docs/                 # Architecture standards, evaluations, white paper, guides
-└── CLAUDE.md             # This file
+├── .claude-plugin/           # Plugin metadata
+│   ├── plugin.json
+│   └── marketplace.json
+├── agents/                   # Team-aware agents (6 gco agents)
+├── rules/                    # Always-loaded rules (6 gco rules)
+├── skills/                   # On-demand skills (16 gco skills)
+├── commands/                 # Slash commands (seance, ship, qa, checkup)
+├── hooks/                    # Enforcement hooks + hooks.json manifest
+├── templates/                # Gate output, institutional memory, settings templates
+├── scripts/                  # Migration, metrics, freshness, cost tools
+├── docs/                     # Architecture standards, white paper, guides
+├── CLAUDE.md                 # Project instructions
+└── README.md                 # Public-facing docs
 ```
 
 ## What's Included
@@ -89,19 +103,29 @@ Skills follow the [Skill Architecture Standard](docs/SKILL-ARCHITECTURE.md): voc
 
 ### Hooks (deterministic enforcement)
 
+**Always Enabled:**
+
 | Hook | Trigger | Purpose |
 |------|---------|---------|
-| `observability-logger.sh` | PostToolUse (all) | Structured JSONL logging to `.haunt/logs/` |
-| `completion-gate.sh` | PreToolUse (Edit) | Blocks marking work complete without test evidence |
-| `commit-validator.sh` | PreToolUse (Bash) | Enforces `[REQ-XXX]` commit prefix |
-| `phase-enforcement.sh` | PreToolUse (Task) | Blocks dev agents before planning approval |
-| `file-location-enforcer.sh` | PreToolUse (Write/Edit) | Enforces `.haunt/` artifact locations |
-| `format-code.sh` | PostToolUse (Edit/Write) | Auto-formats by file type |
-| `notify-completion.sh` | Stop/SubagentStop | Visual/audible notifications when work completes |
-| `damage-control/` | PreToolUse (Bash/Edit/Write) | Blocks destructive operations via `patterns.yaml` |
-| `session-start/` | SessionStart | Initializes `.haunt/` directory structure, logs session start |
-| `stop/` | Stop | Session teardown hook |
-| `subagent-stop/` | SubagentStop | Subagent teardown hook |
+| `observability-logger.sh` | PostToolUse | Structured JSONL logging |
+| `format-code.sh` | PostToolUse (Edit/Write) | Auto-format by file type |
+| `session-start/` | SessionStart | `.haunt/` directory setup |
+| `notify-completion.sh` | Stop/SubagentStop | Completion alerts |
+
+**Seance-Gated** (only enforce when `.haunt/active-session` exists):
+
+| Hook | Trigger | Purpose |
+|------|---------|---------|
+| `damage-control/` | PreToolUse (Bash/Edit/Write) | Block destructive operations |
+| `completion-gate.sh` | PreToolUse (Edit) | Block completion without test evidence |
+| `phase-enforcement.sh` | PreToolUse (Agent) | Block dev agents before planning approval |
+| `file-location-enforcer.sh` | PreToolUse (Edit/Write) | Enforce `.haunt/` artifact paths |
+
+**Shipped but Disabled:**
+
+| Hook | Purpose |
+|------|---------|
+| `commit-validator.sh` | Enforce commit prefix conventions (opt-in via settings.json) |
 
 ### Templates
 
