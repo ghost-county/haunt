@@ -4,62 +4,45 @@
 
 ## Quick Install
 
-Run directly from the internet - no manual cloning required:
+No cloning required — downloads a tarball, deploys, cleans up automatically:
 
 ```bash
+# Install globally (recommended)
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash
 
-# 1. Find your Project Directory
-cd ~/github_repos/my_directory
-
-# 2. Install Haunt globally and cleanup source files (removes cloned repo after setup)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
-
-# 3. Open Claude Code terminal with Bypass Permissions On
-claude --dangerously-skip-permissions
-
-# 4. Start the Haunt Project Requirements Planning, Scoping, and Development workflow with the /seance command
-/seance 
+# Start Claude Code and run the seance workflow
+claude
+/seance
 ```
 
 ### Installation Options
 
 ```bash
-# Install globally (recommended - works in any project)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=global --cleanup --clean --quiet
+# Install globally with minimal output
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --quiet
 
-# Install to current project only
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project --cleanup
+# Install to current project only (deploys to .claude/ instead of ~/.claude/)
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --scope=project
 
-# Verify existing installation
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --verify
-
-# Install (clones repo temporarily, keeps it for reference)
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash
-
-# Preview what would be installed (dry run)
+# Preview what would be installed
 curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --dry-run
 
-# Alternative: Use GitHub API to bypass CDN cache (if you need latest immediately)
-curl -fsSL -H "Accept: application/vnd.github.v3.raw" \
-  "https://api.github.com/repos/ghost-county/haunt/contents/Haunt/scripts/setup-haunt.sh" | bash
+# Verify an existing installation
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --verify
 ```
+
+| Flag | Effect |
+|------|--------|
+| `--scope=global` | Deploy to `~/.claude/` (default) |
+| `--scope=project` | Deploy to `.claude/` in current directory |
+| `--quiet` | Suppress non-error output |
+| `--dry-run` | List what would be deployed without writing |
+| `--verify` | Check an existing installation for completeness |
 
 ### Quick Uninstall
 
-**Via Claude Code (recommended):**
-
 ```bash
-/cleanse              # Interactive mode - guides you through removal
-/cleanse --global     # Remove global ~/.claude artifacts only
-/cleanse --project    # Remove project .claude/ and .haunt/ artifacts only
-/cleanse --full       # Remove global AND project artifacts
-/cleanse --backup     # Create backup before deletion
-```
-
-**Manual removal:**
-
-```bash
-# Remove project-level Haunt (run from your project directory)
+# Remove project-level Haunt
 rm -rf .claude .haunt
 
 # Remove global Haunt artifacts
@@ -121,11 +104,11 @@ After running setup in a new project directory, kick off the Haunt workflow:
 cd /path/to/your/project
 git init  # if not already a git repo
 
-# 2. Run the Haunt setup
-curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- --cleanup
+# 2. Install Haunt
+curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash
 
-# 3. Start Claude 
-claude 
+# 3. Start Claude Code
+claude
 ```
 
 Then tell the Project Manager what you want to build, using the Seance slash-command:

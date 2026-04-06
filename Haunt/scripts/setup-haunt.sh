@@ -2,27 +2,91 @@
 #
 # setup-haunt.sh - Deploy Haunt dev guardrails to ~/.claude/
 #
-# Copies rules, skills, and commands from Haunt/ source to global Claude Code config.
+# Copies rules, skills, commands, agents, and hooks from Haunt/ source to Claude Code config.
 #
-# Usage: bash Haunt/scripts/setup-haunt.sh [--verify]
+# Usage:
+#   Local:  bash Haunt/scripts/setup-haunt.sh [OPTIONS]
+#   Remote: curl -fsSL https://raw.githubusercontent.com/ghost-county/haunt/main/Haunt/scripts/setup-haunt.sh | bash -s -- [OPTIONS]
+#
+# Options:
+#   --verify        Verify existing deployment
+#   --scope=global  Deploy to ~/.claude/ (default)
+#   --scope=project Deploy to .claude/ in current directory
+#   --quiet         Suppress non-error output
+#   --dry-run       Preview what would be installed
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-HAUNT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
-CLAUDE_DIR="$HOME/.claude"
+# --- Parse flags ---
+SCOPE="global"
+QUIET=false
+DRY_RUN=false
+VERIFY=false
 
-# Colors
+for arg in "$@"; do
+    case "$arg" in
+        --verify)        VERIFY=true ;;
+        --scope=global)  SCOPE="global" ;;
+        --scope=project) SCOPE="project" ;;
+        --cleanup|--clean) ;; # accepted for backward compat, cleanup is automatic
+        --quiet)         QUIET=true ;;
+        --dry-run)       DRY_RUN=true ;;
+        *) echo "Unknown option: $arg"; exit 1 ;;
+    esac
+done
+
+# --- Resolve source directory ---
+# When piped from curl, BASH_SOURCE[0] won't resolve to a real file.
+# In that case, download the repo tarball to a temp dir and re-run from there.
+REMOTE_REPO="https://github.com/ghost-county/haunt"
+TEMP_DIR=""
+
+resolve_source() {
+    # Check if we're running from a local clone
+    local script_path="${BASH_SOURCE[0]:-}"
+    if [[ -n "$script_path" && -f "$script_path" ]]; then
+        SCRIPT_DIR="$(cd "$(dirname "$script_path")" && pwd)"
+        HAUNT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+        return 0
+    fi
+
+    # Remote mode: download tarball
+    TEMP_DIR="$(mktemp -d)"
+    trap 'rm -rf "$TEMP_DIR"' EXIT INT TERM
+
+    $QUIET || echo "Downloading Haunt..."
+    if ! curl -fsSL "$REMOTE_REPO/archive/refs/heads/main.tar.gz" | tar -xz -C "$TEMP_DIR" 2>/dev/null; then
+        echo "Error: Failed to download Haunt from $REMOTE_REPO" >&2
+        exit 1
+    fi
+
+    HAUNT_DIR="$TEMP_DIR/haunt-main/Haunt"
+    if [[ ! -d "$HAUNT_DIR" ]]; then
+        echo "Error: Haunt directory not found in downloaded archive" >&2
+        exit 1
+    fi
+}
+
+# --- Set target directory ---
+if [[ "$SCOPE" == "project" ]]; then
+    CLAUDE_DIR=".claude"
+else
+    CLAUDE_DIR="$HOME/.claude"
+fi
+
+# --- Colors ---
 GREEN='\033[0;32m'
 RED='\033[0;31m'
+YELLOW='\033[0;33m'
 NC='\033[0m'
 
-ok() { echo -e "${GREEN}+${NC} $1"; }
+ok()   { $QUIET || echo -e "${GREEN}+${NC} $1"; }
 fail() { echo -e "${RED}x${NC} $1"; }
+info() { $QUIET || echo -e "${YELLOW}*${NC} $1"; }
 
-# --- Verify mode ---
-if [[ "${1:-}" == "--verify" ]]; then
-    echo "Verifying Haunt deployment..."
+# --- Verify mode (no source needed, skip download) ---
+if $VERIFY; then
+    echo "Verifying Haunt deployment in $CLAUDE_DIR..."
     errors=0
 
     # Check agents
@@ -91,14 +155,39 @@ if [[ "${1:-}" == "--verify" ]]; then
         ok "All checks passed."
     else
         echo ""
-        fail "$errors issues found. Re-run setup: bash Haunt/scripts/setup-haunt.sh"
+        fail "$errors issues found. Re-run setup."
         exit 1
     fi
     exit 0
 fi
 
+# --- Resolve source (downloads tarball in remote mode) ---
+resolve_source
+
+# --- Dry-run mode ---
+if $DRY_RUN; then
+    echo "Dry run — would deploy to $CLAUDE_DIR:"
+    echo ""
+    info "Agents:"
+    for f in "$HAUNT_DIR/agents"/*.md; do [[ -e "$f" ]] && echo "    $(basename "$f")"; done
+    info "Rules:"
+    for f in "$HAUNT_DIR/rules"/*.md; do [[ -e "$f" ]] && echo "    $(basename "$f")"; done
+    info "Skills:"
+    for d in "$HAUNT_DIR/skills"/gco-*/; do [[ -d "$d" ]] && echo "    $(basename "$d")/"; done
+    info "Commands:"
+    for f in "$HAUNT_DIR/commands"/*.md; do [[ -e "$f" ]] && echo "    $(basename "$f")"; done
+    info "Hooks:"
+    find "$HAUNT_DIR/hooks" \( -name "*.sh" -o -name "*.py" -o -name "*.yaml" \) 2>/dev/null | while read -r f; do
+        echo "    ${f#"$HAUNT_DIR"/hooks/}"
+    done
+    echo ""
+    info "Target: $CLAUDE_DIR"
+    info "Scope: $SCOPE"
+    exit 0
+fi
+
 # --- Deploy ---
-echo "Deploying Haunt dev guardrails..."
+$QUIET || echo "Deploying Haunt dev guardrails to $CLAUDE_DIR..."
 
 # Create directories
 mkdir -p "$CLAUDE_DIR/rules" "$CLAUDE_DIR/skills" "$CLAUDE_DIR/commands" "$CLAUDE_DIR/agents"
@@ -108,16 +197,13 @@ mkdir -p "$CLAUDE_DIR/rules" "$CLAUDE_DIR/skills" "$CLAUDE_DIR/commands" "$CLAUD
 # Extract a field value from a YAML or Markdown file.
 # Works with both plain YAML files (no --- markers) and Markdown with frontmatter.
 # Handles inline format ("field: value") and block list format ("field:\n  - item").
-# Usage: yaml_get_field "tools" "$file"
 yaml_get_field() {
     local field="$1"
     local file="$2"
-    # Detect if file has frontmatter markers
     local has_frontmatter
     has_frontmatter=$(grep -c "^---$" "$file" || true)
 
     if [[ "$has_frontmatter" -ge 2 ]]; then
-        # Markdown with frontmatter: only scan between first and second ---
         local inline
         inline=$(awk -v f="$field" '
             /^---$/ { if (++fm == 2) exit }
@@ -138,7 +224,6 @@ yaml_get_field() {
             }
         ' "$file" | sed 's/,$//'
     else
-        # Plain YAML: scan the whole file
         local inline
         inline=$(awk -v f="$field" '
             $0 ~ "^"f":[[:space:]]+[^[:space:]]" {
@@ -157,11 +242,6 @@ yaml_get_field() {
     fi
 }
 
-# Alias for backward compat within this script
-fm_get_field() { yaml_get_field "$@"; }
-
-# Resolve a base YAML file, following extends chain recursively.
-# Prints two lines: "TOOLS:<csv>" and "SKILLS:<csv>"
 resolve_base() {
     local base_name="$1"
     local bases_dir="$HAUNT_DIR/agents/bases"
@@ -185,8 +265,8 @@ resolve_base() {
     fi
 
     local own_tools own_skills
-    own_tools=$(fm_get_field "tools" "$base_file")
-    own_skills=$(fm_get_field "skills" "$base_file")
+    own_tools=$(yaml_get_field "tools" "$base_file")
+    own_skills=$(yaml_get_field "skills" "$base_file")
 
     local merged_tools merged_skills
     merged_tools=$(printf "%s,%s" "$parent_tools" "$own_tools" | tr ',' '\n' | sed 's/^[[:space:]]*//' | grep -v '^$' | awk '!seen[$0]++' | tr '\n' ',' | sed 's/,$//')
@@ -196,13 +276,10 @@ resolve_base() {
     echo "SKILLS:${merged_skills}"
 }
 
-# Resolve an agent .md file: merge base tools/skills and write resolved version to dest.
-# Agents without "extends:" in frontmatter are copied as-is.
 resolve_agent() {
     local src="$1"
     local dest="$2"
 
-    # Check for extends in frontmatter (between first and second ---)
     local extends_val
     extends_val=$(awk '/^---$/{if(++fm==2)exit} fm==1 && /^extends:/{sub(/^extends:[[:space:]]*/,""); print; exit}' "$src")
 
@@ -211,23 +288,19 @@ resolve_agent() {
         return
     fi
 
-    # Resolve base chain
     local base_out base_tools base_skills
     base_out=$(resolve_base "$extends_val")
     base_tools=$(echo "$base_out" | grep "^TOOLS:" | sed 's/^TOOLS://')
     base_skills=$(echo "$base_out" | grep "^SKILLS:" | sed 's/^SKILLS://')
 
-    # Extract agent's own tools/skills from frontmatter
     local agent_tools agent_skills
-    agent_tools=$(fm_get_field "tools" "$src")
-    agent_skills=$(fm_get_field "skills" "$src")
+    agent_tools=$(yaml_get_field "tools" "$src")
+    agent_skills=$(yaml_get_field "skills" "$src")
 
-    # Merge base + agent (deduplicated), preserving order: base first, then agent additions
     local merged_tools merged_skills
     merged_tools=$(printf "%s,%s" "$base_tools" "$agent_tools" | tr ',' '\n' | sed 's/^[[:space:]]*//' | grep -v '^$' | awk '!seen[$0]++' | tr '\n' ',' | sed 's/,$//')
     merged_skills=$(printf "%s,%s" "$base_skills" "$agent_skills" | tr ',' '\n' | sed 's/^[[:space:]]*//' | grep -v '^$' | awk '!seen[$0]++' | tr '\n' ',' | sed 's/,$//')
 
-    # Rewrite frontmatter: remove extends line, replace tools/skills with merged values
     awk -v tools="$merged_tools" -v skills="$merged_skills" '
         BEGIN { fm=0 }
         /^---$/ { fm++; print; next }
@@ -240,9 +313,10 @@ resolve_agent() {
     ' "$src" > "$dest"
 }
 
-# Deploy agents (with base composition resolution)
+# Deploy agents
 count=0
 for agent in "$HAUNT_DIR/agents"/*.md; do
+    [[ -e "$agent" ]] || continue
     resolve_agent "$agent" "$CLAUDE_DIR/agents/$(basename "$agent")"
     ((count++))
 done
@@ -251,6 +325,7 @@ ok "Agents deployed ($count files, with base composition)"
 # Deploy rules
 count=0
 for rule in "$HAUNT_DIR/rules"/*.md; do
+    [[ -e "$rule" ]] || continue
     cp "$rule" "$CLAUDE_DIR/rules/$(basename "$rule")"
     ((count++))
 done
@@ -259,6 +334,7 @@ ok "Rules deployed ($count files)"
 # Deploy skills (each is a directory with SKILL.md)
 count=0
 for skill_dir in "$HAUNT_DIR/skills"/gco-*/; do
+    [[ -d "$skill_dir" ]] || continue
     skill_name=$(basename "$skill_dir")
     mkdir -p "$CLAUDE_DIR/skills/$skill_name"
     cp -r "$skill_dir"/* "$CLAUDE_DIR/skills/$skill_name/"
@@ -276,6 +352,7 @@ fi
 # Deploy commands
 count=0
 for cmd in "$HAUNT_DIR/commands"/*.md; do
+    [[ -e "$cmd" ]] || continue
     cp "$cmd" "$CLAUDE_DIR/commands/$(basename "$cmd")"
     ((count++))
 done
@@ -284,14 +361,12 @@ ok "Commands deployed ($count files)"
 # Deploy hooks
 count=0
 mkdir -p "$CLAUDE_DIR/hooks"
-# Copy top-level hook scripts
 for hook_script in "$HAUNT_DIR/hooks"/*.sh "$HAUNT_DIR/hooks"/*.py; do
     [[ -e "$hook_script" ]] || continue
     cp "$hook_script" "$CLAUDE_DIR/hooks/$(basename "$hook_script")"
     chmod +x "$CLAUDE_DIR/hooks/$(basename "$hook_script")"
     ((count++))
 done
-# Copy subdirectories (damage-control/, session-start/)
 for hook_subdir in "$HAUNT_DIR/hooks"/*/; do
     [[ -d "$hook_subdir" ]] || continue
     subdir_name=$(basename "$hook_subdir")
@@ -309,7 +384,6 @@ ok "Hooks deployed ($count files)"
 generate_hooks_json() {
     local manifest="$HAUNT_DIR/manifest.yaml"
 
-    # Parse manifest hooks section using Python3 (handles matchers with | chars safely)
     python3 - "$manifest" <<'PYEOF'
 import sys, json, re
 
@@ -317,7 +391,6 @@ manifest_path = sys.argv[1]
 with open(manifest_path) as f:
     content = f.read()
 
-# Extract just the hooks: section (from "^hooks:" until next top-level key or end)
 hooks_match = re.search(r'^hooks:\n(.*?)(?=^\w|\Z)', content, re.MULTILINE | re.DOTALL)
 if not hooks_match:
     print('{}')
@@ -325,7 +398,6 @@ if not hooks_match:
 
 hooks_yaml = hooks_match.group(1)
 
-# Parse individual hook entries using simple line-by-line state machine
 hooks = []
 current = {}
 for line in hooks_yaml.splitlines():
@@ -346,7 +418,6 @@ for line in hooks_yaml.splitlines():
 if current:
     hooks.append(current)
 
-# Group by trigger, then by matcher
 hooks_by_trigger = {}
 for hook in hooks:
     trigger = hook.get('trigger', '')
@@ -354,9 +425,6 @@ for hook in hooks:
     source = hook.get('source', '')
     timeout = hook.get('timeout', 5)
 
-    # Build command string based on file extension
-    # source is relative from Haunt/ dir, e.g. hooks/commit-validator.sh
-    # deployed path: $HOME/.claude/hooks/<relative-after-hooks/>
     parts = source.split('/', 1)
     rel = parts[1] if len(parts) > 1 else parts[0]
 
@@ -373,7 +441,6 @@ for hook in hooks:
         hooks_by_trigger[trigger][matcher] = []
     hooks_by_trigger[trigger][matcher].append(entry)
 
-# Build output structure
 result = {}
 for trigger, matchers in hooks_by_trigger.items():
     result[trigger] = []
@@ -399,4 +466,9 @@ fi
 ok "Settings: hooks merged into settings.json"
 
 echo ""
-ok "Done. Verify with: bash Haunt/scripts/setup-haunt.sh --verify"
+ok "Haunt deployed to $CLAUDE_DIR ($SCOPE scope)"
+if [[ -n "$TEMP_DIR" ]]; then
+    $QUIET || echo "  Verify with: bash -c \"\$(curl -fsSL $REMOTE_REPO/raw/main/Haunt/scripts/setup-haunt.sh)\" -- --verify"
+else
+    $QUIET || echo "  Verify with: bash Haunt/scripts/setup-haunt.sh --verify"
+fi
