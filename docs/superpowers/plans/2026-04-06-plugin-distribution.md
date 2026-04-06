@@ -608,6 +608,8 @@ echo "  1. /plugin marketplace add ghost-county/haunt"
 echo "  2. /plugin install haunt@ghost-county-haunt"
 ```
 
+**Note on modified files:** The dry-run default serves as the warning — users see exactly what will be removed before running `--execute`. If they modified a gco-* file, they'll see it listed and can back it up. No checksum comparison needed for a one-time migration script.
+
 - [ ] **Step 2: Make executable**
 
 ```bash
