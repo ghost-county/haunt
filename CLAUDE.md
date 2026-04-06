@@ -34,9 +34,9 @@ haunt/
 │   ├── skills/               # On-demand skills (~17 gco skills, attention-optimized layout)
 │   ├── commands/             # Slash commands (seance, ship, qa, checkup)
 │   ├── hooks/                # Enforcement hooks (damage control, observability, gates)
-│   ├── scripts/              # setup-haunt.sh, review-metrics.sh, haunt-doc-freshness.sh
-│   ├── templates/            # Gate output, institutional memory templates
-│   └── docs/                 # Architecture standards, evaluations, task profiles
+│   ├── scripts/              # setup-haunt.sh, review-metrics.sh, cost/freshness/version tools
+│   ├── templates/            # Gate output, institutional memory, settings, charter templates
+│   └── docs/                 # Architecture standards, evaluations, white paper, guides
 └── CLAUDE.md                  # This file
 ```
 
@@ -98,7 +98,11 @@ Skills follow the [Skill Architecture Standard](Haunt/docs/SKILL-ARCHITECTURE.md
 | `phase-enforcement.sh` | PreToolUse (Task) | Blocks dev agents before planning approval |
 | `file-location-enforcer.sh` | PreToolUse (Write/Edit) | Enforces `.haunt/` artifact locations |
 | `format-code.sh` | PostToolUse (Edit/Write) | Auto-formats by file type |
-| `damage-control` | PreToolUse (Bash/Edit/Write) | Blocks destructive operations via `patterns.yaml` |
+| `notify-completion.sh` | Stop/SubagentStop | Visual/audible notifications when work completes |
+| `damage-control/` | PreToolUse (Bash/Edit/Write) | Blocks destructive operations via `patterns.yaml` |
+| `session-start/` | SessionStart | Initializes `.haunt/` directory structure, logs session start |
+| `stop/` | Stop | Session teardown hook |
+| `subagent-stop/` | SubagentStop | Subagent teardown hook |
 
 ### Templates
 
@@ -106,6 +110,9 @@ Skills follow the [Skill Architecture Standard](Haunt/docs/SKILL-ARCHITECTURE.md
 |----------|---------|
 | `institutional-memory.md` | Always/Never X BECAUSE Y format for project-specific lessons |
 | `human-gate-output.md` | Structured format for human review gates (summary, risks, confidence) |
+| `exploratory-charter.md` | Template for exploratory testing charters |
+| `settings.hooks.json` | Reference hooks configuration for `settings.json` |
+| `settings.damage-control.json` | Reference damage-control hook configuration |
 
 ## Seance Workflow
 
@@ -142,6 +149,8 @@ See [SKILL-ARCHITECTURE.md](Haunt/docs/SKILL-ARCHITECTURE.md) for the full stand
 - **Cost logs:** `.haunt/logs/cost-log.jsonl` (written by haunt-cost-logger.sh)
 - **Metrics:** `bash Haunt/scripts/review-metrics.sh` (approval rates, rubber-stamp detection)
 - **Freshness:** `bash Haunt/scripts/haunt-doc-freshness.sh` (stale skill detection)
+- **Skill versions:** `bash Haunt/scripts/haunt-skill-versions.sh` (deployed vs source version check)
+- **Cost logging:** `bash Haunt/scripts/haunt-cost-logger.sh` (per-session cost capture)
 - **Cost report:** `bash Haunt/scripts/haunt-cost-report.sh` (per-session costs, outlier detection)
 
 ## Key Documentation
@@ -150,6 +159,12 @@ See [SKILL-ARCHITECTURE.md](Haunt/docs/SKILL-ARCHITECTURE.md) for the full stand
 |-----|---------|
 | [SKILL-ARCHITECTURE.md](Haunt/docs/SKILL-ARCHITECTURE.md) | Attention-optimized skill layout standard |
 | [TASK-PROFILES.md](Haunt/docs/TASK-PROFILES.md) | Minimal context configs per session type |
+| [HOOKS.md](Haunt/docs/HOOKS.md) | Hook system architecture and configuration |
+| [HAUNT-DIRECTORY-SPEC.md](Haunt/docs/HAUNT-DIRECTORY-SPEC.md) | `.haunt/` runtime directory specification |
+| [CODE-REVIEW-WORKFLOW.md](Haunt/docs/CODE-REVIEW-WORKFLOW.md) | Code review cascade and workflow |
+| [SEANCE-EXPLAINED.md](Haunt/docs/SEANCE-EXPLAINED.md) | Seance workflow deep dive |
+| [WHITE-PAPER.md](Haunt/docs/WHITE-PAPER.md) | Haunt architecture white paper |
+| [SKILLS-REFERENCE.md](Haunt/docs/SKILLS-REFERENCE.md) | Full skills catalog reference |
 | [10-principles-evaluation.md](Haunt/docs/haunt-10-principles-evaluation.md) | Gap analysis against 10 Claude Code Principles |
 | [10-principles-refactor.md](Haunt/docs/10-principles-refactor.md) | Implementation plan for closing gaps |
 
