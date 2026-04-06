@@ -182,8 +182,6 @@ See [SKILL-ARCHITECTURE.md](docs/SKILL-ARCHITECTURE.md) for the full standard.
 |-----|---------|
 | [SKILL-ARCHITECTURE.md](docs/SKILL-ARCHITECTURE.md) | Attention-optimized skill layout standard |
 | [TASK-PROFILES.md](docs/TASK-PROFILES.md) | Minimal context configs per session type |
-| [HOOKS.md](docs/HOOKS.md) | Hook system architecture and configuration |
-| [HAUNT-DIRECTORY-SPEC.md](docs/HAUNT-DIRECTORY-SPEC.md) | `.haunt/` runtime directory specification |
 | [CODE-REVIEW-WORKFLOW.md](docs/CODE-REVIEW-WORKFLOW.md) | Code review cascade and workflow |
 | [SEANCE-EXPLAINED.md](docs/SEANCE-EXPLAINED.md) | Seance workflow deep dive |
 | [WHITE-PAPER.md](docs/WHITE-PAPER.md) | Haunt architecture white paper |
