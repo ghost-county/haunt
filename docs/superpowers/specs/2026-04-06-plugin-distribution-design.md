@@ -446,6 +446,47 @@ haunt/
 
 Replace the flat hooks table with the three-tier structure (Always Enabled, Seance-Gated, Shipped but Disabled) as defined in this spec.
 
+## README Onboarding
+
+The README.md is the entry point for new users finding the repo on GitHub. It must include install instructions prominently.
+
+### README Install Section
+
+```markdown
+## Quick Install
+
+1. Add the Haunt marketplace (one-time):
+   ```
+   /plugin marketplace add ghost-county/haunt
+   ```
+
+2. Install the plugin:
+   ```
+   /plugin install haunt@ghost-county-haunt
+   ```
+
+That's it. Updates are automatic — when changes are pushed to `main`, Claude Code picks them up on its next marketplace refresh. No manual pulls or script re-runs needed.
+
+### Migrating from setup-haunt.sh
+
+If you previously used `setup-haunt.sh` to deploy Haunt:
+
+```bash
+bash scripts/migrate-to-plugin.sh          # Preview what gets cleaned up
+bash scripts/migrate-to-plugin.sh --execute # Remove old file copies
+```
+
+Then follow the Quick Install steps above.
+```
+
+### How It Works
+
+Claude Code's plugin marketplace system:
+1. `/plugin marketplace add ghost-county/haunt` — tells Claude Code to track the `ghost-county/haunt` GitHub repo as a plugin source
+2. `/plugin install haunt@ghost-county-haunt` — installs the plugin from that marketplace
+3. Claude Code periodically refreshes marketplace repos — new commits to `main` are picked up automatically
+4. No repo clone, no manual pulls, no scripts — fully managed by Claude Code
+
 ## Verification
 
 After restructuring and installing:
