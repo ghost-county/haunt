@@ -1,0 +1,36 @@
+flowchart TD
+    Start([Session Startup]) --> Step1[1. Verify Environment]
+
+    Step1 --> CheckEnv{pwd && git status}
+    CheckEnv --> |Review output| Step2[2. Check Recent Changes]
+
+    Step2 --> GitLog[git log --oneline -5]
+    GitLog --> |Understand context| Step3{3. Run Tests}
+
+    Step3 --> TestCheck{Tests Pass?}
+    TestCheck --> |YES| Step4[4. Find Assignment]
+    TestCheck --> |NO - CRITICAL| FixTests[FIX TESTS FIRST]
+    FixTests --> |Tests Fixed| Step4
+
+    Step4 --> DirectAssign{Step 1: Direct<br/>Assignment?}
+    DirectAssign --> |YES| StartWork([Begin Work])
+    DirectAssign --> |NO| CheckActive{Step 2: Active Work<br/>in CLAUDE.md?}
+
+    CheckActive --> |YES - Match Found| StartWork
+    CheckActive --> |NO| CheckRoadmap{Step 3: Roadmap<br/>has ⚪ or 🟡?}
+
+    CheckRoadmap --> |YES| UpdateStatus[Update to 🟡]
+    UpdateStatus --> StartWork
+    CheckRoadmap --> |NO| AskPM[Step 4: Ask PM<br/>for Assignment]
+
+    AskPM --> |Assignment Given| StartWork
+
+    classDef critical fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    classDef success fill:#51cf66,stroke:#2f9e44,color:#fff
+    classDef warning fill:#ffd43b,stroke:#fab005,color:#000
+    classDef decision fill:#74c0fc,stroke:#1971c2,color:#000
+
+    class FixTests critical
+    class StartWork success
+    class DirectAssign,CheckActive,CheckRoadmap,TestCheck decision
+    class AskPM warning

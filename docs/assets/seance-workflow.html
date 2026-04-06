@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Séance Workflow</title>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: white;
+        }
+        .mermaid {
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="mermaid">
+%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'16px'}}}%%
+flowchart TD
+    Start([User has Idea/Bug/Feature]) --> Phase1
+
+    subgraph Phase1["Phase 1: Requirements Development"]
+        A1[PM invokes /seance]
+        A2[Structured Dialogue with User]
+        A3[Extract JTBD & User Stories]
+        A4[Define Acceptance Criteria]
+        A1 --> A2 --> A3 --> A4
+    end
+
+    subgraph Phase2["Phase 2: Requirements Analysis"]
+        B1[Kano Analysis - Feature Priority]
+        B2[RICE Scoring - Impact Assessment]
+        B3[Complexity Estimation - Technical Analysis]
+        B4[Create Requirements Document]
+        B1 --> B2 --> B3 --> B4
+    end
+
+    subgraph Phase3["Phase 3: Roadmap Creation"]
+        C1[Break into REQ-XXX Items]
+        C2[Size Effort - XS/S/M/SPLIT]
+        C3[Assign Agent Type]
+        C4[Add to Roadmap with Status ⚪]
+        C1 --> C2 --> C3 --> C4
+    end
+
+    Phase1 --> Phase2
+    Phase2 --> Phase3
+    Phase3 --> Output([Roadmap Updated<br/>Dev Work Ready])
+
+    style Start fill:#e1f5ff
+    style Output fill:#d4edda
+    style Phase1 fill:#fff3cd
+    style Phase2 fill:#f8d7da
+    style Phase3 fill:#d1ecf1
+    </div>
+    <script>
+        mermaid.initialize({ startOnLoad: true });
+    </script>
+</body>
+</html>

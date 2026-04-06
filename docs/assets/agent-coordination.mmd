@@ -1,0 +1,33 @@
+%%{init: {'theme':'base', 'themeVariables': { 'fontSize':'14px'}}}%%
+flowchart LR
+    subgraph Agents["Agent Types"]
+        PM[Project Manager<br/>Strategic Planning]
+        Dev[Dev Agent<br/>Implementation]
+        Review[Code Reviewer<br/>Quality Gates]
+        Release[Release Manager<br/>Deployment]
+    end
+
+    subgraph Roadmap["Roadmap - Communication Layer"]
+        Status["Status Transitions<br/>⚪ → 🟡 → 🟢"]
+        Tasks["Task Checkboxes<br/>- [ ] → - [x]"]
+        Notes["Implementation Notes<br/>Context & Decisions"]
+    end
+
+    PM -->|Creates Requirements| Status
+    Dev -->|Updates Progress| Tasks
+    Dev -->|Marks Complete| Status
+    Review -->|Approves/Rejects| Status
+    Release -->|Coordinates Merges| Status
+    
+    Status -->|Reads Assignment| Dev
+    Tasks -->|Tracks Progress| PM
+    Notes -->|Shares Context| Dev
+
+    style PM fill:#e1f5ff
+    style Dev fill:#fff3cd
+    style Review fill:#f8d7da
+    style Release fill:#d1ecf1
+    style Roadmap fill:#e8f5e9
+    style Status fill:#ffe0b2
+    style Tasks fill:#fff9c4
+    style Notes fill:#f3e5f5

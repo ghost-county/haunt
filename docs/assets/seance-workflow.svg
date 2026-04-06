@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 900">
+  <defs>
+    <style>
+      .title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 16px; font-weight: 600; }
+      .subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; fill: #333; }
+      .phase-title { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 14px; font-weight: 700; fill: white; }
+      .phase-subtitle { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 11px; fill: white; opacity: 0.9; }
+      .task { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 11px; fill: #555; }
+      .arrow { stroke: #7f8c8d; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .artifact { fill: #ecf0f1; stroke: #95a5a6; stroke-width: 2; rx: 5; }
+      .artifact-text { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; font-size: 12px; font-weight: 600; fill: #2c3e50; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#7f8c8d" />
+    </marker>
+  </defs>
+
+  <!-- Title -->
+  <text x="400" y="30" text-anchor="middle" class="title">Séance Workflow: Idea to Implementation</text>
+
+  <!-- Start Node -->
+  <rect x="300" y="60" width="200" height="50" fill="#e74c3c" stroke="#c0392b" stroke-width="2" rx="25"/>
+  <text x="400" y="85" text-anchor="middle" class="phase-title">User Idea/Feature</text>
+  <text x="400" y="100" text-anchor="middle" class="phase-subtitle">Start here</text>
+
+  <!-- Arrow to Phase 1 -->
+  <path d="M 400 110 L 400 150" class="arrow"/>
+
+  <!-- Phase 1: Scrying -->
+  <rect x="250" y="150" width="300" height="120" fill="#9b59b6" stroke="#8e44ad" stroke-width="3" rx="10"/>
+  <text x="400" y="175" text-anchor="middle" class="phase-title">Phase 1: Scrying 🔮</text>
+  <text x="400" y="193" text-anchor="middle" class="phase-subtitle">Requirements Development</text>
+  <text x="270" y="215" class="phase-subtitle">• Parse user input</text>
+  <text x="270" y="233" class="phase-subtitle">• Extract core needs</text>
+  <text x="270" y="251" class="phase-subtitle">• Identify constraints</text>
+
+  <!-- Arrow to Requirements Doc -->
+  <path d="M 400 270 L 400 300" class="arrow"/>
+
+  <!-- Requirements Document Artifact -->
+  <rect x="320" y="300" width="160" height="40" class="artifact"/>
+  <text x="400" y="318" text-anchor="middle" class="artifact-text">Requirements Doc</text>
+  <text x="400" y="332" text-anchor="middle" class="task">REQ-XXX.md</text>
+
+  <!-- Arrow to Phase 2 -->
+  <path d="M 400 340 L 400 380" class="arrow"/>
+
+  <!-- Phase 2: Summoning -->
+  <rect x="250" y="380" width="300" height="150" fill="#3498db" stroke="#2980b9" stroke-width="3" rx="10"/>
+  <text x="400" y="405" text-anchor="middle" class="phase-title">Phase 2: Summoning 👻</text>
+  <text x="400" y="423" text-anchor="middle" class="phase-subtitle">Requirements Analysis</text>
+  <text x="270" y="445" class="phase-subtitle">• Jobs-to-be-Done analysis</text>
+  <text x="270" y="463" class="phase-subtitle">• Kano Model classification</text>
+  <text x="270" y="481" class="phase-subtitle">• RICE prioritization</text>
+  <text x="270" y="499" class="phase-subtitle">• Strategic insights</text>
+  <text x="270" y="517" class="phase-subtitle">• Effort estimation</text>
+
+  <!-- Arrow to Analysis Doc -->
+  <path d="M 400 530 L 400 560" class="arrow"/>
+
+  <!-- Analysis Document Artifact -->
+  <rect x="320" y="560" width="160" height="40" class="artifact"/>
+  <text x="400" y="578" text-anchor="middle" class="artifact-text">Analysis Document</text>
+  <text x="400" y="592" text-anchor="middle" class="task">Strategic insights</text>
+
+  <!-- Arrow to Phase 3 -->
+  <path d="M 400 600 L 400 640" class="arrow"/>
+
+  <!-- Phase 3: Roadmap Creation -->
+  <rect x="250" y="640" width="300" height="120" fill="#2ecc71" stroke="#27ae60" stroke-width="3" rx="10"/>
+  <text x="400" y="665" text-anchor="middle" class="phase-title">Phase 3: Roadmap 📋</text>
+  <text x="400" y="683" text-anchor="middle" class="phase-subtitle">Roadmap Creation</text>
+  <text x="270" y="705" class="phase-subtitle">• Decompose into tasks</text>
+  <text x="270" y="723" class="phase-subtitle">• Size requirements (XS/S/M)</text>
+  <text x="270" y="741" class="phase-subtitle">• Assign agents</text>
+
+  <!-- Arrow to Roadmap -->
+  <path d="M 400 760 L 400 790" class="arrow"/>
+
+  <!-- Roadmap Artifact -->
+  <rect x="280" y="790" width="240" height="40" class="artifact"/>
+  <text x="400" y="808" text-anchor="middle" class="artifact-text">Updated Roadmap</text>
+  <text x="400" y="822" text-anchor="middle" class="task">.haunt/plans/roadmap.md</text>
+
+  <!-- Arrow to Ready -->
+  <path d="M 400 830 L 400 860" class="arrow"/>
+
+  <!-- Ready Node -->
+  <rect x="280" y="860" width="240" height="30" fill="#f39c12" stroke="#d68910" stroke-width="2" rx="15"/>
+  <text x="400" y="880" text-anchor="middle" class="phase-title" style="font-size: 13px;">Ready for Implementation ✓</text>
+</svg>
