@@ -58,12 +58,8 @@ zeroAccessPaths:
 # ============================================================================
 
 readOnlyPaths:
-  # Deployed assets - edit source, then run setup-haunt.sh
-  - ~/.claude/rules/
-  - ~/.claude/skills/
-  - ~/.claude/commands/
-  - ~/.claude/agents/
-  - ~/.claude/hooks/
+  # Plugin-managed paths are now handled by Claude Code plugin system.
+  # No read-only overrides needed — edits go to the haunt repo source directly.
 
 # ============================================================================
 # NO DELETE PATHS (Read/Write/Edit Allowed, Delete Blocked)
@@ -87,9 +83,5 @@ noDeletePaths:
   - docs/
   - hooks/
 
-  # Deployed artifacts
-  - ~/.claude/agents/
-  - ~/.claude/rules/
-  - ~/.claude/skills/
-  - ~/.claude/commands/
-  - ~/.claude/hooks/
+  # Plugin cache (managed by Claude Code plugin system)
+  - ~/.claude/plugins/

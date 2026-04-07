@@ -31,7 +31,7 @@ def load_patterns(script_path: Path) -> dict:
 
     if not patterns_file.exists():
         print(f"ERROR: patterns.yaml not found at {patterns_file}", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(2)
 
     with open(patterns_file, "r") as f:
         return yaml.safe_load(f)
@@ -89,7 +89,7 @@ def main():
 
     if not file_path_str:
         print("ERROR: No file_path in tool_input", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(2)
 
     # Expand and resolve file path
     file_path = expand_path(file_path_str)
@@ -108,18 +108,9 @@ def main():
         print(f"BLOCKED: Cannot write to {file_path} (zero access path)", file=sys.stderr)
         sys.exit(2)
 
-    # Check if file_path matches any read-only path (deployed framework assets)
+    # Check if file_path matches any read-only path
     if matches_zero_access_paths(file_path, read_only_paths):
-        print(f"BLOCKED: {file_path} is deployed framework code", file=sys.stderr)
-        print("", file=sys.stderr)
-        print("Write to the source instead:", file=sys.stderr)
-        print("  ~/.claude/rules/    -> rules/", file=sys.stderr)
-        print("  ~/.claude/agents/   -> agents/", file=sys.stderr)
-        print("  ~/.claude/skills/   -> skills/", file=sys.stderr)
-        print("  ~/.claude/commands/ -> commands/", file=sys.stderr)
-        print("  ~/.claude/hooks/    -> hooks/", file=sys.stderr)
-        print("", file=sys.stderr)
-        print("Then deploy: bash scripts/setup-haunt.sh", file=sys.stderr)
+        print(f"BLOCKED: {file_path} is a read-only path", file=sys.stderr)
         sys.exit(2)
 
     # ALLOW: File is safe to write

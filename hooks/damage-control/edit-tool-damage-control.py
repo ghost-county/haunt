@@ -43,7 +43,7 @@ def load_patterns() -> Dict[str, Any]:
 
     if not patterns_file.exists():
         print(f"ERROR: patterns.yaml not found at {patterns_file}", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(2)
 
     with open(patterns_file, 'r') as f:
         return yaml.safe_load(f)
@@ -100,7 +100,7 @@ def main():
 
     if not file_path:
         print("ERROR: No file_path in tool_input", file=sys.stderr)
-        sys.exit(1)
+        sys.exit(2)
 
     # Load protection patterns
     patterns = load_patterns()
@@ -113,18 +113,9 @@ def main():
         print("REASON: File is under protected directory containing sensitive data", file=sys.stderr)
         sys.exit(2)
 
-    # Check readOnlyPaths (deployed framework assets)
+    # Check readOnlyPaths (if any are configured)
     if is_protected(file_path, read_only):
-        print(f"BLOCKED: {file_path} is deployed framework code", file=sys.stderr)
-        print("", file=sys.stderr)
-        print("Edit the source instead:", file=sys.stderr)
-        print("  ~/.claude/rules/    -> rules/", file=sys.stderr)
-        print("  ~/.claude/agents/   -> agents/", file=sys.stderr)
-        print("  ~/.claude/skills/   -> skills/", file=sys.stderr)
-        print("  ~/.claude/commands/ -> commands/", file=sys.stderr)
-        print("  ~/.claude/hooks/    -> hooks/", file=sys.stderr)
-        print("", file=sys.stderr)
-        print("Then deploy: bash scripts/setup-haunt.sh", file=sys.stderr)
+        print(f"BLOCKED: {file_path} is a read-only path", file=sys.stderr)
         sys.exit(2)
 
     # If no protection matched, allow the edit
