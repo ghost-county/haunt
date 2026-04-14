@@ -13,13 +13,18 @@ fi
 # Read hook input from stdin
 INPUT=$(cat)
 
-# Extract working directory
+# Extract working directory (needed before seance gate check)
 PROJECT_DIR=$(echo "$INPUT" | jq -r '.cwd // ""')
 
-# Exit if no project directory
-if [[ -z "$PROJECT_DIR" || "$PROJECT_DIR" == "null" ]]; then
+# Seance gate: only activate during active seance
+if [[ -n "$PROJECT_DIR" && "$PROJECT_DIR" != "null" ]]; then
+    SENTINEL="$PROJECT_DIR/.haunt/active-session"
+    [[ -f "$SENTINEL" ]] || exit 0
+else
     exit 0
 fi
+
+# PROJECT_DIR already extracted above for seance gate
 
 HAUNT_DIR="$PROJECT_DIR/.haunt"
 HANDOFF_MAX_AGE_SECONDS=86400

@@ -6,6 +6,10 @@ if [[ "${HAUNT_HOOKS_DISABLED:-0}" == "1" ]]; then
     exit 0
 fi
 
+# Seance gate: only enforce during active seance
+SENTINEL="${PWD}/.haunt/active-session"
+[[ -f "$SENTINEL" ]] || exit 0
+
 # Require jq
 command -v jq >/dev/null 2>&1 || exit 0
 

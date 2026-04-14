@@ -12,6 +12,10 @@
 # Skip if disabled
 [[ "$HAUNT_LINTERS_DISABLED" == "1" ]] && exit 0
 
+# Seance gate: only enforce during active seance
+SENTINEL="${PWD}/.haunt/active-session"
+[[ -f "$SENTINEL" ]] || exit 0
+
 # Process each modified file
 for file in $CLAUDE_FILE_PATHS; do
   # Skip if file doesn't exist (was deleted)

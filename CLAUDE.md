@@ -89,6 +89,7 @@ Skills follow the [Skill Architecture Standard](docs/SKILL-ARCHITECTURE.md): voc
 **Testing:** `gco-tdd-workflow`, `gco-playwright-tests`, `gco-ui-testing`, `gco-testing-mindset`
 **Standards:** `gco-secure-coding`, `gco-python-standards`, `gco-react-standards`, `gco-ui-design`
 **Methodology:** `gco-task-decomposition`, `gco-requirements-development`, `gco-context7-usage`
+**Auditing:** `gco-project-audit`
 **Orchestration:** `gco-seance-orchestration`, `gco-team-protocol`
 
 ### Commands
@@ -103,19 +104,14 @@ Skills follow the [Skill Architecture Standard](docs/SKILL-ARCHITECTURE.md): voc
 
 ### Hooks (deterministic enforcement)
 
-**Always Enabled:**
+**All hooks are seance-gated** (only fire when `.haunt/active-session` exists):
 
 | Hook | Trigger | Purpose |
 |------|---------|---------|
+| `session-start/` | SessionStart | `.haunt/` directory setup |
 | `observability-logger.sh` | PostToolUse | Structured JSONL logging |
 | `format-code.sh` | PostToolUse (Edit/Write) | Auto-format by file type |
-| `session-start/` | SessionStart | `.haunt/` directory setup |
 | `notify-completion.sh` | Stop/SubagentStop | Completion alerts |
-
-**Seance-Gated** (only enforce when `.haunt/active-session` exists):
-
-| Hook | Trigger | Purpose |
-|------|---------|---------|
 | `damage-control/` | PreToolUse (Bash/Edit/Write) | Block destructive operations |
 | `completion-gate.sh` | PreToolUse (Edit) | Block completion without test evidence |
 | `phase-enforcement.sh` | PreToolUse (Agent) | Block dev agents before planning approval |
