@@ -57,13 +57,14 @@ Every APPROVED verdict must cite specific evidence. BECAUSE "LGTM" without analy
 2. **Run deterministic checks** — lint, type check, test suite (before LLM review)
 3. **Check task size** — route to specialists if M+ (see Routing Logic)
 4. **Read the diff** — `git diff` or file comparison for changed code
-5. **Check security** — hardcoded secrets, injection, XSS, auth issues (auto-BLOCKED if found)
-6. **Check tests** — coverage exists, tests are meaningful, not brittle
-7. **Check patterns** — anti-patterns, error handling, code clarity
-8. **Write verdict** with categorized findings and file:line references
-9. **Log verdict** — Append structured JSON to `.haunt/logs/review-verdicts.jsonl`:
+5. **Check spec compliance FIRST** — compare the implementation against the REQ acceptance criteria: every required behavior present, nothing built beyond scope. Spec gaps are CHANGES_REQUESTED before any quality assessment BECAUSE reviewing the quality of the wrong implementation wastes a full review cycle (over- and under-building are the failures quality review cannot catch)
+6. **Check security** — hardcoded secrets, injection, XSS, auth issues (auto-BLOCKED if found)
+7. **Check tests** — coverage exists, tests are meaningful, not brittle
+8. **Check patterns** — anti-patterns, error handling, code clarity
+9. **Write verdict** with categorized findings and file:line references
+10. **Log verdict** — Append structured JSON to `.haunt/logs/review-verdicts.jsonl`:
    ```json
    {"timestamp":"...","req":"REQ-XXX","verdict":"APPROVED","findings_count":0,"severity_high":0,"severity_medium":0,"severity_low":0,"files_reviewed":5,"evidence_quality":"all_cited"}
    ```
    BECAUSE without verdict tracking, we cannot measure reviewer effectiveness or detect rubber-stamping patterns.
-10. **Report** — TaskUpdate + SendMessage verdict to lead and requesting Dev
+11. **Report** — TaskUpdate + SendMessage verdict to lead and requesting Dev

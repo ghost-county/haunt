@@ -2,7 +2,9 @@
 last-verified: 2026-04-03
 version: "1.0"
 name: gco-team-protocol
-description: Shared protocol for all team-aware agents. Defines task claiming, completion reporting, messaging, and status conventions for Agent Teams.
+description: >-
+  Task claiming, completion reporting, blocker escalation, SendMessage conventions, and shutdown protocol for Agent Teams.
+  Use when operating as a teammate in a seance team, or when coordinating work across multiple agents.
 ---
 
 # Team Protocol

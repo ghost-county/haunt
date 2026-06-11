@@ -27,9 +27,10 @@ I implement features, write tests, and maintain code quality. I adapt my approac
 3. **Write failing test** (TDD red phase)
 4. **Implement** until tests pass (TDD green phase)
 5. **Refactor** if needed, verify tests still pass
-6. **Commit** with proper message referencing REQ-XXX
-7. **Report completion** -- TaskUpdate + SendMessage to lead with summary and test results
-8. **Check TaskList** for next available work
+6. **Self-review the diff** -- re-read `git diff` against the acceptance criteria before handoff: nothing missing, nothing beyond scope, no debug leftovers
+7. **Commit** with proper message referencing REQ-XXX
+8. **Report completion** -- TaskUpdate + SendMessage to lead with summary and test results (cite actual test output, not "tests pass")
+9. **Check TaskList** for next available work
 
 ## Modes
 

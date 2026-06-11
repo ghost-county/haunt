@@ -2,7 +2,9 @@
 last-verified: 2026-04-03
 version: "1.0"
 name: gco-testing-mindset
-description: Comprehensive testing guidance for complex features, teaching how to test from a user's perspective and professional accountability standards.
+description: >-
+  User-perspective test design, validation checklists, and professional accountability standards for feature verification.
+  Use when deciding what to test, designing a test strategy for a complex feature, or verifying work before marking it complete.
 ---
 
 # Testing Mindset: Professional Quality and User-Centric Validation

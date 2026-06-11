@@ -15,6 +15,8 @@ The seance is the complete idea-to-shipped workflow: planning, execution, and ar
 /seance --deep "idea"         Deep planning (full JTBD/Kano/RICE + adversarial review)
 ```
 
+The seance also starts **automatically**: the `gco-using-haunt` dispatcher (injected at session start) triages any build request and invokes this workflow for M/L-sized work without the command being typed. `/seance` remains the explicit entry point.
+
 ## Before Starting
 
 Read the `gco-seance-orchestration` skill for detailed orchestration logic, delegation gates, and team management protocol.
@@ -22,13 +24,13 @@ Read the `gco-seance-orchestration` skill for detailed orchestration logic, dele
 ## The Three Phases
 
 ### Phase 1: Scrying (Planning)
-Transform a raw idea into a formal, actionable roadmap. Creates a Team, spawns PM, and produces requirements + roadmap. Ends with an approval gate before execution.
+Transform a raw idea into a self-contained spec artifact at `.haunt/specs/{YYYY-MM-DD}-{HHMM}-{slug}/`. Creates a Team, spawns PM, and produces per-spec requirements + analysis + plan. Adds a row to the cross-spec roadmap index. Ends with an approval gate before execution.
 
 ### Phase 2: Summoning (Execution)
-Spawns Dev and Code Reviewer teammates to work through the roadmap in parallel batches. Tasks are created from REQ-XXX items with dependency tracking.
+Reads the active spec's plan, spawns Dev and Code Reviewer teammates to work through REQ items in parallel batches. Tasks are created with dependency tracking.
 
 ### Phase 3: Banishing (Archival)
-Verifies completed work, archives to `.haunt/completed/`, cleans the roadmap, and shuts down the team.
+Verifies completed work, atomically moves `.haunt/specs/{slug}/` to `.haunt/completed/{slug}/`, updates the roadmap index row, and shuts down the team.
 
 See `gco-seance-orchestration` skill for detailed step-by-step orchestration logic for each phase.
 
@@ -50,14 +52,20 @@ Or tell me what you want to build...
 
 | File | Purpose |
 |------|---------|
-| `.haunt/plans/roadmap.md` | Active roadmap (persistent) |
-| `.haunt/plans/requirements-document.md` | Formal requirements |
-| `.haunt/plans/requirements-analysis.md` | Strategic analysis |
-| `.haunt/completed/` | Archived completed work |
+| `.haunt/active-session` | Sentinel — created at seance start, removed at banishing; activates all enforcement hooks |
+| `.haunt/plans/roadmap.md` | Cross-spec index (active + completed specs with status icons) |
+| `.haunt/specs/{slug}/plan.md` | Per-spec REQ items + dependencies |
+| `.haunt/specs/{slug}/requirements.md` | Per-spec formal requirements |
+| `.haunt/specs/{slug}/analysis.md` | Per-spec strategic analysis (medium/deep mode only) |
+| `.haunt/specs/{slug}/references.md` | Pointers to reference implementations |
+| `.haunt/specs/{slug}/visuals/` | Mockups, screenshots |
+| `.haunt/completed/{slug}/` | Archived completed spec folder (whole artifact) |
+
+Slug format: `{YYYY-MM-DD}-{HHMM}-{idea-slug}` — HHMM disambiguates multi-seance days.
 
 ## Recovery
 
 If a seance is interrupted:
-- The roadmap file persists with last-known status icons
-- `/seance --summon` creates a fresh team and picks up incomplete items
+- The roadmap index + active spec folder persist with last-known status icons
+- `/seance --summon` reads the active spec from the roadmap, re-reads `.haunt/specs/{slug}/plan.md`, creates a fresh team and picks up incomplete items
 - `/seance --banish` cleans up any completed but unarchived work

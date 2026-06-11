@@ -42,9 +42,9 @@ haunt/
 │   ├── plugin.json
 │   └── marketplace.json
 ├── agents/                   # Team-aware agents (6 gco agents)
-├── rules/                    # Always-loaded rules (6 gco rules)
-├── skills/                   # On-demand skills (16 gco skills)
-├── commands/                 # Slash commands (seance, ship, qa, checkup)
+├── rules/                    # Always-loaded rules (8 gco rules)
+├── skills/                   # On-demand skills (18 gco skills)
+├── commands/                 # Slash commands (seance, haunt, ship, qa, checkup)
 ├── hooks/                    # Enforcement hooks + hooks.json manifest
 ├── templates/                # Gate output, institutional memory, settings templates
 ├── scripts/                  # Migration, metrics, freshness, cost tools
@@ -74,9 +74,11 @@ All rules include BECAUSE clauses explaining *why* each directive exists, enabli
 
 | Rule | Purpose |
 |------|---------|
+| `gco-assumption-surfacing.md` | State assumptions explicitly; don't pick silently when uncertain |
 | `gco-communication.md` | Direct communication style, no glazing |
 | `gco-completion-checklist.md` | Tests pass + demo-ready before marking complete |
 | `gco-decisions.md` | YAGNI, 4-question decision filter |
+| `gco-surgical-changes.md` | Touch only what the task requires; match existing style |
 | `gco-team-coordination.md` | Task claiming, completion reporting, team behavior |
 | `gco-ui-testing-reminder.md` | E2E test enforcement for frontend work |
 | `gco-visual-verification.md` | Screenshot verification for CSS changes |
@@ -90,25 +92,26 @@ Skills follow the [Skill Architecture Standard](docs/SKILL-ARCHITECTURE.md): voc
 **Standards:** `gco-secure-coding`, `gco-python-standards`, `gco-react-standards`, `gco-ui-design`
 **Methodology:** `gco-task-decomposition`, `gco-requirements-development`, `gco-context7-usage`
 **Auditing:** `gco-project-audit`
-**Orchestration:** `gco-seance-orchestration`, `gco-team-protocol`
+**Orchestration:** `gco-using-haunt` (session-start dispatcher), `gco-seance-orchestration`, `gco-haunt-orchestration` (standards layer), `gco-team-protocol`
 
 ### Commands
 
 | Command | Purpose |
 |---------|---------|
-| `/seance` | Complete dev ritual: planning -> execution -> archival |
+| `/seance` | Complete dev ritual: planning -> execution -> archival (also auto-triggered by the `gco-using-haunt` dispatcher for M/L build requests) |
 | `/seance --solo` | Solo mode for XS/S tasks (skip team, lead does everything) |
+| `/haunt` | Project init + project-local standards (init, discover, inject, status) |
 | `/ship` | Create PR and enable auto-merge |
 | `/qa` | Generate test scenarios (checklist, gherkin, playwright, charter) |
 | `/checkup` | Verify deployment health |
 
 ### Hooks (deterministic enforcement)
 
-**All hooks are seance-gated** (only fire when `.haunt/active-session` exists):
+**Hooks are seance-gated** — they only fire when the `.haunt/active-session` sentinel exists. The sentinel is created at seance start (Scrying step 1, solo mode, or `--summon` recovery) and removed at Banishing. **Exception:** `session-start/` always runs — it injects the `gco-using-haunt` dispatcher skill into every session so build requests route into the seance automatically (passive harness), and additionally surfaces handoff/staleness warnings when a seance is active.
 
 | Hook | Trigger | Purpose |
 |------|---------|---------|
-| `session-start/` | SessionStart | `.haunt/` directory setup |
+| `session-start/` | SessionStart | Inject dispatcher (always); `.haunt/` setup + session-state warnings (seance only) |
 | `observability-logger.sh` | PostToolUse | Structured JSONL logging |
 | `format-code.sh` | PostToolUse (Edit/Write) | Auto-format by file type |
 | `notify-completion.sh` | Stop/SubagentStop | Completion alerts |
