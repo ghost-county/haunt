@@ -43,7 +43,7 @@ haunt/
 │   └── marketplace.json
 ├── agents/                   # Team-aware agents (6 gco agents)
 ├── rules/                    # Always-loaded rules (8 gco rules)
-├── skills/                   # On-demand skills (18 gco skills)
+├── skills/                   # On-demand skills (19 gco skills)
 ├── commands/                 # Slash commands (seance, haunt, ship, qa, checkup)
 ├── hooks/                    # Enforcement hooks + hooks.json manifest
 ├── templates/                # Gate output, institutional memory, settings templates
@@ -144,6 +144,10 @@ The seance is a 3-phase development ritual with built-in quality gates:
 2. **Summoning** (Execution) — Dev + Code Reviewer work through roadmap → pre-merge human gate for M+ work
 3. **Banishing** (Archival) — Verify, archive, codify lessons learned
 
+**Passive entry:** The session-start hook injects the `gco-using-haunt` dispatcher into every session. When the user asks to build, add, or change functionality, the dispatcher triages size and auto-invokes the seance for M/L work — `/seance` is the explicit entry point, not the only one.
+
+**Sentinel lifecycle:** Scrying step 1 (and solo mode / `--summon` recovery) creates `.haunt/active-session`, which activates all enforcement hooks. Banishing removes it. Outside the sentinel, hooks are no-ops.
+
 **Task Size Cascade** (P9 Token Economy): XS/S tasks use solo mode (no team). M tasks get Dev + Code Reviewer. L tasks get the full team. This prevents wasting tokens on coordination overhead for simple tasks.
 
 **Session Boundaries** (P2 Context Hygiene): `/clear` recommended between phases. Roadmap, tasks, and state files persist on disk.
@@ -172,6 +176,7 @@ See [SKILL-ARCHITECTURE.md](docs/SKILL-ARCHITECTURE.md) for the full standard.
 - **Metrics:** `bash scripts/review-metrics.sh` (approval rates, rubber-stamp detection)
 - **Freshness:** `bash scripts/haunt-doc-freshness.sh` (stale skill detection)
 - **Skill versions:** `bash scripts/haunt-skill-versions.sh` (deployed vs source version check)
+- **Manifest:** `bash scripts/utils/generate-manifest.sh` (regenerate manifest.yaml active sections after adding/removing agents, rules, skills, or commands; deprecated section is manually maintained)
 - **Cost logging:** `bash scripts/haunt-cost-logger.sh` (per-session cost capture)
 - **Cost report:** `bash scripts/haunt-cost-report.sh` (per-session costs, outlier detection)
 
