@@ -28,10 +28,9 @@
 #     1. Add/remove files in agents/, rules/, skills/, commands/
 #     2. Run generator to update active sections
 #     3. Manually add deprecated entries when removing objects
-#     4. Run setup-haunt.sh --clean to remove deprecated objects
 
 version: "2.0"
-updated: "2026-04-03"
+updated: "2026-06-11"
 generated_by: "scripts/utils/generate-manifest.sh"
 
 # ==============================================================================
@@ -51,6 +50,10 @@ agents:
     scope: global
     source: agents/gco-project-manager.md
 
+  - name: gco-quality-reviewer
+    scope: global
+    source: agents/gco-quality-reviewer.md
+
   - name: gco-research
     scope: global
     source: agents/gco-research.md
@@ -59,15 +62,15 @@ agents:
     scope: global
     source: agents/gco-security-reviewer.md
 
-  - name: gco-quality-reviewer
-    scope: global
-    source: agents/gco-quality-reviewer.md
-
 # ==============================================================================
 # RULES - Invariant enforcement protocols
 # ==============================================================================
 
 rules:
+  - name: gco-assumption-surfacing
+    scope: global
+    source: rules/gco-assumption-surfacing.md
+
   - name: gco-communication
     scope: global
     source: rules/gco-communication.md
@@ -80,29 +83,21 @@ rules:
     scope: global
     source: rules/gco-decisions.md
 
-  - name: gco-framework-changes
+  - name: gco-surgical-changes
     scope: global
-    source: rules/gco-framework-changes.md
+    source: rules/gco-surgical-changes.md
 
-  - name: gco-model-selection
+  - name: gco-team-coordination
     scope: global
-    source: rules/gco-model-selection.md
-
-  - name: gco-orchestration
-    scope: global
-    source: rules/gco-orchestration.md
-
-  - name: gco-roadmap-format
-    scope: global
-    source: rules/gco-roadmap-format.md
-
-  - name: gco-session-startup
-    scope: global
-    source: rules/gco-session-startup.md
+    source: rules/gco-team-coordination.md
 
   - name: gco-ui-testing-reminder
     scope: global
     source: rules/gco-ui-testing-reminder.md
+
+  - name: gco-visual-verification
+    scope: global
+    source: rules/gco-visual-verification.md
 
 # ==============================================================================
 # SKILLS - On-demand SDLC methodology guidance
@@ -112,11 +107,6 @@ skills:
   - name: gco-code-patterns
     scope: global
     source: skills/gco-code-patterns/
-    version: "1.0"
-
-  - name: gco-code-quality
-    scope: global
-    source: skills/gco-code-quality/
     version: "1.0"
 
   - name: gco-code-review
@@ -129,59 +119,24 @@ skills:
     source: skills/gco-commit-conventions/
     version: "1.0"
 
-  - name: gco-completion
-    scope: global
-    source: skills/gco-completion/
-    version: "1.0"
-
   - name: gco-context7-usage
     scope: global
     source: skills/gco-context7-usage/
     version: "1.0"
 
-  - name: gco-damage-control
+  - name: gco-haunt-orchestration
     scope: global
-    source: skills/gco-damage-control/
-    version: "1.0"
-
-  - name: gco-feature-contracts
-    scope: global
-    source: skills/gco-feature-contracts/
-    version: "1.0"
-
-  - name: gco-file-conventions
-    scope: global
-    source: skills/gco-file-conventions/
-    version: "1.0"
-
-  - name: gco-haunt-mode
-    scope: global
-    source: skills/gco-haunt-mode/
-    version: "1.0"
-
-  - name: gco-issue-to-roadmap
-    scope: global
-    source: skills/gco-issue-to-roadmap/
-    version: "1.0"
-
-  - name: gco-model-selection
-    scope: global
-    source: skills/gco-model-selection/
-    version: "1.0"
-
-  - name: gco-orchestrator
-    scope: global
-    source: skills/gco-orchestrator/
-    version: "1.0"
-
-  - name: gco-pattern-defeat
-    scope: global
-    source: skills/gco-pattern-defeat/
+    source: skills/gco-haunt-orchestration/
     version: "1.0"
 
   - name: gco-playwright-tests
     scope: global
     source: skills/gco-playwright-tests/
+    version: "1.0"
+
+  - name: gco-project-audit
+    scope: global
+    source: skills/gco-project-audit/
     version: "1.0"
 
   - name: gco-python-standards
@@ -194,44 +149,19 @@ skills:
     source: skills/gco-react-standards/
     version: "1.0"
 
-  - name: gco-requirements-analysis
-    scope: global
-    source: skills/gco-requirements-analysis/
-    version: "1.0"
-
   - name: gco-requirements-development
     scope: global
     source: skills/gco-requirements-development/
     version: "1.0"
 
-  - name: gco-requirements-rubric
+  - name: gco-seance-orchestration
     scope: global
-    source: skills/gco-requirements-rubric/
-    version: "1.0"
+    source: skills/gco-seance-orchestration/
+    version: "1.1"
 
-  - name: gco-roadmap-creation
+  - name: gco-secure-coding
     scope: global
-    source: skills/gco-roadmap-creation/
-    version: "1.0"
-
-  - name: gco-roadmap-format
-    scope: global
-    source: skills/gco-roadmap-format/
-    version: "1.0"
-
-  - name: gco-roadmap-planning
-    scope: global
-    source: skills/gco-roadmap-planning/
-    version: "1.0"
-
-  - name: gco-roadmap-workflow
-    scope: global
-    source: skills/gco-roadmap-workflow/
-    version: "1.0"
-
-  - name: gco-session-startup
-    scope: global
-    source: skills/gco-session-startup/
+    source: skills/gco-secure-coding/
     version: "1.0"
 
   - name: gco-task-decomposition
@@ -242,6 +172,11 @@ skills:
   - name: gco-tdd-workflow
     scope: global
     source: skills/gco-tdd-workflow/
+    version: "1.0"
+
+  - name: gco-team-protocol
+    scope: global
+    source: skills/gco-team-protocol/
     version: "1.0"
 
   - name: gco-testing-mindset
@@ -259,14 +194,9 @@ skills:
     source: skills/gco-ui-testing/
     version: "1.0"
 
-  - name: gco-weekly-refactor
+  - name: gco-using-haunt
     scope: global
-    source: skills/gco-weekly-refactor/
-    version: "1.0"
-
-  - name: gco-witching-hour
-    scope: global
-    source: skills/gco-witching-hour/
+    source: skills/gco-using-haunt/
     version: "1.0"
 
 # ==============================================================================
@@ -274,143 +204,59 @@ skills:
 # ==============================================================================
 
 commands:
-  - name: apparition
-    scope: global
-    source: commands/apparition.md
-
-  - name: assign
-    scope: global
-    source: commands/assign.md
-
-  - name: banish
-    scope: global
-    source: commands/banish.md
-
-  - name: bind-list
-    scope: global
-    source: commands/bind-list.md
-
-  - name: bind
-    scope: global
-    source: commands/bind.md
-
   - name: checkup
     scope: global
     source: commands/checkup.md
-
-  - name: cleanse
-    scope: global
-    source: commands/cleanse.md
-
-  - name: decompose
-    scope: global
-    source: commands/decompose.md
-
-  - name: exorcism
-    scope: global
-    source: commands/exorcism.md
-
-  - name: git-push
-    scope: global
-    source: commands/git-push.md
-
-  - name: haunt-baseline
-    scope: global
-    source: commands/haunt-baseline.md
-
-  - name: haunt-gather
-    scope: global
-    source: commands/haunt-gather.md
-
-  - name: haunt-metrics
-    scope: global
-    source: commands/haunt-metrics.md
-
-  - name: haunt-regression-check
-    scope: global
-    source: commands/haunt-regression-check.md
-
-  - name: haunt-report
-    scope: global
-    source: commands/haunt-report.md
-
-  - name: haunt-status
-    scope: global
-    source: commands/haunt-status.md
-
-  - name: haunt-update
-    scope: global
-    source: commands/haunt-update.md
 
   - name: haunt
     scope: global
     source: commands/haunt.md
 
-  - name: haunting
-    scope: global
-    source: commands/haunting.md
-
-  - name: pattern
-    scope: global
-    source: commands/pattern.md
-
   - name: qa
     scope: global
     source: commands/qa.md
-
-  - name: ritual
-    scope: global
-    source: commands/ritual.md
-
-  - name: roadmap
-    scope: global
-    source: commands/roadmap.md
 
   - name: seance
     scope: global
     source: commands/seance.md
 
-  - name: seer
+  - name: ship
     scope: global
-    source: commands/seer.md
-
-  - name: story
-    scope: global
-    source: commands/story.md
-
-  - name: summon
-    scope: global
-    source: commands/summon.md
-
-  - name: unbind
-    scope: global
-    source: commands/unbind.md
-
-  - name: witching-hour
-    scope: global
-    source: commands/witching-hour.md
+    source: commands/ship.md
 
 # ==============================================================================
 # HOOKS - Deterministic enforcement and observability
 # ==============================================================================
 
 hooks:
-  - name: commit-validator
-    source: hooks/commit-validator.sh
+  - name: initialize-session
+    source: hooks/session-start/initialize-session.sh
+    trigger: SessionStart
+    matcher: "startup|clear|compact"
+    timeout: 10
+
+  - name: observability-logger
+    source: hooks/observability-logger.sh
+    trigger: PostToolUse
+    matcher: ""
+    timeout: 5
+
+  - name: format-code
+    source: hooks/format-code.sh
+    trigger: PostToolUse
+    matcher: "Edit|Write"
+    timeout: 10
+
+  - name: bash-tool-damage-control
+    source: hooks/damage-control/bash-tool-damage-control.py
     trigger: PreToolUse
     matcher: "Bash"
     timeout: 5
 
-  - name: file-location-enforcer
-    source: hooks/file-location-enforcer.sh
+  - name: edit-tool-damage-control
+    source: hooks/damage-control/edit-tool-damage-control.py
     trigger: PreToolUse
-    matcher: "Write|Edit"
-    timeout: 5
-
-  - name: phase-enforcement
-    source: hooks/phase-enforcement.sh
-    trigger: PreToolUse
-    matcher: "Task"
+    matcher: "Edit"
     timeout: 5
 
   - name: completion-gate
@@ -419,39 +265,33 @@ hooks:
     matcher: "Edit"
     timeout: 5
 
-  - name: format-code
-    source: hooks/format-code.sh
-    trigger: PostToolUse
-    matcher: "Edit|Write|MultiEdit"
-    timeout: 30
-
-  - name: observability-logger
-    source: hooks/observability-logger.sh
-    trigger: PostToolUse
-    matcher: ".*"
-    timeout: 3
-
-  - name: bash-damage-control
-    source: hooks/damage-control/bash-tool-damage-control.py
-    trigger: PreToolUse
-    matcher: "Bash"
-    timeout: 5
-
-  - name: edit-damage-control
-    source: hooks/damage-control/edit-tool-damage-control.py
-    trigger: PreToolUse
-    matcher: "Edit"
-    timeout: 5
-
-  - name: write-damage-control
+  - name: write-tool-damage-control
     source: hooks/damage-control/write-tool-damage-control.py
     trigger: PreToolUse
     matcher: "Write"
     timeout: 5
 
-  - name: initialize-session
-    source: hooks/session-start/initialize-session.sh
-    trigger: SessionStart
+  - name: file-location-enforcer
+    source: hooks/file-location-enforcer.sh
+    trigger: PreToolUse
+    matcher: "Edit|Write"
+    timeout: 5
+
+  - name: phase-enforcement
+    source: hooks/phase-enforcement.sh
+    trigger: PreToolUse
+    matcher: "Agent"
+    timeout: 5
+
+  - name: notify-completion
+    source: hooks/notify-completion.sh
+    trigger: Stop
+    matcher: ""
+    timeout: 10
+
+  - name: notify-completion
+    source: hooks/notify-completion.sh
+    trigger: SubagentStop
     matcher: ""
     timeout: 10
 
@@ -460,3 +300,248 @@ deprecated:
     name: git-push
     removed: "2026-01-05"
     reason: "Redundant - command exists at commands/git-push.md"
+
+  - type: rule
+    name: gco-framework-changes
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: rule
+    name: gco-model-selection
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: rule
+    name: gco-orchestration
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: rule
+    name: gco-roadmap-format
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: rule
+    name: gco-session-startup
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-code-quality
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-completion
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-damage-control
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-feature-contracts
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-file-conventions
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-haunt-mode
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-issue-to-roadmap
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-model-selection
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-orchestrator
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-pattern-defeat
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-requirements-analysis
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-requirements-rubric
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-roadmap-creation
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-roadmap-format
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-roadmap-planning
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-roadmap-workflow
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-session-startup
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-weekly-refactor
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: skill
+    name: gco-witching-hour
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: apparition
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: assign
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: banish
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: bind
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: bind-list
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: cleanse
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: decompose
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: exorcism
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: git-push
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: haunt-baseline
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: haunt-gather
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: haunt-metrics
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: haunt-regression-check
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: haunt-report
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: haunt-status
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: haunt-update
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: haunting
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: pattern
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: ritual
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: roadmap
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: seer
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: story
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: summon
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: unbind
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
+
+  - type: command
+    name: witching-hour
+    removed: "2026-02-18"
+    reason: "Removed in 2026-02-18 framework slim-down; manifest entry purged 2026-06-11"
