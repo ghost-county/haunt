@@ -1,9 +1,9 @@
 ---
-name: {agent-name}
-description: {One-sentence description of agent purpose}
-tools: {List of tools this agent uses}
-skills: {List of skills this agent references}
-model: {sonnet | opus | haiku}
+name: "{agent-name}"
+description: "{One-sentence description of agent purpose}"
+tools: "{List of tools this agent uses}"
+skills: "{List of skills this agent references}"
+model: "{sonnet | opus | haiku}"
 ---
 
 # {Agent Name}

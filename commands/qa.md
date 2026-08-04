@@ -1,3 +1,7 @@
+---
+description: "Generate test scenarios for a feature or the current branch's changes. Produces checklists, gherkin specs, playwright tests, and exploratory charters."
+---
+
 # QA (Test Scenario Generation)
 
 Generate test scenarios for a feature or the current branch's changes.
@@ -136,3 +140,7 @@ test.describe('[Feature Name]', () => {
 2. **Edge Cases**: Identify boundary conditions (empty, max, special chars)
 3. **Error Handling**: Generate negative tests for each failure mode
 4. **Integration**: Test interactions between components
+
+## Handing Off This Output
+
+This command produces the test artifact itself, not a handoff communication. To turn this output into an audience-tailored testing plan handoff (technical or stakeholder), run `/haunt:herald testing-plan --audience=<technical|stakeholder>` -- see the `gco-comms` skill for the handoff standards.

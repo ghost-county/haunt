@@ -1,3 +1,7 @@
+---
+description: "Complete development ritual: planning, execution, and archival with zero manual coordination. Use when starting a new feature, executing a roadmap, or archiving completed work."
+---
+
 # /seance - Complete Development Ritual
 
 The seance is the complete idea-to-shipped workflow: planning, execution, and archival with zero manual coordination.

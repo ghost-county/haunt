@@ -1,3 +1,7 @@
+---
+description: "Verify that dev guardrails are properly deployed. Checks rules, skills, hooks, and agent configurations."
+---
+
 # Checkup (Health Verification)
 
 Verify that dev guardrails are properly deployed.
@@ -39,12 +43,12 @@ echo "Rules: $GCO_COUNT gco rules, $TOTAL_COUNT total"
 
 Verify skills are deployed to `~/.claude/skills/`:
 
-**Expected GCO skills (~16):**
+**Expected GCO skills (~17):**
 - `gco-code-review`, `gco-commit-conventions`, `gco-code-patterns`
 - `gco-tdd-workflow`, `gco-playwright-tests`, `gco-ui-testing`, `gco-testing-mindset`
 - `gco-secure-coding`, `gco-python-standards`, `gco-react-standards`, `gco-ui-design`
 - `gco-task-decomposition`, `gco-requirements-development`, `gco-context7-usage`
-- `gco-team-protocol`, `gco-seance-orchestration`
+- `gco-team-protocol`, `gco-seance-orchestration`, `gco-comms`
 
 ```bash
 SKILLS_DIR="$HOME/.claude/skills"
@@ -61,11 +65,12 @@ fi
 
 Verify commands are deployed to `~/.claude/commands/`:
 
-**Expected commands (4):**
+**Expected commands (5):**
 - `seance.md`
 - `ship.md`
 - `qa.md`
 - `checkup.md`
+- `herald.md`
 
 ```bash
 COMMANDS_DIR="$HOME/.claude/commands"
@@ -77,18 +82,19 @@ echo "Commands: $CMD_COUNT deployed"
 
 Verify agents are deployed to `~/.claude/agents/`:
 
-**Expected agents (6):**
+**Expected agents (7):**
 - `gco-project-manager.md`
 - `gco-dev.md`
 - `gco-research.md`
 - `gco-code-reviewer.md`
 - `gco-security-reviewer.md`
 - `gco-quality-reviewer.md`
+- `gco-comms.md`
 
 ```bash
 AGENTS_DIR="$HOME/.claude/agents"
 AGENT_COUNT=$(ls "$AGENTS_DIR"/gco-*.md 2>/dev/null | wc -l | tr -d ' ')
-EXPECTED_AGENTS=6
+EXPECTED_AGENTS=7
 if [[ "$AGENT_COUNT" -lt "$EXPECTED_AGENTS" ]]; then
     echo "Agents: $AGENT_COUNT/$EXPECTED_AGENTS gco agents (WARNING: missing agents)"
 else
@@ -131,9 +137,9 @@ fi
 CHECKUP COMPLETE
 
 Rules: 6/6 gco rules, 9/9 total
-Skills: 16 gco skills deployed
-Commands: 4/4 deployed
-Agents: 6/6 gco agents deployed
+Skills: 17 gco skills deployed
+Commands: 5/5 deployed
+Agents: 7/7 gco agents deployed
 MCP: context7 configured
 Approvals: 5 logged (last: 2026-04-04T12:00:00Z plan_approved)
 

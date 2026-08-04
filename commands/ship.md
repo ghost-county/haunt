@@ -1,3 +1,7 @@
+---
+description: "Create a PR for the current feature branch and enable auto-merge. Handles branch push, PR creation, and merge configuration."
+---
+
 # Ship (Create PR and Merge)
 
 Create a PR for the current feature branch and enable auto-merge.
@@ -106,3 +110,7 @@ Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 | Uncommitted changes | Exit with commit/stash options |
 | gh CLI not authenticated | Exit with `gh auth login` instruction |
 | Merge conflict | Exit (manual resolution needed) |
+
+## Handing Off This Change
+
+This command produces the PR itself, not a stakeholder communication. To turn this change into an audience-tailored project update or technical documentation handoff, run `/haunt:herald project-update --audience=<technical|stakeholder>` or `/haunt:herald tech-doc` -- see the `gco-comms` skill for the handoff standards.
