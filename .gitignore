@@ -136,7 +136,8 @@ nats-data/
 # ============================================================================
 
 # Project-local Claude Code configuration
-.claude/
+.claude/*
+!.claude/gate.sh
 
 # Haunt runtime directory (session state, logs)
 .haunt/
